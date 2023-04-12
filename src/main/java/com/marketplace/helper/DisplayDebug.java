@@ -17,6 +17,8 @@
 package com.marketplace.helper;
 
 import java.io.PrintWriter;
+import java.io.Reader;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Date;
@@ -28,7 +30,11 @@ import java.util.Set;
 
 import javax.inject.Inject;
 import javax.security.auth.callback.Callback;
+import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.TextOutputCallback;
+import javax.swing.text.Document;
+import javax.swing.text.EditorKit;
+import javax.swing.text.html.HTMLEditorKit;
 
 import org.forgerock.guava.common.collect.ListMultimap;
 import org.forgerock.json.JsonValue;
@@ -46,6 +52,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ImmutableList;
 import com.google.inject.assistedinject.Assisted;
+import com.sun.identity.authentication.callbacks.ScriptTextOutputCallback;
 
 /**
  * Dipslay Debug Node
@@ -87,7 +94,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 		default boolean headers() {
 			return true;
 		}
-		
+
 		/**
 		 * The header name for zero-page login that will contain the identity's
 		 * username.
@@ -96,7 +103,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 		default boolean clientIp() {
 			return true;
 		}
-		
+
 		/**
 		 * The header name for zero-page login that will contain the identity's
 		 * username.
@@ -105,7 +112,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 		default boolean cookies() {
 			return true;
 		}
-		
+
 		/**
 		 * The header name for zero-page login that will contain the identity's
 		 * username.
@@ -114,7 +121,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 		default boolean hostName() {
 			return true;
 		}
-		
+
 		/**
 		 * The header name for zero-page login that will contain the identity's
 		 * username.
@@ -123,7 +130,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 		default boolean locales() {
 			return true;
 		}
-		
+
 		/**
 		 * The header name for zero-page login that will contain the identity's
 		 * username.
@@ -132,7 +139,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 		default boolean parameters() {
 			return true;
 		}
-		
+
 		/**
 		 * The header name for zero-page login that will contain the identity's
 		 * username.
@@ -140,9 +147,8 @@ public class DisplayDebug extends AbstractDecisionNode {
 		@Attribute(order = 900)
 		default boolean serverUrl() {
 			return true;
-		}	
-		
-		
+		}
+
 	}
 
 	/**
@@ -165,115 +171,127 @@ public class DisplayDebug extends AbstractDecisionNode {
 
 			if (context.hasCallbacks()) {
 				logger.debug(loggerPrefix + "Done.");
+
+				NodeState ns = context.getStateFor(this);
+				ns.putShared("username", context.getCallback(NameCallback.class).get().getName());
 				return Action.goTo(DisplayDebugOutcome.NEXT_OUTCOME.name()).build();
 			}
 
 			ArrayList<Callback> callbacks = new ArrayList<Callback>();
-			callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, "==========> DISPLAY DEBUG <=========="));
+			callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, " "));
 			if (config.sharedState()) {
 				NodeState ns = context.getStateFor(this);
 				Set<String> shareStateKeys = ns.keys();
-				callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, "==========> NODE STATE <============="));
+				callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, "NODE STATE - FTW"));
 
 				for (Iterator<String> i = shareStateKeys.iterator(); i.hasNext();) {
 					String thisKey = i.next();
 					JsonValue thisVal = ns.get(thisKey);
-					TextOutputCallback txtOutputCallback;
-					if (thisVal.isString())
-						txtOutputCallback = new TextOutputCallback(TextOutputCallback.INFORMATION,
-								thisKey + ": " + escapeHTML(thisVal.asString()));
-					else
-						txtOutputCallback = new TextOutputCallback(TextOutputCallback.INFORMATION,
-								thisKey + ": " + thisVal);
 
+					TextOutputCallback txtOutputCallback; // used for label
+					NameCallback inputCallback;// used for input
+					if (thisVal.isString()) {
+						txtOutputCallback = new TextOutputCallback(TextOutputCallback.INFORMATION, thisKey + ": " + escapeHTML(thisVal.asString()));
+						inputCallback = new NameCallback(escapeHTML(thisVal.asString()), escapeHTML(thisVal.asString()));
+					} else {
+						txtOutputCallback = new TextOutputCallback(TextOutputCallback.INFORMATION, thisKey + ": " + thisVal);
+						inputCallback = new NameCallback(thisVal.toString(), thisVal.toString());
+					}
 					callbacks.add(txtOutputCallback);
+					callbacks.add(inputCallback);
 				}
-				
 
 			}
 
-			
 			if (config.authID()) {
-				callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, "==========> AUTHID <================="));
+				callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, "AUTHID"));
 				String theAuthID = context.request.authId;
-				TextOutputCallback txtOutputCallback = new TextOutputCallback(TextOutputCallback.INFORMATION,
-						"AuthID" + ": " + escapeHTML(theAuthID));
+				TextOutputCallback txtOutputCallback = new TextOutputCallback(TextOutputCallback.INFORMATION, "AuthID" + ": " + escapeHTML(theAuthID));
 				callbacks.add(txtOutputCallback);
 			}
-			
-			if(config.headers()) {
-				callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, "==========> HEADERS <================"));
-				ListMultimap headers = context.request.headers;
+
+			if (config.headers()) {
+				callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, "HEADERS"));
+				ListMultimap<String, String> headers = context.request.headers;
 				Set<String> headersKey = headers.keySet();
-				for (Iterator<String> i =headersKey.iterator(); i.hasNext();) {
+				for (Iterator<String> i = headersKey.iterator(); i.hasNext();) {
 					String thisKey = i.next();
 					List thisHeaderVal = headers.get(thisKey);
-					TextOutputCallback txtOutputCallback = new TextOutputCallback(TextOutputCallback.INFORMATION,
-							thisKey + ": " + escapeHTML(thisHeaderVal.toString()));
+					TextOutputCallback txtOutputCallback = new TextOutputCallback(TextOutputCallback.INFORMATION, thisKey + ": " + escapeHTML(thisHeaderVal.toString()));
+					NameCallback inputCallback = new NameCallback(html2text(escapeHTML(thisHeaderVal.toString())), html2text(escapeHTML(thisHeaderVal.toString())));
 					callbacks.add(txtOutputCallback);
+					callbacks.add(inputCallback);
 				}
-			}
-			
-			if(config.clientIp()) {
-				callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, "==========> CLIENT IP <=============="));
-				String theClientIP = context.request.clientIp;
-				TextOutputCallback txtOutputCallback = new TextOutputCallback(TextOutputCallback.INFORMATION,
-						"ClientIP" + ": " + escapeHTML(theClientIP));
-				callbacks.add(txtOutputCallback);
 			}
 
-			if(config.cookies() && context.request!=null && context.request.cookies!=null) {
-				callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, "==========> COOKIES <================"));
+			if (config.clientIp()) {
+				callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, "CLIENT IP"));
+				String theClientIP = context.request.clientIp;
+				TextOutputCallback txtOutputCallback = new TextOutputCallback(TextOutputCallback.INFORMATION, "ClientIP" + ": " + escapeHTML(theClientIP));
+				NameCallback inputCallback = new NameCallback(escapeHTML(theClientIP.toString()), escapeHTML(theClientIP.toString()));
+				callbacks.add(txtOutputCallback);
+				callbacks.add(inputCallback);
+			}
+
+			if (config.cookies() && context.request != null && context.request.cookies != null) {
+				callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, "COOKIES"));
 				Map<String, String> theCookies = context.request.cookies;
 				Set<String> cookieKeys = theCookies.keySet();
-				for (Iterator<String> i =cookieKeys.iterator(); i.hasNext();) {
+				for (Iterator<String> i = cookieKeys.iterator(); i.hasNext();) {
 					String thisKey = i.next();
 					String thisCookieVal = theCookies.get(thisKey);
-					TextOutputCallback txtOutputCallback = new TextOutputCallback(TextOutputCallback.INFORMATION,
-							thisKey + ": " + escapeHTML(thisCookieVal.toString()));
+					TextOutputCallback txtOutputCallback = new TextOutputCallback(TextOutputCallback.INFORMATION, thisKey + ": " + escapeHTML(thisCookieVal.toString()));
+					NameCallback inputCallback = new NameCallback(escapeHTML(thisCookieVal.toString()), escapeHTML(thisCookieVal.toString()));
 					callbacks.add(txtOutputCallback);
+					callbacks.add(inputCallback);
+
 				}
 			}
-			
-			if(config.hostName()) {
-				callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, "==========> HOSTNAME <==============="));
+
+			if (config.hostName()) {
+				callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, "HOSTNAME"));
 				String theHostName = context.request.hostName;
-				TextOutputCallback txtOutputCallback = new TextOutputCallback(TextOutputCallback.INFORMATION,
-						"HostName" + ": " + escapeHTML(theHostName));
+				TextOutputCallback txtOutputCallback = new TextOutputCallback(TextOutputCallback.INFORMATION, "HostName" + ": " + escapeHTML(theHostName));
+				NameCallback inputCallback = new NameCallback(escapeHTML(theHostName), escapeHTML(theHostName));
 				callbacks.add(txtOutputCallback);
+				callbacks.add(inputCallback);
 			}
-			
-			if(config.locales()) {
-				callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, "==========> LOCALE <================="));
+
+			if (config.locales()) {
+				callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, "LOCALE"));
 				PreferredLocales theLocales = context.request.locales;
-				TextOutputCallback txtOutputCallback = new TextOutputCallback(TextOutputCallback.INFORMATION,
-						"Preferred Locale" + ": " + escapeHTML(theLocales.getPreferredLocale().getDisplayName()));
+				TextOutputCallback txtOutputCallback = new TextOutputCallback(TextOutputCallback.INFORMATION, "Preferred Locale" + ": " + escapeHTML(theLocales.getPreferredLocale().getDisplayName()));
+				NameCallback inputCallback = new NameCallback(escapeHTML(theLocales.getPreferredLocale().getDisplayName()), escapeHTML(theLocales.getPreferredLocale().getDisplayName()));
 				callbacks.add(txtOutputCallback);
+				callbacks.add(inputCallback);
 			}
-			
-			
-			if(config.parameters() && context.request!=null && context.request.parameters!=null) {
-				callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, "==========> PARAMETERS <============="));
+
+			if (config.parameters() && context.request != null && context.request.parameters != null) {
+				callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, "PARAMETERS"));
 				Map<String, List<String>> theParms = context.request.parameters;
 				Set<String> parmKeys = theParms.keySet();
 				for (Iterator<String> i = parmKeys.iterator(); i.hasNext();) {
 					String thisKey = i.next();
 					List<String> thisParmVal = theParms.get(thisKey);
-					TextOutputCallback txtOutputCallback = new TextOutputCallback(TextOutputCallback.INFORMATION,
-							thisKey + ": " + escapeHTML(thisParmVal.toString()));
+					TextOutputCallback txtOutputCallback = new TextOutputCallback(TextOutputCallback.INFORMATION, thisKey + ": " + escapeHTML(thisParmVal.toString()));
+					NameCallback inputCallback = new NameCallback(escapeHTML(thisParmVal.toString()), escapeHTML(thisParmVal.toString()));
 					callbacks.add(txtOutputCallback);
+					callbacks.add(inputCallback);
 				}
 			}
-			
-			if(config.serverUrl()) {
-				callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, "==========> SERVER URL <============="));
+
+			if (config.serverUrl()) {
+				callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, "SERVER URL"));
 				String theServerURL = context.request.serverUrl;
-				TextOutputCallback txtOutputCallback = new TextOutputCallback(TextOutputCallback.INFORMATION,
-						"Server URL" + ": " + escapeHTML(theServerURL));
+				TextOutputCallback txtOutputCallback = new TextOutputCallback(TextOutputCallback.INFORMATION, "Server URL" + ": " + escapeHTML(theServerURL));
+				NameCallback inputCallback = new NameCallback(escapeHTML(theServerURL), escapeHTML(theServerURL));
 				callbacks.add(txtOutputCallback);
+				callbacks.add(inputCallback);
 			}
-			
-			
+
+			String scriptedForFormating = "" + "for (const val of document.querySelectorAll('div')) {\n" + "  if(val.textContent === \"NODE STATE - FTW\" ||\n" + "    val.textContent === \"AUTHID\" ||\n" + "    val.textContent === \"HEADERS\" ||\n" + "    val.textContent === \"CLIENT IP\" ||\n" + "    val.textContent === \"COOKIES\" ||\n" + "    val.textContent === \"HOSTNAME\" ||\n" + "    val.textContent === \"LOCALE\" ||\n" + "    val.textContent === \"PARAMETERS\" ||\n" + "    val.textContent === \"SERVER URL\")\n" + "    val.outerHTML = \"<h3>\" + val.outerHTML + \"</h3>\";\n" + "}";
+			ScriptTextOutputCallback scriptAndSelfSubmitCallback = new ScriptTextOutputCallback(scriptedForFormating);
+			//callbacks.add(scriptAndSelfSubmitCallback);
 
 			return Action.send(callbacks).build();
 		} catch (Exception ex) {
@@ -286,8 +304,6 @@ public class DisplayDebug extends AbstractDecisionNode {
 			return Action.goTo(DisplayDebugOutcome.ERROR_OUTCOME.name()).build();
 		}
 	}
-	
-	
 
 	private static String escapeHTML(String s) {
 		StringBuilder out = new StringBuilder(Math.max(16, s.length()));
@@ -304,6 +320,20 @@ public class DisplayDebug extends AbstractDecisionNode {
 		return out.toString();
 	}
 
+	public static final String html2text(String html) {
+		EditorKit kit = new HTMLEditorKit();
+		Document doc = kit.createDefaultDocument();
+		doc.putProperty("IgnoreCharsetDirective", Boolean.TRUE);
+		try {
+			Reader reader = new StringReader(html);
+			kit.read(reader, doc, 0);
+			return doc.getText(0, doc.getLength());
+		} catch (Exception e) {
+
+			return "";
+		}
+	}
+
 	// Possible outcomes
 	public enum DisplayDebugOutcome {
 
@@ -318,11 +348,8 @@ public class DisplayDebug extends AbstractDecisionNode {
 	public static class DisplayDebugOutcomeProvider implements org.forgerock.openam.auth.node.api.OutcomeProvider {
 		@Override
 		public List<Outcome> getOutcomes(PreferredLocales locales, JsonValue nodeAttributes) {
-			ResourceBundle bundle = locales.getBundleInPreferredLocale(BUNDLE,
-					DisplayDebugOutcomeProvider.class.getClassLoader());
-			return ImmutableList.of(
-					new Outcome(DisplayDebugOutcome.NEXT_OUTCOME.name(), bundle.getString("nextOutcome")),
-					new Outcome(DisplayDebugOutcome.ERROR_OUTCOME.name(), bundle.getString("errorOutcome")));
+			ResourceBundle bundle = locales.getBundleInPreferredLocale(BUNDLE, DisplayDebugOutcomeProvider.class.getClassLoader());
+			return ImmutableList.of(new Outcome(DisplayDebugOutcome.NEXT_OUTCOME.name(), bundle.getString("nextOutcome")), new Outcome(DisplayDebugOutcome.ERROR_OUTCOME.name(), bundle.getString("errorOutcome")));
 		}
 	}
 
