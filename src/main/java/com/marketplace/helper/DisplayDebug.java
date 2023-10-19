@@ -168,16 +168,53 @@ public class DisplayDebug extends AbstractDecisionNode {
 	public Action process(TreeContext context) throws NodeProcessException {
 
 		try {
+			ArrayList<Callback> callbacks = new ArrayList<Callback>();
+			List<NameCallback> nameCallbacks = context.getCallbacks(NameCallback.class);
+			List<TextOutputCallback> textCallbacks = context.getCallbacks(TextOutputCallback.class);
 
 			if (context.hasCallbacks()) {
 				logger.debug(loggerPrefix + "Done.");
 
 				NodeState ns = context.getStateFor(this);
 				ns.putShared("username", context.getCallback(NameCallback.class).get().getName());
+
+				//For loop
+
+				for (NameCallback callback : nameCallbacks) {
+					//If callback get that name like "HEADERS"
+					//String name = context.getCallback(TextOutputCallback.class).;
+					//Get that value of the callback
+
+					String value = callback.getPrompt();
+					String getName = callback.getName();
+					String defaultName = callback.getDefaultName();
+					System.out.println("Get Prompt: " + value);
+					System.out.println("Get Default name: " + defaultName);
+					System.out.println("Get name: " + getName);
+				}
+
+				for (TextOutputCallback index : textCallbacks) {
+					//If callback get that name like "HEADERS"
+					//String name = context.getCallback(TextOutputCallback.class).;
+					//Get that value of the callback
+
+
+					String test = index.toString();
+					System.out.println("Get message type: " + test);
+					try {
+						String newVal = index.getMessage();
+						System.out.println("Get Message: " + newVal);
+					}catch(Exception e){
+						System.out.println(e.toString());
+					}
+
+				}
+
+
 				return Action.goTo(DisplayDebugOutcome.NEXT_OUTCOME.name()).build();
 			}
 
-			ArrayList<Callback> callbacks = new ArrayList<Callback>();
+			//ArrayList<Callback> callbacks = new ArrayList<Callback>();
 			callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, " "));
 			if (config.sharedState()) {
 				NodeState ns = context.getStateFor(this);
@@ -225,6 +262,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 			}
 
 			if (config.clientIp()) {
+				System.out.println("Inside of clientIP if statement");
 				callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, "CLIENT IP"));
 				String theClientIP = context.request.clientIp;
 				TextOutputCallback txtOutputCallback = new TextOutputCallback(TextOutputCallback.INFORMATION, "ClientIP" + ": " + escapeHTML(theClientIP));
