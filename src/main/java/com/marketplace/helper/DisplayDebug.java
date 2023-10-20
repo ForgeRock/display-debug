@@ -45,6 +45,7 @@ import org.forgerock.openam.auth.node.api.Node;
 import org.forgerock.openam.auth.node.api.NodeProcessException;
 import org.forgerock.openam.auth.node.api.NodeState;
 import org.forgerock.openam.auth.node.api.TreeContext;
+import org.forgerock.openam.authentication.callbacks.StringAttributeInputCallback;
 import org.forgerock.openam.core.realms.Realm;
 import org.forgerock.util.i18n.PreferredLocales;
 import org.slf4j.Logger;
@@ -169,47 +170,22 @@ public class DisplayDebug extends AbstractDecisionNode {
 
 		try {
 			ArrayList<Callback> callbacks = new ArrayList<Callback>();
-			List<NameCallback> nameCallbacks = context.getCallbacks(NameCallback.class);
-			List<TextOutputCallback> textCallbacks = context.getCallbacks(TextOutputCallback.class);
+			List<StringAttributeInputCallback> stringCallbacks = context.getCallbacks(StringAttributeInputCallback.class);
 
 			if (context.hasCallbacks()) {
+
 				logger.debug(loggerPrefix + "Done.");
-
 				NodeState ns = context.getStateFor(this);
-				ns.putShared("username", context.getCallback(NameCallback.class).get().getName());
 
-				//For loop
+				//For loop to itterate through StringAttribute callbacks
+				for (StringAttributeInputCallback callback : stringCallbacks) {
 
-				for (NameCallback callback : nameCallbacks) {
-					//If callback get that name like "HEADERS"
-					//String name = context.getCallback(TextOutputCallback.class).;
-					//Get that value of the callback
+					//Get key, value pair in stringCallbacks
+					String key = callback.getName();
+					String value = callback.getValue();
 
-					String value = callback.getPrompt();
-					String getName = callback.getName();
-					String defaultName = callback.getDefaultName();
-					System.out.println("Get Prompt: " + value);
-					System.out.println("Get Default name: " + defaultName);
-					System.out.println("Get name: " + getName);
+					ns.putShared(key, value);
 				}
-
-				for (TextOutputCallback index : textCallbacks) {
-					//If callback get that name like "HEADERS"
-					//String name = context.getCallback(TextOutputCallback.class).;
-					//Get that value of the callback
-
-
-					String test = index.toString();
-					System.out.println("Get message type: " + test);
-					try {
-						String newVal = index.getMessage();
-						System.out.println("Get Message: " + newVal);
-					}catch(Exception e){
-						System.out.println(e.toString());
-					}
-
-				}
-
 
 				return Action.goTo(DisplayDebugOutcome.NEXT_OUTCOME.name()).build();
 			}
@@ -217,6 +193,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 			//ArrayList<Callback> callbacks = new ArrayList<Callback>();
 			callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, " "));
 			if (config.sharedState()) {
+				System.out.println("In Shared State");
 				NodeState ns = context.getStateFor(this);
 				Set<String> shareStateKeys = ns.keys();
 				callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, "NODE STATE - FTW"));
@@ -226,28 +203,40 @@ public class DisplayDebug extends AbstractDecisionNode {
 					JsonValue thisVal = ns.get(thisKey);
 
 					TextOutputCallback txtOutputCallback; // used for label
-					NameCallback inputCallback;// used for input
+					//NameCallback inputCallback;// used for input
+					StringAttributeInputCallback stringCallback;
+
 					if (thisVal.isString()) {
+
 						txtOutputCallback = new TextOutputCallback(TextOutputCallback.INFORMATION, thisKey + ": " + escapeHTML(thisVal.asString()));
-						inputCallback = new NameCallback(escapeHTML(thisVal.asString()), escapeHTML(thisVal.asString()));
+						stringCallback = new StringAttributeInputCallback(thisKey, thisKey + ": ", thisVal.asString(), false);
+//						inputCallback = new NameCallback(escapeHTML(thisVal.asString()), escapeHTML(thisVal.asString()));
 					} else {
 						txtOutputCallback = new TextOutputCallback(TextOutputCallback.INFORMATION, thisKey + ": " + thisVal);
-						inputCallback = new NameCallback(thisVal.toString(), thisVal.toString());
+						//inputCallback = new NameCallback(thisVal.toString(), thisVal.toString());
+						stringCallback = new StringAttributeInputCallback(thisKey, thisKey + ": ", thisVal.toString(), false);
 					}
 					callbacks.add(txtOutputCallback);
-					callbacks.add(inputCallback);
+					callbacks.add(stringCallback);
 				}
 
 			}
 
 			if (config.authID()) {
+				System.out.println("Im AuthId");
 				callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, "AUTHID"));
 				String theAuthID = context.request.authId;
+				System.out.println("AuthID: " + theAuthID);
 				TextOutputCallback txtOutputCallback = new TextOutputCallback(TextOutputCallback.INFORMATION, "AuthID" + ": " + escapeHTML(theAuthID));
-				callbacks.add(txtOutputCallback);
+				if(callbacks.add(txtOutputCallback)){
+					System.out.println("AUthId successfully added...");
+				}else{
+					System.out.println("AuthId failed to be added");
+				}
 			}
 
 			if (config.headers()) {
+				System.out.println("In headers");
 				callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, "HEADERS"));
 				ListMultimap<String, String> headers = context.request.headers;
 				Set<String> headersKey = headers.keySet();
@@ -255,23 +244,34 @@ public class DisplayDebug extends AbstractDecisionNode {
 					String thisKey = i.next();
 					List thisHeaderVal = headers.get(thisKey);
 					TextOutputCallback txtOutputCallback = new TextOutputCallback(TextOutputCallback.INFORMATION, thisKey + ": " + escapeHTML(thisHeaderVal.toString()));
-					NameCallback inputCallback = new NameCallback(html2text(escapeHTML(thisHeaderVal.toString())), html2text(escapeHTML(thisHeaderVal.toString())));
+					//NameCallback inputCallback = new NameCallback(html2text(escapeHTML(thisHeaderVal.toString())), html2text(escapeHTML(thisHeaderVal.toString())));
+					StringAttributeInputCallback stringCallback = new StringAttributeInputCallback(thisKey, thisKey + ": ", html2text(escapeHTML(thisHeaderVal.toString())), false);
 					callbacks.add(txtOutputCallback);
-					callbacks.add(inputCallback);
+					if(callbacks.add(stringCallback)){
+						System.out.println("Headers have been successfully added...");
+					}else{
+						System.out.println("Headers failed to be added...");
+					}
 				}
 			}
 
 			if (config.clientIp()) {
-				System.out.println("Inside of clientIP if statement");
+				System.out.println("Inside of clientIp");
 				callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, "CLIENT IP"));
 				String theClientIP = context.request.clientIp;
 				TextOutputCallback txtOutputCallback = new TextOutputCallback(TextOutputCallback.INFORMATION, "ClientIP" + ": " + escapeHTML(theClientIP));
-				NameCallback inputCallback = new NameCallback(escapeHTML(theClientIP.toString()), escapeHTML(theClientIP.toString()));
+				//NameCallback inputCallback = new NameCallback(escapeHTML(theClientIP.toString()), escapeHTML(theClientIP.toString()));
+				StringAttributeInputCallback stringCallback = new StringAttributeInputCallback("ClientIp", "ClientIp: ", escapeHTML(theClientIP.toString()), false);
 				callbacks.add(txtOutputCallback);
-				callbacks.add(inputCallback);
+				if(callbacks.add(stringCallback)){
+					System.out.println("ClientIp was successfully added...");
+				}else{
+					System.out.println("ClientIp failed to be added...");
+				}
 			}
 
 			if (config.cookies() && context.request != null && context.request.cookies != null) {
+				System.out.println("In Cookies: ");
 				callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, "COOKIES"));
 				Map<String, String> theCookies = context.request.cookies;
 				Set<String> cookieKeys = theCookies.keySet();
@@ -279,32 +279,51 @@ public class DisplayDebug extends AbstractDecisionNode {
 					String thisKey = i.next();
 					String thisCookieVal = theCookies.get(thisKey);
 					TextOutputCallback txtOutputCallback = new TextOutputCallback(TextOutputCallback.INFORMATION, thisKey + ": " + escapeHTML(thisCookieVal.toString()));
-					NameCallback inputCallback = new NameCallback(escapeHTML(thisCookieVal.toString()), escapeHTML(thisCookieVal.toString()));
+					//NameCallback inputCallback = new NameCallback(escapeHTML(thisCookieVal.toString()), escapeHTML(thisCookieVal.toString()));
+					StringAttributeInputCallback stringCallback = new StringAttributeInputCallback(thisKey, thisKey+": ", escapeHTML(thisCookieVal.toString()), false);
 					callbacks.add(txtOutputCallback);
-					callbacks.add(inputCallback);
+					if(callbacks.add(stringCallback)){
+						System.out.println("Cookies have been successfull added...");
+					}else{
+						System.out.println("Cookies failed to be added...");
+					}
 
 				}
 			}
 
 			if (config.hostName()) {
+				System.out.println("In Hostname");
 				callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, "HOSTNAME"));
 				String theHostName = context.request.hostName;
+				System.out.println("Hostname: " + theHostName);
 				TextOutputCallback txtOutputCallback = new TextOutputCallback(TextOutputCallback.INFORMATION, "HostName" + ": " + escapeHTML(theHostName));
-				NameCallback inputCallback = new NameCallback(escapeHTML(theHostName), escapeHTML(theHostName));
+				//NameCallback inputCallback = new NameCallback(escapeHTML(theHostName), escapeHTML(theHostName));
+				StringAttributeInputCallback stringCallback = new StringAttributeInputCallback("Hostname", "Hostname: ", escapeHTML(theHostName), false);
 				callbacks.add(txtOutputCallback);
-				callbacks.add(inputCallback);
+				if(callbacks.add(stringCallback)){
+					System.out.println("Hostname callback has been successfully added...");
+				}else{
+					System.out.println("Hostname callback failed to be added...");
+				}
 			}
 
 			if (config.locales()) {
+				System.out.println("In Locales");
 				callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, "LOCALE"));
 				PreferredLocales theLocales = context.request.locales;
 				TextOutputCallback txtOutputCallback = new TextOutputCallback(TextOutputCallback.INFORMATION, "Preferred Locale" + ": " + escapeHTML(theLocales.getPreferredLocale().getDisplayName()));
-				NameCallback inputCallback = new NameCallback(escapeHTML(theLocales.getPreferredLocale().getDisplayName()), escapeHTML(theLocales.getPreferredLocale().getDisplayName()));
+				//NameCallback inputCallback = new NameCallback(escapeHTML(theLocales.getPreferredLocale().getDisplayName()), escapeHTML(theLocales.getPreferredLocale().getDisplayName()));
+				StringAttributeInputCallback stringCallback = new StringAttributeInputCallback("Preferred Locale", "Preferred Locale: ", escapeHTML(theLocales.getPreferredLocale().getDisplayName()), false);
 				callbacks.add(txtOutputCallback);
-				callbacks.add(inputCallback);
+				if(callbacks.add(stringCallback)){
+					System.out.println("Locales callback has successfully been added...");
+				}else{
+					System.out.println("Locales callback failed to be added...");
+				}
 			}
 
 			if (config.parameters() && context.request != null && context.request.parameters != null) {
+				System.out.println("In Params");
 				callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, "PARAMETERS"));
 				Map<String, List<String>> theParms = context.request.parameters;
 				Set<String> parmKeys = theParms.keySet();
@@ -312,19 +331,35 @@ public class DisplayDebug extends AbstractDecisionNode {
 					String thisKey = i.next();
 					List<String> thisParmVal = theParms.get(thisKey);
 					TextOutputCallback txtOutputCallback = new TextOutputCallback(TextOutputCallback.INFORMATION, thisKey + ": " + escapeHTML(thisParmVal.toString()));
-					NameCallback inputCallback = new NameCallback(escapeHTML(thisParmVal.toString()), escapeHTML(thisParmVal.toString()));
+					//NameCallback inputCallback = new NameCallback(escapeHTML(thisParmVal.toString()), escapeHTML(thisParmVal.toString()));
+
+					StringAttributeInputCallback stringCallback = new StringAttributeInputCallback(thisKey, thisKey + ": ", escapeHTML(thisParmVal.toString()), false);
+
 					callbacks.add(txtOutputCallback);
-					callbacks.add(inputCallback);
+
+					if(callbacks.add(stringCallback)) {
+						System.out.println("Params callback has been successfully added...");
+					}else{
+						System.out.println("Params callback has failed to be added...");
+					}
 				}
 			}
 
 			if (config.serverUrl()) {
+				System.out.println("In Server Url");
 				callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, "SERVER URL"));
 				String theServerURL = context.request.serverUrl;
 				TextOutputCallback txtOutputCallback = new TextOutputCallback(TextOutputCallback.INFORMATION, "Server URL" + ": " + escapeHTML(theServerURL));
-				NameCallback inputCallback = new NameCallback(escapeHTML(theServerURL), escapeHTML(theServerURL));
+				//NameCallback inputCallback = new NameCallback(escapeHTML(theServerURL), escapeHTML(theServerURL));
+
+				StringAttributeInputCallback stringCallback = new StringAttributeInputCallback("Server Url", "Server Url" + ": ", escapeHTML(theServerURL), false);
+
 				callbacks.add(txtOutputCallback);
-				callbacks.add(inputCallback);
+				if(callbacks.add(stringCallback)){
+					System.out.println("Server Url has successfully been added...");
+				}else{
+					System.out.println("Server Url failed to be added...");
+				}
 			}
 
 			String scriptedForFormating = "" + "for (const val of document.querySelectorAll('div')) {\n" + "  if(val.textContent === \"NODE STATE - FTW\" ||\n" + "    val.textContent === \"AUTHID\" ||\n" + "    val.textContent === \"HEADERS\" ||\n" + "    val.textContent === \"CLIENT IP\" ||\n" + "    val.textContent === \"COOKIES\" ||\n" + "    val.textContent === \"HOSTNAME\" ||\n" + "    val.textContent === \"LOCALE\" ||\n" + "    val.textContent === \"PARAMETERS\" ||\n" + "    val.textContent === \"SERVER URL\")\n" + "    val.outerHTML = \"<h3>\" + val.outerHTML + \"</h3>\";\n" + "}";
