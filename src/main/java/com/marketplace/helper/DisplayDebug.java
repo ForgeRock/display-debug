@@ -13,6 +13,12 @@
  *
  * Copyright 2017-2018 ForgeRock AS.
  */
+/*
+ * This code is to be used exclusively in connection with ForgeRock’s software or services.
+ * ForgeRock only offers ForgeRock software or services to legal entities who have entered
+ * into a binding license agreement with ForgeRock.
+ */
+
 
 package com.marketplace.helper;
 
@@ -29,6 +35,7 @@ import java.util.ResourceBundle;
 import java.util.Set;
 
 import javax.inject.Inject;
+import javax.print.attribute.IntegerSyntax;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.TextOutputCallback;
@@ -179,7 +186,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 				logger.debug(loggerPrefix + "Done.");
 				NodeState ns = context.getStateFor(this);
 
-				//For loop to itterate through StringAttribute callbacks
+				//For loop to iterate through StringAttribute callbacks
 				for (StringAttributeInputCallback callback : stringCallbacks) {
 
 					//Get key, value pair in stringCallbacks
@@ -187,8 +194,9 @@ public class DisplayDebug extends AbstractDecisionNode {
 					String value = callback.getValue();
 					System.out.println("Key: " + key + "\nValue: " + value);
 					if(key.equals("authLevel")){
-						int int_value = Integer.parseInt(value);
+						Integer int_value = Integer.parseInt(value);
 						ns.putShared(key, int_value);
+						continue;
 					}
 					//callbacks.add(new StringAttributeInputCallback(key, key + ": ", value.toString(), false));
 

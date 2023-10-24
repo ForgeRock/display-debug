@@ -15,6 +15,13 @@
  * Copyright 2017-2020 ForgeRock AS.
  * 
 -->
+<!--
+ * This code is to be used exclusively in connection with ForgeRock’s software or services.
+ * ForgeRock only offers ForgeRock software or services to legal entities who have entered
+ * into a binding license agreement with ForgeRock.
+ *
+-->
+
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
@@ -23,7 +30,7 @@
     <artifactId>Helper</artifactId>
 
     <groupId>com.marketplace</groupId>
-    <version>0.0.0</version>    
+    <version>0.0.4</version>
     <name>Template for an Auth Tree Node maven project</name>
     <description>An Authentication Tree Node for ForgeRock's Identity Platform</description>
 

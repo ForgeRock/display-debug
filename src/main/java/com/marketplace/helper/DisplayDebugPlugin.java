@@ -27,6 +27,12 @@ import org.forgerock.openam.plugins.PluginException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+/*
+ * This code is to be used exclusively in connection with ForgeRock’s software or services.
+ * ForgeRock only offers ForgeRock software or services to legal entities who have entered
+ * into a binding license agreement with ForgeRock.
+ */
+
 
 /**
  * Definition of an <a href="https://backstage.forgerock.com/docs/am/6/apidocs/org/forgerock/openam/auth/node/api/AbstractNodeAmPlugin.html">AbstractNodeAmPlugin</a>. 
@@ -60,7 +66,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DisplayDebugPlugin extends AbstractNodeAmPlugin {
 
-	static private String currentVersion = "0.0.0";
+	static private String currentVersion = "0.0.4";
 	
     /** 
      * Specify the Map of list of node classes that the plugin is providing. These will then be installed and
