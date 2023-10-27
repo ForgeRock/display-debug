@@ -26,13 +26,7 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
-import java.util.Set;
+import java.util.*;
 
 import javax.inject.Inject;
 import javax.print.attribute.IntegerSyntax;
@@ -54,6 +48,7 @@ import org.forgerock.openam.auth.node.api.NodeState;
 import org.forgerock.openam.auth.node.api.TreeContext;
 import org.forgerock.openam.authentication.callbacks.StringAttributeInputCallback;
 import org.forgerock.openam.core.realms.Realm;
+import org.forgerock.openam.headers.SetHeadersFilter;
 import org.forgerock.util.i18n.PreferredLocales;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -182,29 +177,45 @@ public class DisplayDebug extends AbstractDecisionNode {
 			List<StringAttributeInputCallback> stringCallbacks = context.getCallbacks(StringAttributeInputCallback.class);
 
 			if (context.hasCallbacks()) {
-
+				boolean flagState = true;
 				logger.debug(loggerPrefix + "Done.");
 				NodeState ns = context.getStateFor(this);
 
 				//For loop to iterate through StringAttribute callbacks
 				for (StringAttributeInputCallback callback : stringCallbacks) {
 
-					//Get key, value pair in stringCallbacks
-					String key = callback.getName();
-					String value = callback.getValue();
-					System.out.println("Key: " + key + "\nValue: " + value);
-					if(key.equals("authLevel")){
-						Integer int_value = Integer.parseInt(value);
-						ns.putShared(key, int_value);
-						continue;
-					}
-					//callbacks.add(new StringAttributeInputCallback(key, key + ": ", value.toString(), false));
+						//Get key, value pair in stringCallbacks
+						String key = callback.getName();
+						String value = callback.getValue();
 
-					ns.putShared(key, value);
-					//ns.get(key).put(key, value);
-					//JsonValue copyState = context.sharedState.copy();
-					//return Action.goTo(NEXT_OUTCOME.name()).build();
+						Set<String> shareStateKeys = ns.keys();
+
+						//To put values in shared state only
+						for (Iterator<String> i = shareStateKeys.iterator(); i.hasNext(); ) {
+
+							String thisKey = i.next();
+
+							if (thisKey.equals(key)) {
+								System.out.println("Key: " + key+ "\nValue: " + value);
+								if(thisKey.equals("authLevel")){
+									System.out.println("In if statement inside of for loop");
+
+
+									Integer intValue = Integer.parseInt(String.valueOf(value));
+									System.out.println("Bottom of Int casting...");
+									ns.putShared(key, intValue);
+									System.out.println("Bottom of put shared...");
+									}
+								else {
+									ns.putShared(key, value.toString());
+								}
+							}
+
+					}
+					//ns.putShared(key, value);
 				}
+
+
 
 				return Action.goTo(NEXT_OUTCOME.name()).build();
 			}
@@ -228,7 +239,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 
 						txtOutputCallback = new TextOutputCallback(TextOutputCallback.INFORMATION, thisKey + ": " + escapeHTML(thisVal.asString()));
 						stringCallback = new StringAttributeInputCallback(thisKey, thisKey + ": ", thisVal.asString(), false);
-					} else {
+					} else{
 						txtOutputCallback = new TextOutputCallback(TextOutputCallback.INFORMATION, thisKey + ": " + thisVal);//inputCallback = new NameCallback(thisVal.toString(), thisVal.toString());
 						stringCallback = new StringAttributeInputCallback(thisKey, thisKey + ": ", thisVal.toString(), false);
 					}
@@ -252,6 +263,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 
 				callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, "HEADERS"));
 				ListMultimap<String, String> headers = context.request.headers;
+
 				Set<String> headersKey = headers.keySet();
 				for (Iterator<String> i = headersKey.iterator(); i.hasNext();) {
 					String thisKey = i.next();
