@@ -1,5 +1,5 @@
 #!/bin/sh
 cd /Users/kcarron/Repositories/display-debug/
 git add .
-git commit -m "Got username and authLevel to be put into sharedState. Realm is not getting put into shared state. Iterating through key: value pairs the first value printed out is the realm and the last value printed out is the realm with old value. Not sure about that"
+git commit -m "Can't write to anything but shared state. Everything but shared state now displays the data and doesn't accept user input. Need to add config to display data or not"
 git push -u origin sharedState
