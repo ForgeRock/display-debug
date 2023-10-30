@@ -66,7 +66,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DisplayDebugPlugin extends AbstractNodeAmPlugin {
 
-	static private String currentVersion = "0.0.7";
+	static private String currentVersion = "0.0.9";
 	
     /** 
      * Specify the Map of list of node classes that the plugin is providing. These will then be installed and
@@ -114,6 +114,7 @@ public class DisplayDebugPlugin extends AbstractNodeAmPlugin {
      */	
 	@Override
 	public void upgrade(String fromVersion) throws PluginException {
+		pluginTools.upgradeAuthNode(DisplayDebugPlugin.class);
 		super.upgrade(fromVersion);
 	}
 

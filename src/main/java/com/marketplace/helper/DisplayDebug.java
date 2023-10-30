@@ -60,7 +60,7 @@ import com.sun.identity.authentication.callbacks.ScriptTextOutputCallback;
 import static com.marketplace.helper.DisplayDebug.DisplayDebugOutcome.NEXT_OUTCOME;
 
 /**
- * Dipslay Debug Node
+ * Display Debug Node
  */
 @Node.Metadata(outcomeProvider = DisplayDebug.DisplayDebugOutcomeProvider.class, configClass = DisplayDebug.Config.class)
 public class DisplayDebug extends AbstractDecisionNode {
@@ -77,10 +77,10 @@ public class DisplayDebug extends AbstractDecisionNode {
 		 * The header name for zero-page login that will contain the identity's
 		 * username.
 		 */
-		@Attribute(order = 100)
+		@Attribute(order = 50)
 		default boolean display() { return true; }
 
-		@Attribute(order = 200)
+		@Attribute(order = 100)
 		default boolean sharedState() {
 			return true;
 		}
@@ -89,7 +89,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 		 * The header name for zero-page login that will contain the identity's
 		 * username.
 		 */
-		@Attribute(order = 300)
+		@Attribute(order = 200)
 		default boolean authID() {
 			return true;
 		}
@@ -98,7 +98,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 		 * The header name for zero-page login that will contain the identity's
 		 * username.
 		 */
-		@Attribute(order = 400)
+		@Attribute(order = 300)
 		default boolean headers() {
 			return true;
 		}
@@ -107,7 +107,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 		 * The header name for zero-page login that will contain the identity's
 		 * username.
 		 */
-		@Attribute(order = 500)
+		@Attribute(order = 400)
 		default boolean clientIp() {
 			return true;
 		}
@@ -116,7 +116,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 		 * The header name for zero-page login that will contain the identity's
 		 * username.
 		 */
-		@Attribute(order = 600)
+		@Attribute(order = 500)
 		default boolean cookies() {
 			return true;
 		}
@@ -125,7 +125,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 		 * The header name for zero-page login that will contain the identity's
 		 * username.
 		 */
-		@Attribute(order = 700)
+		@Attribute(order = 600)
 		default boolean hostName() {
 			return true;
 		}
@@ -134,7 +134,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 		 * The header name for zero-page login that will contain the identity's
 		 * username.
 		 */
-		@Attribute(order = 800)
+		@Attribute(order = 700)
 		default boolean locales() {
 			return true;
 		}
@@ -143,7 +143,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 		 * The header name for zero-page login that will contain the identity's
 		 * username.
 		 */
-		@Attribute(order = 900)
+		@Attribute(order = 800)
 		default boolean parameters() {
 			return true;
 		}
@@ -152,7 +152,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 		 * The header name for zero-page login that will contain the identity's
 		 * username.
 		 */
-		@Attribute(order = 1000)
+		@Attribute(order = 900)
 		default boolean serverUrl() {
 			return true;
 		}
@@ -181,7 +181,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 					List<StringAttributeInputCallback> stringCallbacks = context.getCallbacks(StringAttributeInputCallback.class);
 					System.out.println("Callbacks: " + stringCallbacks);
 					if (context.hasCallbacks()) {
-						boolean flag = true;
+
 						logger.debug(loggerPrefix + "Done.");
 						NodeState ns = context.getStateFor(this);
 
@@ -193,12 +193,11 @@ public class DisplayDebug extends AbstractDecisionNode {
 							String key = callback.getName();
 							String value = callback.getValue();
 
-							//System.out.println("Top of loop ---- Key: " + key + "\t Value: "+ value);
+
 							//To put values in shared state
 							for (String thisKey : shareStateKeys) {
 
 								if (thisKey.equals(key)) {
-									System.out.println("In Shared state -- Key: " + key + "\tValue: " + value);
 									if (thisKey.equals("authLevel")) {
 										Integer intValue = Integer.parseInt(String.valueOf(value));
 										ns.putShared(key, intValue);
