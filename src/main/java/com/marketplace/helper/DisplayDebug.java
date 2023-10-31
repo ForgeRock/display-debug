@@ -240,23 +240,45 @@ public class DisplayDebug extends AbstractDecisionNode {
 						StringAttributeInputCallback userCallback_key1, userCallback_key2, userCallback_key3;
 						StringAttributeInputCallback userCallback_value1, userCallback_value2, userCallback_value3;
 
+
+						TextOutputCallback txtOutputCallback1 = new TextOutputCallback(TextOutputCallback.INFORMATION,"Key 1");
 						userCallback_key1 = new StringAttributeInputCallback("Key_1", "Key" + ": ", " ", false);
+
+						TextOutputCallback txtOutputCallback2 = new TextOutputCallback(TextOutputCallback.INFORMATION, "Value 1");
 						userCallback_value1 = new StringAttributeInputCallback("Value_1", "Value" + ": ", " ", false);
 
+						TextOutputCallback txtOutputCallback3 = new TextOutputCallback(TextOutputCallback.INFORMATION, "Key 2");
 						userCallback_key2 = new StringAttributeInputCallback("Key_2", "Key" + ": ", " ", false);
+
+						TextOutputCallback txtOutputCallback4 = new TextOutputCallback(TextOutputCallback.INFORMATION, "Value 2");
 						userCallback_value2 = new StringAttributeInputCallback("Value_2", "Value" + ": ", " ", false);
 
+						TextOutputCallback txtOutputCallback5 = new TextOutputCallback(TextOutputCallback.INFORMATION, "Key 3");
 						userCallback_key3 = new StringAttributeInputCallback("Key_3", "Key" + ": ", " ", false);
+
+						TextOutputCallback txtOutputCallback6 = new TextOutputCallback(TextOutputCallback.INFORMATION, "Value 3");
 						userCallback_value3 = new StringAttributeInputCallback("Value_3", "Value" + ": ", " ", false);
 
+						callbacks.add(txtOutputCallback1);
 						callbacks.add(userCallback_key1);
+
+						callbacks.add(txtOutputCallback2);
 						callbacks.add(userCallback_value1);
+
+						callbacks.add(txtOutputCallback3);
 						callbacks.add(userCallback_key2);
+
+						callbacks.add(txtOutputCallback4);
 						callbacks.add(userCallback_value2);
+
+						callbacks.add(txtOutputCallback5);
 						callbacks.add(userCallback_key3);
+
+						callbacks.add(txtOutputCallback6);
 						callbacks.add(userCallback_value3);
 
 
+						callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, "SHARED STATE"));
 						for (Iterator<String> i = shareStateKeys.iterator(); i.hasNext(); ) {
 							String thisKey = i.next();
 							JsonValue thisVal = ns.get(thisKey);
