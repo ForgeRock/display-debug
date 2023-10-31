@@ -179,9 +179,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 				try {
 					ArrayList<Callback> callbacks = new ArrayList<Callback>();
 					List<StringAttributeInputCallback> stringCallbacks = context.getCallbacks(StringAttributeInputCallback.class);
-					System.out.println("Callbacks: " + stringCallbacks);
 					if (context.hasCallbacks()) {
-
 						logger.debug(loggerPrefix + "Done.");
 						NodeState ns = context.getStateFor(this);
 
@@ -208,74 +206,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 								}
 
 							}
-
-//						//Replace Headers
-//						ListMultimap<String, String> headers = context.request.headers;
-//						Set<String> headersKey = headers.keySet();
-//						//Iterate through headers
-//						for (Iterator<String> i = headersKey.iterator(); i.hasNext();) {
-//							String thisKey = i.next();
-//							List thisHeaderVal = headers.get(thisKey);
-//							if(thisKey.equals(key)){
-//								//Swap old out for new
-//								// *******
-//								// Not sure if line replaceValues function is correct
-//								// *******
-//								System.out.println("In Headers ---- Key: " + thisKey + "\tValue" + Collections.sin
-//								gleton(value));
-//								value = value.replace("[", "");
-//								value = value.replace("]", "");
-//								List headerVal = Collections.singletonList(value);
-//								headers.replaceValues(thisKey, thisHeaderVal);
-//								System.out.println("This is below the headers.replacevalues()...");
-//							}
-//						}
-//
-//						//Replace new authId
-//						if(key.equals("authId")) {
-//							System.out.println("In AuthId -----" + key + "\tValue: " + value);
-//							context.request.authId.replace(context.request.authId, value);
-//					}
-//
-//
-//						//Replace clientIp
-//						if(key.equals("ClientIP")){
-//							System.out.println("Inside clientIp ----- Key: "+ key + "\tValue" + value);
-//							context.request.clientIp.replace(context.request.clientIp, value);
-//					}
-//
-//						//Replace cookies
-//						if(key.equals("COOKIES")){
-//							Map<String, String> theCookies = context.request.cookies;
-//							Set<String> cookieKeys = theCookies.keySet();
-//							for (Iterator<String> i = cookieKeys.iterator(); i.hasNext();) {
-//								String thisKey = i.next();
-//								if(thisKey.equals(key)){
-//									System.out.println("Inside Cookies ----- Key: "+ key + "\tValue" + value);
-//									theCookies.replace(key, value);
-//								}
-//							}
-//						}
-//
-//						//Replace Hostname
-//						if(key.equals("HOSTNAME")){
-//							System.out.println("Inside Hostname ----- Key: "+ key + "\tValue" + value);
-//							context.request.hostName.replace(context.request.hostName, value);
-//					}
-//						//Replace Locales
-//	//					if(key.equals("Locales")){
-//	//						context.request.locales.
-//	//					}
-//
-//						//Replace Server Url
-//						if(key.equals("Server Url")){
-//							System.out.println("Inside Server Url ----- Key: "+ key + "\tValue" + value);
-//						context.request.serverUrl.replace(context.request.serverUrl, value);
-//					}
-//
-//
-
-						}
+					}
 
 						return Action.goTo(NEXT_OUTCOME.name()).build();
 					}
@@ -329,9 +260,9 @@ public class DisplayDebug extends AbstractDecisionNode {
 							String thisKey = i.next();
 							List thisHeaderVal = headers.get(thisKey);
 							TextOutputCallback txtOutputCallback = new TextOutputCallback(TextOutputCallback.INFORMATION, thisKey + ": " + escapeHTML(thisHeaderVal.toString()));
-							StringAttributeInputCallback stringCallback = new StringAttributeInputCallback(thisKey, thisKey + ": ", html2text(escapeHTML(thisHeaderVal.toString())), false);
+							//StringAttributeInputCallback stringCallback = new StringAttributeInputCallback(thisKey, thisKey + ": ", html2text(escapeHTML(thisHeaderVal.toString())), false);
 							callbacks.add(txtOutputCallback);
-							//callbacks.add(stringCallback);
+
 
 						}
 					}
@@ -341,9 +272,9 @@ public class DisplayDebug extends AbstractDecisionNode {
 						callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, "CLIENT IP"));
 						String theClientIP = context.request.clientIp;
 						TextOutputCallback txtOutputCallback = new TextOutputCallback(TextOutputCallback.INFORMATION, "ClientIP" + ": " + escapeHTML(theClientIP));
-						StringAttributeInputCallback stringCallback = new StringAttributeInputCallback("ClientIp", "ClientIp: ", escapeHTML(theClientIP.toString()), false);
+						//StringAttributeInputCallback stringCallback = new StringAttributeInputCallback("ClientIp", "ClientIp: ", escapeHTML(theClientIP.toString()), false);
 						callbacks.add(txtOutputCallback);
-						//callbacks.add(stringCallback);
+
 
 					}
 
@@ -356,7 +287,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 							String thisKey = i.next();
 							String thisCookieVal = theCookies.get(thisKey);
 							TextOutputCallback txtOutputCallback = new TextOutputCallback(TextOutputCallback.INFORMATION, thisKey + ": " + escapeHTML(thisCookieVal.toString()));
-							StringAttributeInputCallback stringCallback = new StringAttributeInputCallback(thisKey, thisKey + ": ", escapeHTML(thisCookieVal.toString()), false);
+							//StringAttributeInputCallback stringCallback = new StringAttributeInputCallback(thisKey, thisKey + ": ", escapeHTML(thisCookieVal.toString()), false);
 							callbacks.add(txtOutputCallback);
 							//callbacks.add(stringCallback);
 
@@ -368,7 +299,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 						callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, "HOSTNAME"));
 						String theHostName = context.request.hostName;
 						TextOutputCallback txtOutputCallback = new TextOutputCallback(TextOutputCallback.INFORMATION, "HostName" + ": " + escapeHTML(theHostName));
-						StringAttributeInputCallback stringCallback = new StringAttributeInputCallback("Hostname", "Hostname: ", escapeHTML(theHostName), false);
+						//StringAttributeInputCallback stringCallback = new StringAttributeInputCallback("Hostname", "Hostname: ", escapeHTML(theHostName), false);
 						callbacks.add(txtOutputCallback);
 						//callbacks.add(stringCallback);
 
@@ -379,7 +310,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 						callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, "LOCALE"));
 						PreferredLocales theLocales = context.request.locales;
 						TextOutputCallback txtOutputCallback = new TextOutputCallback(TextOutputCallback.INFORMATION, "Preferred Locale" + ": " + escapeHTML(theLocales.getPreferredLocale().getDisplayName()));
-						StringAttributeInputCallback stringCallback = new StringAttributeInputCallback("Preferred Locale", "Preferred Locale: ", escapeHTML(theLocales.getPreferredLocale().getDisplayName()), false);
+						//StringAttributeInputCallback stringCallback = new StringAttributeInputCallback("Preferred Locale", "Preferred Locale: ", escapeHTML(theLocales.getPreferredLocale().getDisplayName()), false);
 						callbacks.add(txtOutputCallback);
 						//callbacks.add(stringCallback);
 
@@ -395,7 +326,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 							List<String> thisParmVal = theParms.get(thisKey);
 							TextOutputCallback txtOutputCallback = new TextOutputCallback(TextOutputCallback.INFORMATION, thisKey + ": " + escapeHTML(thisParmVal.toString()));
 
-							StringAttributeInputCallback stringCallback = new StringAttributeInputCallback(thisKey, thisKey + ": ", escapeHTML(thisParmVal.toString()), false);
+							//StringAttributeInputCallback stringCallback = new StringAttributeInputCallback(thisKey, thisKey + ": ", escapeHTML(thisParmVal.toString()), false);
 
 							callbacks.add(txtOutputCallback);
 
@@ -410,7 +341,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 						String theServerURL = context.request.serverUrl;
 						TextOutputCallback txtOutputCallback = new TextOutputCallback(TextOutputCallback.INFORMATION, "Server URL" + ": " + escapeHTML(theServerURL));
 
-						StringAttributeInputCallback stringCallback = new StringAttributeInputCallback("Server Url", "Server Url" + ": ", escapeHTML(theServerURL), false);
+						//StringAttributeInputCallback stringCallback = new StringAttributeInputCallback("Server Url", "Server Url" + ": ", escapeHTML(theServerURL), false);
 
 						callbacks.add(txtOutputCallback);
 						//callbacks.add(stringCallback);

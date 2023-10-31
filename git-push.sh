@@ -1,5 +1,5 @@
 #!/bin/sh
 cd /Users/kcarron/Repositories/display-debug/
 git add .
-git commit -m "Got display to be in configuration in journey. My changes don't seem to reflect on the journey on my local machine but on different machines it works. Everything should wowrk now"
+git commit -m "Got configuration to work where admin can choose whether or not to display node data or not. Got AM to work on local again"
 git push -u origin sharedState
