@@ -176,6 +176,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 	public Action process(TreeContext context) throws NodeProcessException {
 
 			if(config.display()) {
+				TextOutputCallback separator = new TextOutputCallback(TextOutputCallback.INFORMATION,"================================");
 				try {
 					ArrayList<Callback> callbacks = new ArrayList<Callback>();
 					List<StringAttributeInputCallback> stringCallbacks = context.getCallbacks(StringAttributeInputCallback.class);
@@ -230,7 +231,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 					}
 
 					//ArrayList<Callback> callbacks = new ArrayList<Callback>();
-					callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, " "));
+
 					if (config.sharedState()) {
 
 						NodeState ns = context.getStateFor(this);
@@ -277,7 +278,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 						callbacks.add(txtOutputCallback6);
 						callbacks.add(userCallback_value3);
 
-
+						callbacks.add(separator);
 						callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, "SHARED STATE"));
 						for (Iterator<String> i = shareStateKeys.iterator(); i.hasNext(); ) {
 							String thisKey = i.next();
@@ -301,7 +302,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 					}
 
 					if (config.authID()) {
-
+						callbacks.add(separator);
 						callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, "AUTHID"));
 						String theAuthID = context.request.authId;
 
@@ -311,7 +312,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 					}
 
 					if (config.headers()) {
-
+						callbacks.add(separator);
 						callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, "HEADERS"));
 						ListMultimap<String, String> headers = context.request.headers;
 
@@ -327,7 +328,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 					}
 
 					if (config.clientIp()) {
-
+						callbacks.add(separator);
 						callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, "CLIENT IP"));
 						String theClientIP = context.request.clientIp;
 						TextOutputCallback txtOutputCallback = new TextOutputCallback(TextOutputCallback.INFORMATION, "ClientIP" + ": " + escapeHTML(theClientIP));
@@ -337,7 +338,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 					}
 
 					if (config.cookies() && context.request != null && context.request.cookies != null) {
-
+						callbacks.add(separator);
 						callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, "COOKIES"));
 						Map<String, String> theCookies = context.request.cookies;
 						Set<String> cookieKeys = theCookies.keySet();
@@ -359,7 +360,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 					}
 
 					if (config.locales()) {
-
+						callbacks.add(separator);
 						callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, "LOCALE"));
 						PreferredLocales theLocales = context.request.locales;
 						TextOutputCallback txtOutputCallback = new TextOutputCallback(TextOutputCallback.INFORMATION, "Preferred Locale" + ": " + escapeHTML(theLocales.getPreferredLocale().getDisplayName()));
@@ -367,7 +368,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 					}
 
 					if (config.parameters() && context.request != null && context.request.parameters != null) {
-
+						callbacks.add(separator);
 						callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, "PARAMETERS"));
 						Map<String, List<String>> theParms = context.request.parameters;
 						Set<String> parmKeys = theParms.keySet();
@@ -381,7 +382,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 					}
 
 					if (config.serverUrl()) {
-
+						callbacks.add(separator);
 						callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, "SERVER URL"));
 						String theServerURL = context.request.serverUrl;
 						TextOutputCallback txtOutputCallback = new TextOutputCallback(TextOutputCallback.INFORMATION, "Server URL" + ": " + escapeHTML(theServerURL));
