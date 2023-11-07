@@ -66,7 +66,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DisplayDebugPlugin extends AbstractNodeAmPlugin {
 
-	static private String currentVersion = "0.0.9";
+	static private String currentVersion = "0.1.0";
 	
     /** 
      * Specify the Map of list of node classes that the plugin is providing. These will then be installed and
