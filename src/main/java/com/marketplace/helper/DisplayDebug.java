@@ -238,7 +238,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 
 						NodeState ns = context.getStateFor(this);
 						Set<String> shareStateKeys = ns.keys();
-						callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, "NODE STATE - FTW"));
+						callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, "NODE STATE"));
 						if(config.textBoxes()) {
 							StringAttributeInputCallback userCallback_key1, userCallback_key2, userCallback_key3;
 							StringAttributeInputCallback userCallback_value1, userCallback_value2, userCallback_value3;
