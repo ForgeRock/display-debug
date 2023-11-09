@@ -68,6 +68,8 @@ public class DisplayDebug extends AbstractDecisionNode {
 	private final Config config;
 	private static final String BUNDLE = DisplayDebug.class.getName();
 	private String loggerPrefix = "[DisplayDebug Node][Marketplace] ";
+	@Node.Metadata(outcomeProvider = DisplayDebug.OutcomeProvider.class,
+			configClass = DisplayDebug.Config.class, tags = {"marketplace", "trustnetwork"})
 
 	/**
 	 * Configuration for the node.
@@ -177,7 +179,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 	@Override
 	public Action process(TreeContext context) throws NodeProcessException {
 
-			if(config.display()) {
+		if(config.display()) {
 				TextOutputCallback separator = new TextOutputCallback(TextOutputCallback.INFORMATION,"================================");
 				try {
 					ArrayList<Callback> callbacks = new ArrayList<Callback>();
