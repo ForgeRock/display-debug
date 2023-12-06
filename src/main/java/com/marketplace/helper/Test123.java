@@ -1,7 +1,9 @@
 package com.marketplace.helper;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.forgerock.json.JsonValue;
 import org.json.JSONObject;
@@ -9,17 +11,21 @@ import org.json.JSONObject;
 public class Test123 {
 
 	public static void main(String[] args) {
-		JsonValue jv = new JsonValue(null);
+
 
 		List<String> al = new ArrayList<String>();
 
 		al.add("John");
 
-		jv.put("name", al);
+		
+		JsonValue jv = new JsonValue(al);
 
 		System.out.println(jv);
 
-		JSONObject jsonobj = new JSONObject(jv.toString());
+		Map<String, Object> content = new LinkedHashMap<String, Object>();
+		content.put("names", jv);
+		
+		JSONObject jsonobj = new JSONObject(content);
 
 		System.out.println(jsonobj);
 
