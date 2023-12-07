@@ -199,37 +199,37 @@ public class DisplayDebug extends AbstractDecisionNode {
 
 							//Test what value is coming in
 							//To put values in shared state
-							int times = 1;
+
 							for (String thisKey : shareStateKeys) {
 								JsonValue jsonValue = ns.get(thisKey);
-								System.out.println("value: " + value + " been in this loop "+ times + " times...");
-								times++;
-								if (jsonValue.isBoolean()&& times == 1) {
+								System.out.println("jsonValue: " + jsonValue);
+
+								if (jsonValue.isBoolean()) {
+									System.out.println("Inside boolean with "+ value+ "...");
 									ns.putShared(key, Boolean.valueOf(String.valueOf(value)));
-									continue;
-								}else if(thisKey.equals("authLevel") && times == 1){
-									System.out.println("Inside authLevel with " + thisKey + " and " + jsonValue + "...");
+								}else if(thisKey.equals("authLevel")){
+									System.out.println("Inside authLevel with " + thisKey + " and " + value + "...");
 									ns.putShared(key, value); //Integer.valueOf(String.valueOf(value)
-									continue;
 								}
-								else if (jsonValue.toString().startsWith("{") && times == 1){
+								else if (jsonValue.toString().startsWith("{")){
 									//{pageNodeCallback: {"0":0}}
-//									System.out.println("It is a json object... \t Key: " + thisKey + " Value: "+ jsonValue);
-//									JSONObject jsonobj = new JSONObject(value.toString());
+									System.out.println("It is a json object... \t Key: " + thisKey + " Value: "+ jsonValue);
+
+									JSONObject jsonobj = new JSONObject(value);
+									System.out.println("Inside {} with "+ value+ "...");
 									ns.putShared(key, value);
-									continue;
+									break;
 								}
-								else if (jsonValue.isNumber() && times == 1){
-									ns.putShared(key, Integer.valueOf(String.valueOf(value)));
-									continue;
-								}else if (jsonValue.isString() && times == 1){
+								else if (jsonValue.isNumber()){//jsonValue.isNumber()
+									System.out.println("Inside number with "+ value + "...");
+									ns.putShared(key, Integer.valueOf(value));
+								}else if (jsonValue.isString()){
+									System.out.println("Inside string with "+ value + "...");
 									ns.putShared(key, value.toString());
-									continue;
 								}
 							}
 							i = i + 1;
 					}
-
 						return Action.goTo(NEXT_OUTCOME.name()).build();
 					}
 

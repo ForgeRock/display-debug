@@ -66,7 +66,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DisplayDebugPlugin extends AbstractNodeAmPlugin {
 
-	static private String currentVersion = "0.1.0";
+	static private String currentVersion = "0.1.2";
 	static final String logAppender = "[Version: " + currentVersion + "][Marketplace] ";
 
 
