@@ -37,6 +37,8 @@ import javax.swing.text.Document;
 import javax.swing.text.EditorKit;
 import javax.swing.text.html.HTMLEditorKit;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.forgerock.guava.common.collect.ListMultimap;
 import org.forgerock.json.JsonValue;
 import org.forgerock.openam.annotations.sm.Attribute;
@@ -50,6 +52,7 @@ import org.forgerock.openam.authentication.callbacks.StringAttributeInputCallbac
 import org.forgerock.openam.core.realms.Realm;
 import org.forgerock.openam.headers.SetHeadersFilter;
 import org.forgerock.util.i18n.PreferredLocales;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,7 +72,9 @@ public class DisplayDebug extends AbstractDecisionNode {
 	private static final String BUNDLE = DisplayDebug.class.getName();
 	private String loggerPrefix = "[DisplayDebug Node][Marketplace] ";
 	@Node.Metadata(outcomeProvider = DisplayDebug.OutcomeProvider.class,
-			configClass = DisplayDebug.Config.class, tags = {"marketplace", "trustnetwork"})
+			configClass = DisplayDebug.Config.class,
+			tags = {"marketplace", "trustnetwork"}
+	)
 
 	/**
 	 * Configuration for the node.
@@ -83,79 +88,52 @@ public class DisplayDebug extends AbstractDecisionNode {
 		default boolean display() { return true; }
 		@Attribute(order = 75)
 		default boolean textBoxes() { return true; }
+		@Attribute(order = 77)
+		default Integer numTextboxes() { return 1; }
+
+		@Attribute(order = 80)
+		default boolean pretty() { return true; }
 
 		@Attribute(order = 100)
 		default boolean sharedState() {
 			return true;
 		}
 
-		/**
-		 * The header name for zero-page login that will contain the identity's
-		 * username.
-		 */
 		@Attribute(order = 200)
 		default boolean authID() {
 			return true;
 		}
 
-		/**
-		 * The header name for zero-page login that will contain the identity's
-		 * username.
-		 */
 		@Attribute(order = 300)
 		default boolean headers() {
 			return true;
 		}
 
-		/**
-		 * The header name for zero-page login that will contain the identity's
-		 * username.
-		 */
 		@Attribute(order = 400)
 		default boolean clientIp() {
 			return true;
 		}
 
-		/**
-		 * The header name for zero-page login that will contain the identity's
-		 * username.
-		 */
 		@Attribute(order = 500)
 		default boolean cookies() {
 			return true;
 		}
 
-		/**
-		 * The header name for zero-page login that will contain the identity's
-		 * username.
-		 */
 		@Attribute(order = 600)
 		default boolean hostName() {
 			return true;
 		}
 
-		/**
-		 * The header name for zero-page login that will contain the identity's
-		 * username.
-		 */
 		@Attribute(order = 700)
 		default boolean locales() {
 			return true;
 		}
 
-		/**
-		 * The header name for zero-page login that will contain the identity's
-		 * username.
-		 */
 		@Attribute(order = 800)
 		default boolean parameters() {
 			return true;
 		}
 
-		/**
-		 * The header name for zero-page login that will contain the identity's
-		 * username.
-		 */
 		@Attribute(order = 900)
 		default boolean serverUrl() {
 			return true;
@@ -189,46 +167,67 @@ public class DisplayDebug extends AbstractDecisionNode {
 						NodeState ns = context.getStateFor(this);
 
 						Set<String> shareStateKeys = ns.keys();
+						int i = 0;
+						int size = stringCallbacks.size();
+
 						//For loop to iterate through StringAttribute callbacks
-						for (StringAttributeInputCallback callback : stringCallbacks) {
+						while (i < size) {
+							StringAttributeInputCallback currentCallback = stringCallbacks.get(i);
 
 							//Get key, value pair in stringCallbacks
-							String key = callback.getName();
-							String value = callback.getValue();
+							String key = currentCallback.getName();
+							String value = currentCallback.getValue();
+							System.out.println("========================");
+							System.out.println("Key value pair being read in currently...\n");
+							System.out.println("Key: "+ key + " Value: " + value);
+							System.out.println("========================");
+							if(key.startsWith("text-boxes")){
+								StringAttributeInputCallback valueCallback = stringCallbacks.get(i+1);
+								String textboxKey = valueCallback.getName();
+								String val = valueCallback.getValue();
+								//key = stringCallbacks[i]
+								//value = stringCallbacks[i + 1]
+//								System.out.println("========================");
+//								System.out.println("Key value pair\n");
+//								System.out.println("Key: "+ textboxKey + " Value: " + val);
+//								System.out.println("========================");
+								ns.putShared(key, val);
 
-
-							//To put values in shared state
-							for (String thisKey : shareStateKeys) {
-
-								if (thisKey.equals(key)) {
-									if (thisKey.equals("authLevel")) {
-										Integer intValue = Integer.parseInt(String.valueOf(value));
-										ns.putShared(key, intValue);
-									} else {
-										ns.putShared(key, value.toString());
-									}
-									break;
-								} else if(key.equals("Key_1")){
-									ns.putShared(key, value.toString());
-								}
-								else if(key.equals("Value_1")){
-									ns.putShared(key, value.toString());
-								}
-								else if(key.equals("Key_2")){
-									ns.putShared(key, value.toString());
-								}
-								else if(key.equals("Value_2")){
-									ns.putShared(key, value.toString());
-								}
-								else if(key.equals("Key_3")){
-									ns.putShared(key, value.toString());
-								}
-								else if(key.equals("Value_3")){
-									ns.putShared(key, value.toString());
-								}
-
-
+								i = i+1;
+								continue;
 							}
+
+							//Test what value is coming in
+							//To put values in shared state
+							int times = 1;
+							for (String thisKey : shareStateKeys) {
+								JsonValue jsonValue = ns.get(thisKey);
+								System.out.println("value: " + value + " been in this loop "+ times + " times...");
+								times++;
+								if (jsonValue.isBoolean()&& times == 1) {
+									ns.putShared(key, Boolean.valueOf(String.valueOf(value)));
+									continue;
+								}else if(thisKey.equals("authLevel") && times == 1){
+									System.out.println("Inside authLevel with " + thisKey + " and " + jsonValue + "...");
+									ns.putShared(key, value); //Integer.valueOf(String.valueOf(value)
+									continue;
+								}
+								else if (jsonValue.toString().startsWith("{") && times == 1){
+									//{pageNodeCallback: {"0":0}}
+//									System.out.println("It is a json object... \t Key: " + thisKey + " Value: "+ jsonValue);
+//									JSONObject jsonobj = new JSONObject(value.toString());
+									ns.putShared(key, value);
+									continue;
+								}
+								else if (jsonValue.isNumber() && times == 1){
+									ns.putShared(key, Integer.valueOf(String.valueOf(value)));
+									continue;
+								}else if (jsonValue.isString() && times == 1){
+									ns.putShared(key, value.toString());
+									continue;
+								}
+							}
+							i = i + 1;
 					}
 
 						return Action.goTo(NEXT_OUTCOME.name()).build();
@@ -242,47 +241,28 @@ public class DisplayDebug extends AbstractDecisionNode {
 						Set<String> shareStateKeys = ns.keys();
 						callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, "NODE STATE"));
 						if(config.textBoxes()) {
-							StringAttributeInputCallback userCallback_key1, userCallback_key2, userCallback_key3;
-							StringAttributeInputCallback userCallback_value1, userCallback_value2, userCallback_value3;
+							Integer numtextboxes = config.numTextboxes();
+							for(int i = 0; i < numtextboxes; i++) {
+								StringAttributeInputCallback userCallback_key;
+								StringAttributeInputCallback userCallback_value;
 
 
-							TextOutputCallback txtOutputCallback1 = new TextOutputCallback(TextOutputCallback.INFORMATION, "Key 1");
-							userCallback_key1 = new StringAttributeInputCallback("Key_1", "Key" + ": ", " ", false);
+								TextOutputCallback txtOutputCallback = new TextOutputCallback(TextOutputCallback.INFORMATION, "Key");
+								userCallback_key = new StringAttributeInputCallback("text-boxes", "Key" + ": ", " ", false);
 
-							TextOutputCallback txtOutputCallback2 = new TextOutputCallback(TextOutputCallback.INFORMATION, "Value 1");
-							userCallback_value1 = new StringAttributeInputCallback("Value_1", "Value" + ": ", " ", false);
+								callbacks.add(txtOutputCallback);
+								callbacks.add(userCallback_key);
 
-							TextOutputCallback txtOutputCallback3 = new TextOutputCallback(TextOutputCallback.INFORMATION, "Key 2");
-							userCallback_key2 = new StringAttributeInputCallback("Key_2", "Key" + ": ", " ", false);
 
-							TextOutputCallback txtOutputCallback4 = new TextOutputCallback(TextOutputCallback.INFORMATION, "Value 2");
-							userCallback_value2 = new StringAttributeInputCallback("Value_2", "Value" + ": ", " ", false);
+								TextOutputCallback txtOutputCallback2 = new TextOutputCallback(TextOutputCallback.INFORMATION, "Value");
+								userCallback_value = new StringAttributeInputCallback("text-boxes", "Value" + ": ", " ", false);
 
-							TextOutputCallback txtOutputCallback5 = new TextOutputCallback(TextOutputCallback.INFORMATION, "Key 3");
-							userCallback_key3 = new StringAttributeInputCallback("Key_3", "Key" + ": ", " ", false);
+								callbacks.add(txtOutputCallback2);
+								callbacks.add(userCallback_value);
 
-							TextOutputCallback txtOutputCallback6 = new TextOutputCallback(TextOutputCallback.INFORMATION, "Value 3");
-							userCallback_value3 = new StringAttributeInputCallback("Value_3", "Value" + ": ", " ", false);
 
-							callbacks.add(txtOutputCallback1);
-							callbacks.add(userCallback_key1);
-
-							callbacks.add(txtOutputCallback2);
-							callbacks.add(userCallback_value1);
-
-							callbacks.add(txtOutputCallback3);
-							callbacks.add(userCallback_key2);
-
-							callbacks.add(txtOutputCallback4);
-							callbacks.add(userCallback_value2);
-
-							callbacks.add(txtOutputCallback5);
-							callbacks.add(userCallback_key3);
-
-							callbacks.add(txtOutputCallback6);
-							callbacks.add(userCallback_value3);
-
-							callbacks.add(separator);
+								callbacks.add(separator);
+							}
 						}
 
 						callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, "SHARED STATE"));
@@ -447,10 +427,6 @@ public class DisplayDebug extends AbstractDecisionNode {
 	public enum DisplayDebugOutcome {
 
 		NEXT_OUTCOME,
-
-		/**
-		 * Error occured. Need to check sharedstate for issue
-		 */
 		ERROR_OUTCOME
 	}
 
