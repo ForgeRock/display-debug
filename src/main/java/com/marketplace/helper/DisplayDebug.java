@@ -169,32 +169,47 @@ public class DisplayDebug extends AbstractDecisionNode {
 						Set<String> shareStateKeys = ns.keys();
 						int i = 0;
 						int size = stringCallbacks.size();
-
+						int pair = 2;
 						//For loop to iterate through StringAttribute callbacks
 						while (i < size) {
+
 							StringAttributeInputCallback currentCallback = stringCallbacks.get(i);
 
 							//Get key, value pair in stringCallbacks
 							String key = currentCallback.getName();
 							String value = currentCallback.getValue();
-							System.out.println("========================");
-							System.out.println("Key value pair being read in currently...\n");
-							System.out.println("Key: "+ key + " Value: " + value);
-							System.out.println("========================");
-							if(key.startsWith("text-boxes")){
+
+//							System.out.println("========================");
+//							System.out.println("Key value pair being read in currently...\n");
+//							System.out.println("Key: "+ key + " Value: " + value);
+//							System.out.println("========================");
+							//key1
+							//val1
+							//key2
+							//val2
+							if(key.startsWith("text-boxes") && pair == 2){
+								pair--;
 								StringAttributeInputCallback valueCallback = stringCallbacks.get(i+1);
 								String textboxKey = valueCallback.getName();
+								if(!textboxKey.startsWith("text-boxes")){
+									i = i+1;
+									continue;
+								}
 								String val = valueCallback.getValue();
 								//key = stringCallbacks[i]
 								//value = stringCallbacks[i + 1]
-//								System.out.println("========================");
-//								System.out.println("Key value pair\n");
-//								System.out.println("Key: "+ textboxKey + " Value: " + val);
-//								System.out.println("========================");
-								ns.putShared(key, val);
+								System.out.println("========================");
+								System.out.println("Inside text-boxes with");
+								System.out.println("Key: "+ value + " Value: " + val);
+								System.out.println("========================");
+								ns.putShared(value, val);
 
 								i = i+1;
 								continue;
+							}
+							pair--;
+							if(pair == 0){
+								pair = 2;
 							}
 
 							//Test what value is coming in
@@ -202,29 +217,29 @@ public class DisplayDebug extends AbstractDecisionNode {
 
 							for (String thisKey : shareStateKeys) {
 								JsonValue jsonValue = ns.get(thisKey);
-								System.out.println("jsonValue: " + jsonValue);
+								//System.out.println("jsonValue: " + jsonValue);
 
 								if (jsonValue.isBoolean()) {
-									System.out.println("Inside boolean with "+ value+ "...");
+									//System.out.println("Inside boolean with "+ value+ "...");
 									ns.putShared(key, Boolean.valueOf(String.valueOf(value)));
 								}else if(thisKey.equals("authLevel")){
-									System.out.println("Inside authLevel with " + thisKey + " and " + value + "...");
-									ns.putShared(key, value); //Integer.valueOf(String.valueOf(value)
+									//System.out.println("Inside authLevel with " + thisKey + " and " + value + "...");
+									ns.putShared(key, value);
 								}
 								else if (jsonValue.toString().startsWith("{")){
 									//{pageNodeCallback: {"0":0}}
-									System.out.println("It is a json object... \t Key: " + thisKey + " Value: "+ jsonValue);
+									//System.out.println("It is a json object... \t Key: " + thisKey + " Value: "+ jsonValue);
 
-									JSONObject jsonobj = new JSONObject(value);
-									System.out.println("Inside {} with "+ value+ "...");
+//									JSONObject jsonobj = new JSONObject(value);
+									//System.out.println("Inside {} with "+ value+ "...");
 									ns.putShared(key, value);
 									break;
 								}
 								else if (jsonValue.isNumber()){//jsonValue.isNumber()
-									System.out.println("Inside number with "+ value + "...");
+									//System.out.println("Inside number with "+ value + "...");
 									ns.putShared(key, Integer.valueOf(value));
 								}else if (jsonValue.isString()){
-									System.out.println("Inside string with "+ value + "...");
+									//System.out.println("Inside string with "+ value + "...");
 									ns.putShared(key, value.toString());
 								}
 							}
