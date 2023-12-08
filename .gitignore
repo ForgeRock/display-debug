@@ -2,4 +2,4 @@ target
 .whitesource
 .idea
 git-push.sh
-script.sh
+builder.sh

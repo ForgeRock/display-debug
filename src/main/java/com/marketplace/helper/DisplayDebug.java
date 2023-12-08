@@ -72,8 +72,8 @@ public class DisplayDebug extends AbstractDecisionNode {
 	private static final String BUNDLE = DisplayDebug.class.getName();
 	private String loggerPrefix = "[DisplayDebug Node][Marketplace] ";
 	@Node.Metadata(outcomeProvider = DisplayDebug.OutcomeProvider.class,
-			configClass = DisplayDebug.Config.class,
-			tags = {"marketplace", "trustnetwork"}
+			configClass 		= DisplayDebug.Config.class,
+			tags 				= {"marketplace", "trustnetwork"}
 	)
 
 	/**
@@ -95,9 +95,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 		default boolean pretty() { return true; }
 
 		@Attribute(order = 100)
-		default boolean sharedState() {
-			return true;
-		}
+		default boolean sharedState() {return true; }
 
 		@Attribute(order = 200)
 		default boolean authID() {
@@ -187,6 +185,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 							//val1
 							//key2
 							//val2
+							//{"0": 0}
 							if(key.startsWith("text-boxes") && pair == 2){
 								pair--;
 								StringAttributeInputCallback valueCallback = stringCallbacks.get(i+1);
@@ -217,15 +216,15 @@ public class DisplayDebug extends AbstractDecisionNode {
 
 							for (String thisKey : shareStateKeys) {
 								JsonValue jsonValue = ns.get(thisKey);
-								//System.out.println("jsonValue: " + jsonValue);
+								System.out.println("jsonValue: " + jsonValue);
 
 								if (jsonValue.isBoolean()) {
 									//System.out.println("Inside boolean with "+ value+ "...");
 									ns.putShared(key, Boolean.valueOf(String.valueOf(value)));
-								}else if(thisKey.equals("authLevel")){
-									//System.out.println("Inside authLevel with " + thisKey + " and " + value + "...");
-									ns.putShared(key, value);
+								}else if(thisKey.equals(key)){
+									ns.putShared(thisKey, value);
 								}
+
 								else if (jsonValue.toString().startsWith("{")){
 									//{pageNodeCallback: {"0":0}}
 									//System.out.println("It is a json object... \t Key: " + thisKey + " Value: "+ jsonValue);
@@ -237,7 +236,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 								}
 								else if (jsonValue.isNumber()){//jsonValue.isNumber()
 									//System.out.println("Inside number with "+ value + "...");
-									ns.putShared(key, Integer.valueOf(value));
+									ns.putShared(key, value);
 								}else if (jsonValue.isString()){
 									//System.out.println("Inside string with "+ value + "...");
 									ns.putShared(key, value.toString());
