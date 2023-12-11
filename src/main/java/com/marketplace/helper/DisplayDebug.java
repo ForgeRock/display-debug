@@ -186,28 +186,27 @@ public class DisplayDebug extends AbstractDecisionNode {
 							//key2
 							//val2
 							//{"0": 0}
-							if(key.startsWith("text-boxes") && pair == 2){
+							if (key.startsWith("text-boxes") && pair == 2) {
 								pair--;
-								StringAttributeInputCallback valueCallback = stringCallbacks.get(i+1);
+								StringAttributeInputCallback valueCallback = stringCallbacks.get(i + 1);
 								String textboxKey = valueCallback.getName();
-								if(!textboxKey.startsWith("text-boxes")){
-									i = i+1;
+								if (!textboxKey.startsWith("text-boxes")) {
+									i = i + 1;
 									continue;
 								}
 								String val = valueCallback.getValue();
-								//key = stringCallbacks[i]
-								//value = stringCallbacks[i + 1]
+
 								System.out.println("========================");
 								System.out.println("Inside text-boxes with");
-								System.out.println("Key: "+ value + " Value: " + val);
+								System.out.println("Key: " + value + " Value: " + val);
 								System.out.println("========================");
 								ns.putShared(value, val);
 
-								i = i+1;
+								i = i + 1;
 								continue;
 							}
 							pair--;
-							if(pair == 0){
+							if (pair == 0) {
 								pair = 2;
 							}
 
@@ -215,39 +214,36 @@ public class DisplayDebug extends AbstractDecisionNode {
 							//To put values in shared state
 
 							for (String thisKey : shareStateKeys) {
-								JsonValue jsonValue = ns.get(thisKey);
-								System.out.println("jsonValue: " + jsonValue);
+								System.out.println("thisKey " + thisKey + " key: " + key);
+								if (key.equals(thisKey)) {
+									System.out.println("Keys now match...");
+									JsonValue jsonValue = ns.get(thisKey);
 
-								if (jsonValue.isBoolean()) {
-									//System.out.println("Inside boolean with "+ value+ "...");
-									ns.putShared(key, Boolean.valueOf(String.valueOf(value)));
-								}else if(thisKey.equals(key)){
-									ns.putShared(thisKey, value);
+									if (jsonValue.isBoolean()) {
+										System.out.println("Inside boolean with "+ value+ "...");
+										ns.putShared(key, Boolean.valueOf(String.valueOf(value)));
+										continue;
+									} else if (jsonValue.isString()) {
+										System.out.println("Inside string with "+ value + "...");
+										ns.putShared(key, value.toString());
+										System.out.println("After string.putshared...");
+										continue;
+									} else if (jsonValue.toString().startsWith("{")) {
+										System.out.println("Inside {} with "+ value+ "...");
+										ns.putShared(key, value);
+										continue;
+									} else if (key.equals("authLevel")) {//jsonValue.isNumber()
+										System.out.println("Inside authLevel with "+ value + "...");
+										ns.putShared(key, Integer.valueOf(value));
+										continue;
+									}
 								}
-
-								else if (jsonValue.toString().startsWith("{")){
-									//{pageNodeCallback: {"0":0}}
-									//System.out.println("It is a json object... \t Key: " + thisKey + " Value: "+ jsonValue);
-
-//									JSONObject jsonobj = new JSONObject(value);
-									//System.out.println("Inside {} with "+ value+ "...");
-									ns.putShared(key, value);
-									break;
-								}
-								else if (jsonValue.isNumber()){//jsonValue.isNumber()
-									//System.out.println("Inside number with "+ value + "...");
-									ns.putShared(key, value);
-								}else if (jsonValue.isString()){
-									//System.out.println("Inside string with "+ value + "...");
-									ns.putShared(key, value.toString());
-								}
+								System.out.println("Bottom of for loop...");
 							}
 							i = i + 1;
-					}
+						}
 						return Action.goTo(NEXT_OUTCOME.name()).build();
 					}
-
-					//ArrayList<Callback> callbacks = new ArrayList<Callback>();
 
 					if (config.sharedState()) {
 
@@ -260,20 +256,17 @@ public class DisplayDebug extends AbstractDecisionNode {
 								StringAttributeInputCallback userCallback_key;
 								StringAttributeInputCallback userCallback_value;
 
-
 								TextOutputCallback txtOutputCallback = new TextOutputCallback(TextOutputCallback.INFORMATION, "Key");
 								userCallback_key = new StringAttributeInputCallback("text-boxes", "Key" + ": ", " ", false);
 
 								callbacks.add(txtOutputCallback);
 								callbacks.add(userCallback_key);
 
-
 								TextOutputCallback txtOutputCallback2 = new TextOutputCallback(TextOutputCallback.INFORMATION, "Value");
 								userCallback_value = new StringAttributeInputCallback("text-boxes", "Value" + ": ", " ", false);
 
 								callbacks.add(txtOutputCallback2);
 								callbacks.add(userCallback_value);
-
 
 								callbacks.add(separator);
 							}
@@ -298,7 +291,6 @@ public class DisplayDebug extends AbstractDecisionNode {
 							callbacks.add(txtOutputCallback);
 							callbacks.add(stringCallback);
 						}
-
 					}
 
 					if (config.authID()) {
@@ -308,7 +300,6 @@ public class DisplayDebug extends AbstractDecisionNode {
 
 						TextOutputCallback txtOutputCallback = new TextOutputCallback(TextOutputCallback.INFORMATION, "AuthID" + ": " + escapeHTML(theAuthID));
 						callbacks.add(txtOutputCallback);
-
 					}
 
 					if (config.headers()) {
@@ -322,8 +313,6 @@ public class DisplayDebug extends AbstractDecisionNode {
 							List thisHeaderVal = headers.get(thisKey);
 							TextOutputCallback txtOutputCallback = new TextOutputCallback(TextOutputCallback.INFORMATION, thisKey + ": " + escapeHTML(thisHeaderVal.toString()));
 							callbacks.add(txtOutputCallback);
-
-
 						}
 					}
 
@@ -333,8 +322,6 @@ public class DisplayDebug extends AbstractDecisionNode {
 						String theClientIP = context.request.clientIp;
 						TextOutputCallback txtOutputCallback = new TextOutputCallback(TextOutputCallback.INFORMATION, "ClientIP" + ": " + escapeHTML(theClientIP));
 						callbacks.add(txtOutputCallback);
-
-
 					}
 
 					if (config.cookies() && context.request != null && context.request.cookies != null) {
@@ -347,8 +334,6 @@ public class DisplayDebug extends AbstractDecisionNode {
 							String thisCookieVal = theCookies.get(thisKey);
 							TextOutputCallback txtOutputCallback = new TextOutputCallback(TextOutputCallback.INFORMATION, thisKey + ": " + escapeHTML(thisCookieVal.toString()));
 							callbacks.add(txtOutputCallback);
-
-
 						}
 					}
 
@@ -396,6 +381,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 					return Action.send(callbacks).build();
 				} catch (Exception ex) {
 					String stackTrace = org.apache.commons.lang.exception.ExceptionUtils.getStackTrace(ex);
+					ex.printStackTrace();
 					logger.error(loggerPrefix + "Exception occurred: " + stackTrace);
 					context.getStateFor(this).putShared(loggerPrefix + "Exception", ex.getMessage());
 					context.getStateFor(this).putShared(loggerPrefix + "StackTrace", stackTrace);
