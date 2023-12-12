@@ -168,6 +168,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 						int i = 0;
 						int size = stringCallbacks.size();
 						int pair = 2;
+
 						//For loop to iterate through StringAttribute callbacks
 						while (i < size) {
 
@@ -177,15 +178,6 @@ public class DisplayDebug extends AbstractDecisionNode {
 							String key = currentCallback.getName();
 							String value = currentCallback.getValue();
 
-//							System.out.println("========================");
-//							System.out.println("Key value pair being read in currently...\n");
-//							System.out.println("Key: "+ key + " Value: " + value);
-//							System.out.println("========================");
-							//key1
-							//val1
-							//key2
-							//val2
-							//{"0": 0}
 							if (key.startsWith("text-boxes") && pair == 2) {
 								pair--;
 								StringAttributeInputCallback valueCallback = stringCallbacks.get(i + 1);
@@ -195,13 +187,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 									continue;
 								}
 								String val = valueCallback.getValue();
-
-								System.out.println("========================");
-								System.out.println("Inside text-boxes with");
-								System.out.println("Key: " + value + " Value: " + val);
-								System.out.println("========================");
 								ns.putShared(value, val);
-
 								i = i + 1;
 								continue;
 							}
@@ -212,33 +198,25 @@ public class DisplayDebug extends AbstractDecisionNode {
 
 							//Test what value is coming in
 							//To put values in shared state
-
 							for (String thisKey : shareStateKeys) {
-								System.out.println("thisKey " + thisKey + " key: " + key);
 								if (key.equals(thisKey)) {
-									System.out.println("Keys now match...");
+									logger.debug(loggerPrefix + "Key: " + key + " Value: " + value + " being inserted into shared state...");
 									JsonValue jsonValue = ns.get(thisKey);
 
 									if (jsonValue.isBoolean()) {
-										System.out.println("Inside boolean with "+ value+ "...");
 										ns.putShared(key, Boolean.valueOf(String.valueOf(value)));
 										continue;
 									} else if (jsonValue.isString()) {
-										System.out.println("Inside string with "+ value + "...");
 										ns.putShared(key, value.toString());
-										System.out.println("After string.putshared...");
 										continue;
 									} else if (jsonValue.toString().startsWith("{")) {
-										System.out.println("Inside {} with "+ value+ "...");
 										ns.putShared(key, value);
 										continue;
-									} else if (key.equals("authLevel")) {//jsonValue.isNumber()
-										System.out.println("Inside authLevel with "+ value + "...");
+									} else if (key.equals("authLevel")) {
 										ns.putShared(key, Integer.valueOf(value));
 										continue;
 									}
 								}
-								System.out.println("Bottom of for loop...");
 							}
 							i = i + 1;
 						}
@@ -375,8 +353,11 @@ public class DisplayDebug extends AbstractDecisionNode {
 						callbacks.add(txtOutputCallback);
 					}
 
-					String scriptedForFormating = "" + "for (const val of document.querySelectorAll('div')) {\n" + "  if(val.textContent === \"NODE STATE\" ||\n" + "    val.textContent === \"AUTHID\" ||\n" + "    val.textContent === \"HEADERS\" ||\n" + "    val.textContent === \"CLIENT IP\" ||\n" + "    val.textContent === \"COOKIES\" ||\n" + "    val.textContent === \"HOSTNAME\" ||\n" + "    val.textContent === \"LOCALE\" ||\n" + "    val.textContent === \"PARAMETERS\" ||\n" + "    val.textContent === \"SERVER URL\")\n" + "    val.outerHTML = \"<h3>\" + val.outerHTML + \"</h3>\";\n" + "}";
-					ScriptTextOutputCallback scriptAndSelfSubmitCallback = new ScriptTextOutputCallback(scriptedForFormating);
+					if(config.pretty()) {
+						String scriptedForFormating = "" + "for (const val of document.querySelectorAll('div')) {\n" + "  if(val.textContent === \"NODE STATE\" ||\n" + "    val.textContent === \"AUTHID\" ||\n" + "    val.textContent === \"HEADERS\" ||\n" + "    val.textContent === \"CLIENT IP\" ||\n" + "    val.textContent === \"COOKIES\" ||\n" + "    val.textContent === \"HOSTNAME\" ||\n" + "    val.textContent === \"LOCALE\" ||\n" + "    val.textContent === \"PARAMETERS\" ||\n" + "    val.textContent === \"SERVER URL\")\n" + "    val.outerHTML = \"<h3>\" + val.outerHTML + \"</h3>\";\n" + "}";
+						ScriptTextOutputCallback scriptAndSelfSubmitCallback = new ScriptTextOutputCallback(scriptedForFormating);
+						callbacks.add(scriptAndSelfSubmitCallback);
+					}
 
 					return Action.send(callbacks).build();
 				} catch (Exception ex) {
