@@ -85,17 +85,27 @@ public class DisplayDebug extends AbstractDecisionNode {
 		 * username.
 		 */
 		@Attribute(order = 50)
-		default boolean display() { return true; }
+		default boolean display() {
+			return true;
+		}
 		@Attribute(order = 75)
-		default boolean textBoxes() { return true; }
+		default boolean textBoxes() {
+			return true;
+		}
 		@Attribute(order = 77)
-		default Integer numTextboxes() { return 1; }
+		default Integer numTextboxes() {
+			return 1;
+		}
 
 		@Attribute(order = 80)
-		default boolean pretty() { return true; }
+		default boolean pretty() {
+			return true;
+		}
 
 		@Attribute(order = 100)
-		default boolean sharedState() {return true; }
+		default boolean sharedState() {
+			return true;
+		}
 
 		@Attribute(order = 200)
 		default boolean authID() {
@@ -156,7 +166,6 @@ public class DisplayDebug extends AbstractDecisionNode {
 	public Action process(TreeContext context) throws NodeProcessException {
 
 		if(config.display()) {
-				TextOutputCallback separator = new TextOutputCallback(TextOutputCallback.INFORMATION,"================================");
 				try {
 					ArrayList<Callback> callbacks = new ArrayList<Callback>();
 					List<StringAttributeInputCallback> stringCallbacks = context.getCallbacks(StringAttributeInputCallback.class);
@@ -220,11 +229,11 @@ public class DisplayDebug extends AbstractDecisionNode {
 							}
 							i = i + 1;
 						}
+
 						return Action.goTo(NEXT_OUTCOME.name()).build();
 					}
 
 					if (config.sharedState()) {
-
 						NodeState ns = context.getStateFor(this);
 						Set<String> shareStateKeys = ns.keys();
 						callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, "NODE STATE"));
@@ -245,8 +254,6 @@ public class DisplayDebug extends AbstractDecisionNode {
 
 								callbacks.add(txtOutputCallback2);
 								callbacks.add(userCallback_value);
-
-								callbacks.add(separator);
 							}
 						}
 
@@ -259,7 +266,6 @@ public class DisplayDebug extends AbstractDecisionNode {
 							StringAttributeInputCallback stringCallback;
 
 							if (thisVal.isString()) {
-
 								txtOutputCallback = new TextOutputCallback(TextOutputCallback.INFORMATION, thisKey + ": " + escapeHTML(thisVal.asString()));
 								stringCallback = new StringAttributeInputCallback(thisKey, thisKey + ": ", thisVal.asString(), false);
 							} else {
@@ -272,7 +278,6 @@ public class DisplayDebug extends AbstractDecisionNode {
 					}
 
 					if (config.authID()) {
-						callbacks.add(separator);
 						callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, "AUTHID"));
 						String theAuthID = context.request.authId;
 
@@ -281,7 +286,6 @@ public class DisplayDebug extends AbstractDecisionNode {
 					}
 
 					if (config.headers()) {
-						callbacks.add(separator);
 						callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, "HEADERS"));
 						ListMultimap<String, String> headers = context.request.headers;
 
@@ -295,7 +299,6 @@ public class DisplayDebug extends AbstractDecisionNode {
 					}
 
 					if (config.clientIp()) {
-						callbacks.add(separator);
 						callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, "CLIENT IP"));
 						String theClientIP = context.request.clientIp;
 						TextOutputCallback txtOutputCallback = new TextOutputCallback(TextOutputCallback.INFORMATION, "ClientIP" + ": " + escapeHTML(theClientIP));
@@ -303,7 +306,6 @@ public class DisplayDebug extends AbstractDecisionNode {
 					}
 
 					if (config.cookies() && context.request != null && context.request.cookies != null) {
-						callbacks.add(separator);
 						callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, "COOKIES"));
 						Map<String, String> theCookies = context.request.cookies;
 						Set<String> cookieKeys = theCookies.keySet();
@@ -323,7 +325,6 @@ public class DisplayDebug extends AbstractDecisionNode {
 					}
 
 					if (config.locales()) {
-						callbacks.add(separator);
 						callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, "LOCALE"));
 						PreferredLocales theLocales = context.request.locales;
 						TextOutputCallback txtOutputCallback = new TextOutputCallback(TextOutputCallback.INFORMATION, "Preferred Locale" + ": " + escapeHTML(theLocales.getPreferredLocale().getDisplayName()));
@@ -331,7 +332,6 @@ public class DisplayDebug extends AbstractDecisionNode {
 					}
 
 					if (config.parameters() && context.request != null && context.request.parameters != null) {
-						callbacks.add(separator);
 						callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, "PARAMETERS"));
 						Map<String, List<String>> theParms = context.request.parameters;
 						Set<String> parmKeys = theParms.keySet();
@@ -345,7 +345,6 @@ public class DisplayDebug extends AbstractDecisionNode {
 					}
 
 					if (config.serverUrl()) {
-						callbacks.add(separator);
 						callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, "SERVER URL"));
 						String theServerURL = context.request.serverUrl;
 						TextOutputCallback txtOutputCallback = new TextOutputCallback(TextOutputCallback.INFORMATION, "Server URL" + ": " + escapeHTML(theServerURL));
@@ -353,16 +352,34 @@ public class DisplayDebug extends AbstractDecisionNode {
 						callbacks.add(txtOutputCallback);
 					}
 
+
 					if(config.pretty()) {
-						String scriptedForFormating = "" + "for (const val of document.querySelectorAll('div')) {\n" + "  if(val.textContent === \"NODE STATE\" ||\n" + "    val.textContent === \"AUTHID\" ||\n" + "    val.textContent === \"HEADERS\" ||\n" + "    val.textContent === \"CLIENT IP\" ||\n" + "    val.textContent === \"COOKIES\" ||\n" + "    val.textContent === \"HOSTNAME\" ||\n" + "    val.textContent === \"LOCALE\" ||\n" + "    val.textContent === \"PARAMETERS\" ||\n" + "    val.textContent === \"SERVER URL\")\n" + "    val.outerHTML = \"<h3>\" + val.outerHTML + \"</h3>\";\n" + "}";
-						ScriptTextOutputCallback scriptAndSelfSubmitCallback = new ScriptTextOutputCallback(scriptedForFormating);
+						//scripts for UI styling
+						String node_state_tag = "" + "for (const val of document.querySelectorAll('div')) {\n" + "  if(val.textContent === \"NODE STATE\")\n" + " " +
+								"   val.outerHTML = \"<h3 style='border-bottom: 5px solid black; padding-top: 5px'>\"  + val.outerHTML + \"</h3>\";\n" + "}";
+
+						ScriptTextOutputCallback node_state_callback = new ScriptTextOutputCallback(node_state_tag);
+						callbacks.add(node_state_callback);
+
+						String h3_tags = "" + "for (const val of document.querySelectorAll('div')) {\n" + "  if(val.textContent === \"AUTHID\" ||\n" + "    val.textContent === \"SHARED STATE\" ||\n" + "    val.textContent === \"HEADERS\" ||\n" + "    val.textContent === \"CLIENT IP\" ||\n" + "    val.textContent === \"COOKIES\" ||\n" + "    val.textContent === \"HOSTNAME\" ||\n" + "    val.textContent === \"LOCALE\" ||\n"
+								+ "    val.textContent === \"PARAMETERS\" ||\n" +  "    val.textContent === \"PARAMETERS\" ||\n" + "    val.textContent === \"SERVER URL\")\n" + " " +
+								"   val.outerHTML = \"<h3 style='border-top: 5px solid black; padding-top: 5px'>\"  + val.outerHTML + \"</h3>\";\n" + "}";
+
+						ScriptTextOutputCallback scriptAndSelfSubmitCallback = new ScriptTextOutputCallback(h3_tags);
 						callbacks.add(scriptAndSelfSubmitCallback);
+
+						String key_val_h4 = "" + "for (const val of document.querySelectorAll('div')) {\n" + "  if(val.textContent === \"Key\" ||\n" + "    val.textContent === \"Value\")\n" + " " +
+								"   val.outerHTML = \"<h4>\"  + val.outerHTML + \"</h4>\";\n" + "}";
+						ScriptTextOutputCallback tester = new ScriptTextOutputCallback(key_val_h4);
+						callbacks.add(tester);
+
+
+
 					}
 
 					return Action.send(callbacks).build();
 				} catch (Exception ex) {
 					String stackTrace = org.apache.commons.lang.exception.ExceptionUtils.getStackTrace(ex);
-					ex.printStackTrace();
 					logger.error(loggerPrefix + "Exception occurred: " + stackTrace);
 					context.getStateFor(this).putShared(loggerPrefix + "Exception", ex.getMessage());
 					context.getStateFor(this).putShared(loggerPrefix + "StackTrace", stackTrace);
