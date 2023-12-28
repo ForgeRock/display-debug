@@ -165,6 +165,19 @@ public class DisplayDebug extends AbstractDecisionNode {
 	@Override
 	public Action process(TreeContext context) throws NodeProcessException {
 		ArrayList<Callback> callbacks = new ArrayList<Callback>();
+		String html = "<html lang=\"en\">\n" +
+				"  <head>\n" +
+				"\n" +
+				"    <!-- Styles -->\n" +
+				"      <link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css\" integrity=\"sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T\" crossorigin=\"anonymous\">\n" +
+				"\n" +
+				"  </head>\n" +
+				"\n" +
+				"  <body>\n" +
+				"\n" +
+				"      <div class=\"container\">\n" +
+				"        <div class=\"row\">\n" +
+				"			<div class=\"col-12 col-md-12 col-xl-12 py-md-3 pl-md-5\">";
 		if(config.display()) {
 				try {
 					callbacks = new ArrayList<Callback>();
@@ -334,21 +347,41 @@ public class DisplayDebug extends AbstractDecisionNode {
 					}
 
 					if (config.parameters() && context.request != null && context.request.parameters != null) {
-						String html = "<table class=\"table table-striped\">\n";
-						html += "<thead class=\"thead-dark\">\n<tr><th class=\"px-1 py-1\" colspan=\"2\">Parameters</th></tr>\n</thead>\n";
+						html += "<hr class=\"hr-dash my-7\">";
+						html += "<h4>PARAMETERS</h4>";
+						html += "<table class=\"table table-bordered table-striped table-detail\">\n" +
+								"                  <thead>\n" +
+								"                    <tr>\n" +
+								"                      <th>name: </th>\n" +
+								"                      <th>value</th>\n" +
+								"                    </tr>\n" +
+								"                  </thead>\n" +
+								"                  <tbody>";
 
 						callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, "PARAMETERS"));
 						Map<String, List<String>> theParms = context.request.parameters;
 						Set<String> parmKeys = theParms.keySet();
 						for (Iterator<String> i = parmKeys.iterator(); i.hasNext(); ) {
 							String thisKey = i.next();
-							List<String> thisParmVal = theParms.get(thisKey);
-							TextOutputCallback txtOutputCallback = new TextOutputCallback(TextOutputCallback.INFORMATION, thisKey + ": " + escapeHTML(thisParmVal.toString()));
-							html += "<tr><td class=\"px-1 py-1\">" + thisKey + "</td><td class=\"px-1 py-1\">" + thisParmVal + "</td></tr>\n";
+							List<String> thisParamVal = theParms.get(thisKey);
+							html += "<tr>\n" +
+									"   <td><code>"+ thisKey + "</code></td>\n" +
+									"	<td>"+thisParamVal+"</td>\n" +
+									"</tr>";
+							TextOutputCallback txtOutputCallback = new TextOutputCallback(TextOutputCallback.INFORMATION, thisKey + ": " + escapeHTML(thisParamVal.toString()));
 
 							callbacks.add(txtOutputCallback);
 						}
-						html += "</table>";
+						html += "</tbody>\n" +
+								"</table>";
+						html += "       </div>            \n" +
+								"            \n" +
+								"        </div>\n" +
+								"      </div>\n" +
+								"\n" +
+								"\n" +
+								"  </body>\n" +
+								"</html>";
 						displayMessage(html, callbacks);
 					}
 
@@ -364,23 +397,23 @@ public class DisplayDebug extends AbstractDecisionNode {
 					if(config.pretty()) {
 						//scripts for UI styling
 						if(xml_flag) {
-							String node_state_tag = "" + "for (const val of document.querySelectorAll('div')) {\n" + "  if(val.textContent === \"NODE STATE\")\n" + " " +
-									"   val.outerHTML = \"<h3 style='border-bottom: 5px solid black; padding-top: 5px'>\"  + val.outerHTML + \"</h3>\";\n" + "}";
-
-							ScriptTextOutputCallback node_state_callback = new ScriptTextOutputCallback(node_state_tag);
-							callbacks.add(node_state_callback);
-
-							String h3_tags = "" + "for (const val of document.querySelectorAll('div')) {\n" + "  if(val.textContent === \"AUTHID\" ||\n" + "    val.textContent === \"SHARED STATE\" ||\n" + "    val.textContent === \"HEADERS\" ||\n" + "    val.textContent === \"CLIENT IP\" ||\n" + "    val.textContent === \"COOKIES\" ||\n" + "    val.textContent === \"HOSTNAME\" ||\n" + "    val.textContent === \"LOCALE\" ||\n"
-									+ "    val.textContent === \"PARAMETERS\" ||\n" + "    val.textContent === \"SERVER URL\")\n" + " " +
-									"   val.outerHTML = \"<h3 style='border-top: 5px solid black; padding-top: 5px'>\"  + val.outerHTML + \"</h3>\";\n" + "}";
-
-							ScriptTextOutputCallback scriptAndSelfSubmitCallback = new ScriptTextOutputCallback(h3_tags);
-							callbacks.add(scriptAndSelfSubmitCallback);
-
-							String key_val_h4 = "" + "for (const val of document.querySelectorAll('div')) {\n" + "  if(val.textContent === \"Key\" ||\n" + "    val.textContent === \"Value\")\n" + " " +
-									"   val.outerHTML = \"<h4>\"  + val.outerHTML + \"</h4>\";\n" + "}";
-							ScriptTextOutputCallback tester = new ScriptTextOutputCallback(key_val_h4);
-							callbacks.add(tester);
+//							String node_state_tag = "" + "for (const val of document.querySelectorAll('div')) {\n" + "  if(val.textContent === \"NODE STATE\")\n" + " " +
+//									"   val.outerHTML = \"<h3 style='border-bottom: 5px solid black; padding-top: 5px'>\"  + val.outerHTML + \"</h3>\";\n" + "}";
+//
+//							ScriptTextOutputCallback node_state_callback = new ScriptTextOutputCallback(node_state_tag);
+//							callbacks.add(node_state_callback);
+//
+//							String h3_tags = "" + "for (const val of document.querySelectorAll('div')) {\n" + "  if(val.textContent === \"AUTHID\" ||\n" + "    val.textContent === \"SHARED STATE\" ||\n" + "    val.textContent === \"HEADERS\" ||\n" + "    val.textContent === \"CLIENT IP\" ||\n" + "    val.textContent === \"COOKIES\" ||\n" + "    val.textContent === \"HOSTNAME\" ||\n" + "    val.textContent === \"LOCALE\" ||\n"
+//									+ "    val.textContent === \"PARAMETERS\" ||\n" + "    val.textContent === \"SERVER URL\")\n" + " " +
+//									"   val.outerHTML = \"<h3 style='border-top: 5px solid black; padding-top: 5px'>\"  + val.outerHTML + \"</h3>\";\n" + "}";
+//
+//							ScriptTextOutputCallback scriptAndSelfSubmitCallback = new ScriptTextOutputCallback(h3_tags);
+//							callbacks.add(scriptAndSelfSubmitCallback);
+//
+//							String key_val_h4 = "" + "for (const val of document.querySelectorAll('div')) {\n" + "  if(val.textContent === \"Key\" ||\n" + "    val.textContent === \"Value\")\n" + " " +
+//									"   val.outerHTML = \"<h4>\"  + val.outerHTML + \"</h4>\";\n" + "}";
+//							ScriptTextOutputCallback tester = new ScriptTextOutputCallback(key_val_h4);
+//							callbacks.add(tester);
 						}
 
 
@@ -418,24 +451,17 @@ public class DisplayDebug extends AbstractDecisionNode {
 
 	private void displayMessage(String message, ArrayList<Callback> callbacks) {
 		System.out.println("Inside displayMessage()...");
-		var halign = "left";
-		var script = "Array.prototype.slice.call(\n".concat(
-				"document.getElementsByClassName('callback-component')).forEach(\n").concat(
-				"function (e) {\n").concat(
-				"  var message = e.firstElementChild;\n").concat(
-				"  if (message.firstChild && message.firstChild.nodeName == '#text' && message.firstChild.nodeValue.trim() == ' ").concat("') {\n").concat(
-				"    message.className = \"\";\n").concat(
-				"    message.style = \"\";\n").concat(
-				"    message.align = \"").concat(halign).concat("\";\n").concat(
-				"    message.innerHTML = '").concat(message).concat("';\n").concat(
-				"  }\n").concat(
-				"})");
+		String halign = "left";
+//		String script = "Array.prototype.slice.call(\n".concat(
+//					"alert('This works');"
+//		)+"\n)";
 
-		System.out.println("Below script...");
+		 String script = "alert('hello justin');";
+
+
+
 		if(callbacks.isEmpty()) System.out.println("No callbacks");
-		System.out.println("message\n" + message );
-		System.out.println();
-		System.out.println("script\n" + script);
+
 		if (!message.isEmpty() && callbacks.isEmpty()) {
 //			action = fr.Action.send(
 //					new fr.TextOutputCallback(
@@ -444,12 +470,11 @@ public class DisplayDebug extends AbstractDecisionNode {
 //					),
 //					new fr.ScriptTextOutputCallback(script)
 //			).build()
-			System.out.println("Inside displayMessage() if statement...");
+
 			ScriptTextOutputCallback html = new ScriptTextOutputCallback(script);
 			callbacks.add(html);
 			Action.send(html).build();
 		}
-
 	}
 
 	private static final String html2text(String html) {
