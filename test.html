@@ -149,7 +149,7 @@ Use of this code requires a commercial software license with ForgeRock AS.
 or with one of its affiliates. All use shall be exclusively subject
 to such license between the licensee and ForgeRock AS.
 -->
-            <div id="callback_9" class="0" role="presentation">SHARED STATE</div>
+            <div id="callback_9" class="0" role="presentation">h3SHARED STATE</div>
 
         </div>
 
@@ -281,7 +281,7 @@ Use of this code requires a commercial software license with ForgeRock AS.
 or with one of its affiliates. All use shall be exclusively subject
 to such license between the licensee and ForgeRock AS.
 -->
-            <div id="callback_18" class="0" role="presentation">AUTHID</div>
+            <div id="callback_18" class="0" role="presentation">h3AUTHID</div>
 
         </div>
 
@@ -305,7 +305,7 @@ Use of this code requires a commercial software license with ForgeRock AS.
 or with one of its affiliates. All use shall be exclusively subject
 to such license between the licensee and ForgeRock AS.
 -->
-            <div id="callback_20" class="0" role="presentation">HEADERS</div>
+            <div id="callback_20" class="0" role="presentation">h3HEADERS</div>
 
         </div>
 
@@ -521,7 +521,7 @@ Use of this code requires a commercial software license with ForgeRock AS.
 or with one of its affiliates. All use shall be exclusively subject
 to such license between the licensee and ForgeRock AS.
 -->
-            <div id="callback_38" class="0" role="presentation">CLIENT IP</div>
+            <div id="callback_38" class="0" role="presentation">h3CLIENT IP</div>
 
         </div>
 
@@ -545,7 +545,7 @@ Use of this code requires a commercial software license with ForgeRock AS.
 or with one of its affiliates. All use shall be exclusively subject
 to such license between the licensee and ForgeRock AS.
 -->
-            <div id="callback_40" class="0" role="presentation">COOKIES</div>
+            <div id="callback_40" class="0" role="presentation">h3COOKIES/h3</div>
 
         </div>
 
@@ -569,7 +569,7 @@ Use of this code requires a commercial software license with ForgeRock AS.
 or with one of its affiliates. All use shall be exclusively subject
 to such license between the licensee and ForgeRock AS.
 -->
-            <div id="callback_42" class="0" role="presentation">HOSTNAME</div>
+            <div id="callback_42" class="0" role="presentation">h3HOSTNAME/h3</div>
 
         </div>
 
@@ -593,7 +593,7 @@ Use of this code requires a commercial software license with ForgeRock AS.
 or with one of its affiliates. All use shall be exclusively subject
 to such license between the licensee and ForgeRock AS.
 -->
-    <div id="callback_44" class="0" role="presentation">LOCALE</div>
+    <div id="callback_44" class="0" role="presentation">h3LOCALE/h3</div>
 
         </div>
 
@@ -617,7 +617,7 @@ Use of this code requires a commercial software license with ForgeRock AS.
 or with one of its affiliates. All use shall be exclusively subject
 to such license between the licensee and ForgeRock AS.
 -->
-            <div id="callback_46" class="0" role="presentation">PARAMETERS</div>
+            <div id="callback_46" class="0" role="presentation">h3PARAMETERS/h3</div>
 
         </div>
 
@@ -689,7 +689,7 @@ Use of this code requires a commercial software license with ForgeRock AS.
 or with one of its affiliates. All use shall be exclusively subject
 to such license between the licensee and ForgeRock AS.
 -->
-            <div id="callback_52" class="0" role="presentation">SERVER URL</div>
+            <div id="callback_52" class="0" role="presentation">h3SERVER URL/h3</div>
 
         </div>
 
@@ -787,6 +787,7 @@ to such license between the licensee and ForgeRock AS.
                     "x-nosession",
                     "x-password",
                     "x-requested-with",
+                    "LOCALE",
                     "x-username",
                     "ClientIP",
                     "amlbcookie",
@@ -800,54 +801,24 @@ to such license between the licensee and ForgeRock AS.
                     "Server",
                     "URL"
     ];
+    var table = '';
+
     for (const val of document.querySelectorAll('div')) {
 
+            if(val.textContent === "h3NODE STATE/h3" ||
+                val.textContent === "h3AUTHID/h3" ||
+                val.textContent === "h3HEADERS/h3"||
+                val.textContent === "h3CLIENT IP/h3" ||
+                val.textContent === "h3COOKIES/h3" ||
+                val.textContent === "h3HOSTNAME/h3" ||
+                val.textContent === "h3LOCALE/h3" ||
+                val.textContent === "h3PARAMETERS/h3" ||
+                val.textContent === "h3SERVER URL/h3"||
+                val.textContent === "h3SHARED STATE/h3") {
 
-        console.log("In here...");
-        if( val.textContent === "AUTHID"       ||
-            val.textContent === "SHARED STATE" ||
-            val.textContent === "HEADERS"      ||
-            val.textContent === "CLIENT IP"    ||
-            val.textContent === "COOKIES"      ||
-            val.textContent === "HOSTNAME"     ||
-            val.textContent === "LOCALE"       ||
-            val.textContent === "PARAMETERS"   ||
-            val.textContent === "SERVER URL") {
-            val.outerHTML = "<h3 style='border-bottom: 2px solid black; padding-top: 5px'>" + val.outerHTML + "</h3>"
-        }
-        else {
-            var key = val.textContent.trim(" ")
-
-            if(key === "Key:" || key === "Value:") {
-                continue
-            };
-
-            //To get key and make it <code> Key </code>
-            var text = val.textContent.split(" ")
-            document.create
-            for(word in text){
-                /*
-                * if word in list_of_keys
-                *   key = <code>
-                * */
-                console.log(text[word])
-                if(keys.includes(text[word])){
-                    console.log("text[word]: " + text[word]+ '\n' +"val.textContent: " +val.textContent)
-                    val.innerHTML = "<code>" + text[word] + "</code>";
-                    break;
-                }
-
-             }
-        }
-
-
+                val.outerHTML = "<h3 style='border-bottom: 2px solid black; padding-top: 5px'>" + val.outerHTML.replace("h3", "").replace("/h3","") + "</h3>";
+            }
     }
-    //
-
-
-
-     const tableClass = "table";
-    const head = ["Key", "Value"];
 
 </script>
 </body>

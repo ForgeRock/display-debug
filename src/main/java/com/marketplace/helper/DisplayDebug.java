@@ -181,6 +181,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 						int i = 0;
 						int size = stringCallbacks.size();
 						int pair = 2;
+						System.out.println(callbacks);
 
 						//For loop to iterate through StringAttribute callbacks
 						while (i < size) {
@@ -190,6 +191,8 @@ public class DisplayDebug extends AbstractDecisionNode {
 							//Get key, value pair in stringCallbacks
 							String key = currentCallback.getName();
 							String value = currentCallback.getValue();
+
+							System.out.println("value: " + value);
 
 							if (key.startsWith("text-boxes") && pair == 2) {
 								pair--;
@@ -238,20 +241,19 @@ public class DisplayDebug extends AbstractDecisionNode {
 						return Action.goTo(NEXT_OUTCOME.name()).build();
 					}
 
-					String e_modifier = " " ;
-					String s_modifier = " ";
-
+					String h3 = "";
+					String h3_close="";
 
 
 					if (config.pretty()) {
-						s_modifier = "??";
-						e_modifier = "??";
+						 h3 = "h3";
+						 h3_close="/h3";
 					}
 
 					if (config.sharedState()) {
 						NodeState ns = context.getStateFor(this);
 						Set<String> shareStateKeys = ns.keys();
-						callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, s_modifier+ "NODE STATE" + e_modifier));
+						callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, h3+ "NODE STATE" + h3_close));
 						if(config.textBoxes()) {
 							Integer numtextboxes = config.numTextboxes();
 							for(int i = 0; i < numtextboxes; i++) {
@@ -272,7 +274,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 							}
 						}
 
-						callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, "SHARED STATE"));
+						callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, h3 + "SHARED STATE" + h3_close));
 						for (Iterator<String> i = shareStateKeys.iterator(); i.hasNext(); ) {
 							String thisKey = i.next();
 							JsonValue thisVal = ns.get(thisKey);
@@ -293,9 +295,8 @@ public class DisplayDebug extends AbstractDecisionNode {
 					}
 
 
-
 					if (config.authID()) {
-						callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, "AUTHID"));
+						callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, h3 + "AUTHID" +h3_close));
 						String theAuthID = context.request.authId;
 
 						TextOutputCallback txtOutputCallback = new TextOutputCallback(TextOutputCallback.INFORMATION,  "AuthID" + " " + escapeHTML(theAuthID));
@@ -305,7 +306,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 
 					Boolean xml_flag = false;
 					if (config.headers()) {
-						callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, "HEADERS"));
+						callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, h3 + "HEADERS" + h3_close));
 						ListMultimap<String, String> headers = context.request.headers;
 						if(headers.containsValue("XMLHttpRequest")){
 							xml_flag = true;
@@ -320,14 +321,14 @@ public class DisplayDebug extends AbstractDecisionNode {
 					}
 
 					if (config.clientIp()) {
-						callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, "CLIENT IP"));
+						callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, h3 + "CLIENT IP" + h3_close));
 						String theClientIP = context.request.clientIp;
 						TextOutputCallback txtOutputCallback = new TextOutputCallback(TextOutputCallback.INFORMATION, "ClientIp" + " " + escapeHTML(theClientIP));
 						callbacks.add(txtOutputCallback);
 					}
 
 					if (config.cookies() && context.request != null && context.request.cookies != null) {
-						callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, "COOKIES"));
+						callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, h3 + "COOKIES" +h3_close));
 						Map<String, String> theCookies = context.request.cookies;
 						Set<String> cookieKeys = theCookies.keySet();
 						for (Iterator<String> i = cookieKeys.iterator(); i.hasNext(); ) {
@@ -339,36 +340,48 @@ public class DisplayDebug extends AbstractDecisionNode {
 					}
 
 					if (config.hostName()) {
-						callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, "HOSTNAME"));
+						callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, h3 + "HOSTNAME" + h3_close));
 						String theHostName = context.request.hostName;
 						TextOutputCallback txtOutputCallback = new TextOutputCallback(TextOutputCallback.INFORMATION, "HostName" + " " + escapeHTML(theHostName));
 						callbacks.add(txtOutputCallback);
 					}
 
 					if (config.locales()) {
-						callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, "LOCALE"));
+						callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, h3 + "LOCALE" +h3_close));
 						PreferredLocales theLocales = context.request.locales;
 						TextOutputCallback txtOutputCallback = new TextOutputCallback(TextOutputCallback.INFORMATION, "Preferred Locale" + " " + escapeHTML(theLocales.getPreferredLocale().getDisplayName()));
 						callbacks.add(txtOutputCallback);
 					}
 
 					if (config.parameters() && context.request != null && context.request.parameters != null) {
-						callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, "PARAMETERS"));
+						callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, h3 + "PARAMETERS" + h3_close));
 						Map<String, List<String>> theParms = context.request.parameters;
 						Set<String> parmKeys = theParms.keySet();
+						/*
+						* Steps to create html
+						* 1) create table variable
+						* 2) Add all html to it.
+						* 3) create <tr><td>Key</td><td>Value</td><tr/>
+						* 4) Pass html variable into function that creates
+						* 	 The html
+						* */
+						String table = "";
 						for (Iterator<String> i = parmKeys.iterator(); i.hasNext(); ) {
+							table += "<tr>";
 							String thisKey = i.next();
 							List<String> thisParamVal = theParms.get(thisKey);
 
 							TextOutputCallback txtOutputCallback = new TextOutputCallback(TextOutputCallback.INFORMATION, thisKey + " " + escapeHTML(thisParamVal.toString()));
-
+							table +="<td><code>" + thisKey + "</code></td>";
+							table +="<td>" + thisParamVal + "</td>";
 							callbacks.add(txtOutputCallback);
+							table += "</tr>";
 						}
-
+						//displayhtml(table, callbacks);
 					}
 
 					if (config.serverUrl()) {
-						callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, "SERVER URL"));
+						callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION,  h3 + "SERVER URL" + h3_close));
 						String theServerURL = context.request.serverUrl;
 						TextOutputCallback txtOutputCallback = new TextOutputCallback(TextOutputCallback.INFORMATION, "Server URL " + escapeHTML(theServerURL));
 
@@ -412,80 +425,24 @@ public class DisplayDebug extends AbstractDecisionNode {
 //									"\n" +
 //									"\n";
 
-						String test = "const keys = [  \"AuthID\",\n" +
-								"                    \"accept\",\n" +
-								"                    \"accept-api-version\",\n" +
-								"                    \"accept-encoding\",\n" +
-								"                    \"accept-language\",\n" +
-								"                    \"cache-control\",\n" +
-								"                    \"connection\",\n" +
-								"                    \"content-length\",\n" +
-								"                    \"content-type\",\n" +
-								"                    'cookie',\n" +
-								"                    \"host\",\n" +
-								"                    \"origin\",\n" +
-								"                    \"referer\",\n" +
-								"                    \"user-agent\",\n" +
-								"                    \"x-nosession\",\n" +
-								"                    \"x-password\",\n" +
-								"                    \"x-requested-with\",\n" +
-								"                    \"x-username\",\n" +
-								"                    \"ClientIP\",\n" +
-								"                    \"amlbcookie\",\n" +
-								"                    \"HostName\",\n" +
-								"                    \"Preferred\",\n" +
-								"                    \"Locale\",\n" +
-								"                    \"authIndexType\",\n" +
-								"                    \"authIndexValue\",\n" +
-								"                    \"realm\",\n" +
-								"                    \"service\",\n" +
-								"                    \"Server\",\n" +
-								"                    \"URL\"\n" +
-								"    ];\n" +
+						String h3_html = "\n" +
 								"    for (const val of document.querySelectorAll('div')) {\n" +
 								"\n" +
+								"            if(val.textContent === \"h3NODE STATE/h3\" ||\n" +
+								"                val.textContent === \"h3AUTHID/h3\" ||\n" +
+								"                val.textContent === \"h3HEADERS/h3\"||\n" +
+								"                val.textContent === \"h3CLIENT IP/h3\" ||\n" +
+								"                val.textContent === \"h3COOKIES/h3\" ||\n" +
+								"                val.textContent === \"h3HOSTNAME/h3\" ||\n" +
+								"                val.textContent === \"h3LOCALE/h3\" ||\n" +
+								"                val.textContent === \"h3PARAMETERS/h3\" ||\n" +
+								"                val.textContent === \"h3SERVER URL/h3\"||\n" +
+								"                val.textContent === \"h3SHARED STATE/h3\") {\n" +
 								"\n" +
-								"        console.log(\"In here...\");\n" +
-								"        if( val.textContent === \"AUTHID\"       ||\n" +
-								"            val.textContent === \"SHARED STATE\" ||\n" +
-								"            val.textContent === \"HEADERS\"      ||\n" +
-								"            val.textContent === \"CLIENT IP\"    ||\n" +
-								"            val.textContent === \"COOKIES\"      ||\n" +
-								"            val.textContent === \"HOSTNAME\"     ||\n" +
-								"            val.textContent === \"LOCALE\"       ||\n" +
-								"            val.textContent === \"PARAMETERS\"   ||\n" +
-								"            val.textContent === \"SERVER URL\") {\n" +
-								"            val.outerHTML = \"<h3 style='border-bottom: 2px solid black; padding-top: 5px'>\"+val.outerHTML+\"</h3>\"\n" +
-								"        }\n" +
-								"        else {\n" +
-								"            var key = val.textContent.trim(\" \")\n" +
-								"\n" +
-								"            if(key === \"Key:\" || key === \"Value:\") {\n" +
-								"                continue\n" +
-								"            };\n" +
-								"\n" +
-								"            //To get key and make it <code> Key </code>\n" +
-								"            var text = val.textContent.split(\" \")\n" +
-								"            for(word in text){\n" +
-								"                /*\n" +
-								"                * if word in list_of_keys\n" +
-								"                *   key = <code>\n" +
-								"                * */\n" +
-								"                console.log(text[word])\n" +
-								"                if(keys.includes(text[word])){\n" +
-								"                    console.log(\"Match...\")\n" +
-								"                    val.innerHTML = \"<code>\" + val.innerHTML + \"</code>\";\n" +
-								"                    break;\n" +
-								"                }\n" +
-								"\n" +
-								"             }\n" +
-								"        }\n" +
-								"\n" +
-								"\n" +
-								"    }\n" +
-								"\n" +
-								"\n";
-							ScriptTextOutputCallback tester = new ScriptTextOutputCallback(test);
+								"                val.outerHTML = \"<h3 style='border-bottom: 2px solid black; padding-top: 5px'>\" + val.outerHTML.replace(\"h3\", \"\").replace(\"/h3\",\"\") + \"</h3>\";\n" +
+								"            }\n" +
+								"    }\n";
+							ScriptTextOutputCallback tester = new ScriptTextOutputCallback(h3_html);
 							callbacks.add(tester);
 						}
 
@@ -506,8 +463,12 @@ public class DisplayDebug extends AbstractDecisionNode {
 			return Action.goTo(NEXT_OUTCOME.name()).build();
 	}
 
-
-
+	public void displayhtml(String html, ArrayList<Callback> callbacks){
+		String write = "document.write(<table >" + html + "</table>);";
+		System.out.println(html);
+		ScriptTextOutputCallback script = new ScriptTextOutputCallback(write);
+		callbacks.add(script);
+	}
 
 	private static String escapeHTML(String s) {
 		StringBuilder out = new StringBuilder(Math.max(16, s.length()));
