@@ -483,75 +483,9 @@ String bootstrap = "var sc = document.createElement('link'); "
 						+ "document.head.appendChild(sc);";
 
 		ScriptTextOutputCallback script = new ScriptTextOutputCallback(bootstrap);
-		callbacks.add(script);
+		//callbacks.add(script);
 
 		String parameters_table = "\n" +
-				"\n" +
-				"\n" +
-				"    const keys = [\n" +
-				"        \"authIndexType\",\n" +
-				"        \"authIndexValue\",\n" +
-				"        \"realm\",\n" +
-				"        \"service\"\n" +
-				"    ];\n" +
-				"    var wait;\n" +
-				"    var i = 0;\n" +
-				"    var table = '';\n" +
-				"    var first = true;\n" +
-				"    var last = false\n" +
-				"    var very_end = false\n" +
-				"    for (const val of document.querySelectorAll('div')) {\n" +
-				"            for(key in keys){\n" +
-				"\n" +
-				"                if(val.textContent.startsWith(keys[key])){\n" +
-				"                   if(first === true){\n" +
-				"                       table += \"<table>\";\n" +
-				"                       first = false;\n" +
-				"                   }\n" +
-				"                    else if(val.textContent.startsWith(\"service\")){\n" +
-				"                        //console.log(\"Found last with: \" + val.textContent)\n" +
-				"                       var string = val.textContent;\n" +
-				"                       var trimmed = '';\n" +
-				"                       for(letter in string){\n" +
-				"                           if(string[letter] === \"[\"){\n" +
-				"                               break;\n" +
-				"                           }else{\n" +
-				"                               trimmed += string[letter]\n" +
-				"                           }\n" +
-				"\n" +
-				"                       }\n" +
-				"\n" +
-				"                       table += \"<tr><td><code>\" + trimmed + \"</code></td><td>\"+ val.textContent.replace(keys[key], \"\")+\"</td></tr></table>\"\n" +
-				"                       very_end = true;\n" +
-				"                    }\n" +
-				"                    else{\n" +
-				"                        var string = val.textContent;\n" +
-				"                        var trimmed = '';\n" +
-				"                        for(letter in string){\n" +
-				"                            if(string[letter] === \"[\"){\n" +
-				"                                break;\n" +
-				"                            }else{\n" +
-				"                                trimmed += string[letter]\n" +
-				"                            }\n" +
-				"\n" +
-				"                        }\n" +
-				"\n" +
-				"                        table += \"<tr><td><code>\" + trimmed + \"</code></td><td>\"+ val.textContent.replace(keys[key], \"\")+\"</td></tr>\"\n" +
-				"                   }\n" +
-				"                    if(very_end){\n" +
-				"                        val.innerHTML = table;\n" +
-				"                    }\n" +
-				"               }\n" +
-				"\n" +
-				"           }\n" +
-				"\n" +
-				"    }\n" +
-				"\n";
-//		ScriptTextOutputCallback test = new ScriptTextOutputCallback(parameters_table);
-//		callbacks.add(test);
-
-		String justTesting = "\n" +
-				"\n" +
 				"\n" +
 				"    const keys = [\n" +
 				"        \"authIndexType\",\n" +
@@ -572,12 +506,12 @@ String bootstrap = "var sc = document.createElement('link'); "
 				"                if(val.textContent.startsWith(keys[key])){\n" +
 				"                    //First time coming into loop so this is the beginning\n" +
 				"                   if(first === true){\n" +
-				"                       table += \"<table class=\\\"table table-bordered table-striped table-detail\\\">\";\n" +
+				"                       table += \"<div class=\\\"react-bootstrap-table\\\"> <table class=\\\"table table-bordered table-striped table-detail\\\">\";\n" +
 				"                       first = false;\n" +
 				"                   }\n" +
 				"                   //This is the last key\n" +
-				"                    else if(val.textContent.startsWith(\"service\")){\n" +
-				"                       var string = val.textContent;\n" +
+				"                    else if(val.textContent.startsWith(keys[keys.length-1])){\n" +
+				"                       const string = val.textContent;\n" +
 				"                       trimmed = '';\n" +
 				"                       for(letter in string){\n" +
 				"                           if(string[letter] === \"[\"){\n" +
@@ -588,7 +522,7 @@ String bootstrap = "var sc = document.createElement('link'); "
 				"\n" +
 				"                       }\n" +
 				"                       //Creates final row and closes table tag\n" +
-				"                       table += \"<tr><td><code>\" + trimmed + \"</code></td><td>\"+ val.textContent.replace(keys[key], \"\")+\"</td></tr></table>\"\n" +
+				"                       table += \"<tr><td><code>\" + trimmed + \"</code></td><td>\"+ val.textContent.replace(keys[key], \"\")+\"</td></tr></table></div>\"\n" +
 				"                       very_end = true;\n" +
 				"                    }\n" +
 				"                    else{\n" +
@@ -604,19 +538,179 @@ String bootstrap = "var sc = document.createElement('link'); "
 				"                            }\n" +
 				"                        }\n" +
 				"                        table += \"<tr><td><code>\" + trimmed + \"</code></td><td>\"+ val.textContent.replace(keys[key], \"\")+\"</td></tr>\"\n" +
-				"                        document.getElementById(val.id).remove()\n" +
+				"                        //<table class=\"table table-hover\"><thead><tr><th class=\"selection-cell-header\" data-row-selection=\"true\"><div class=\"checkbox\"><input class=\"react-bs-select-all\" id=\"checkboxHeader\" name=\"checkboxHeader\" type=\"checkbox\"><label for=\"checkboxHeader\"></label></div></th><th tabindex=\"0\" aria-label=\"Username sortable\" class=\"sortable\">Username<span class=\"order\"><span class=\"dropdown\"><span class=\"caret\"></span></span><span class=\"dropup\"><span class=\"caret\"></span></span></span></th><th tabindex=\"0\">Full name</th><th tabindex=\"0\">Email address</th><th tabindex=\"0\">Status</th></tr></thead><tbody><tr><td class=\"selection-cell\"><div class=\"checkbox\"><input id=\"checkbox0\" name=\"checkbox0\" type=\"checkbox\"><label for=\"checkbox0\"></label></div></td><td title=\"demo\"><span class=\"am-table-icon-cell\"><span class=\"fa-stack fa-lg am-table-icon-cell-stack\"><i class=\"fa fa-circle fa-stack-2x text-primary\"></i><i class=\"fa fa-address-card fa-stack-1x fa-inverse\"></i></span> <span><span>demo</span></span></span></td><td title=\"demo\"><span>demo</span></td><td><span>demo@example.com</span></td><td><span class=\"text-success\"><i class=\"fa fa-check-circle\"></i> Active</span></td></tr><tr><td class=\"selection-cell\"><div class=\"checkbox\"><input id=\"checkbox1\" name=\"checkbox1\" type=\"checkbox\"><label for=\"checkbox1\"></label></div></td><td title=\"test_iproov\"><span class=\"am-table-icon-cell\"><span class=\"fa-stack fa-lg am-table-icon-cell-stack\"><i class=\"fa fa-circle fa-stack-2x text-primary\"></i><i class=\"fa fa-address-card fa-stack-1x fa-inverse\"></i></span> <span><span>test_iproov</span></span></span></td><td title=\"test_iproov\"><span>test_iproov</span></td><td><span>testiproov@mailinator.com</span></td><td><span class=\"text-success\"><i class=\"fa fa-check-circle\"></i> Active</span></td></tr></tbody></table></div>\n" +
+				"                       document.getElementById(val.id).remove()\n" +
 				"                   }\n" +
 				"                    if(very_end){\n" +
 				"                        val.innerHTML = table;\n" +
 				"                    }\n" +
 				"               }\n" +
-				"\n" +
 				"           }\n" +
-				"\n" +
 				"    }\n" +
 				"\n";
-				ScriptTextOutputCallback test = new ScriptTextOutputCallback(justTesting);
-				callbacks.add(test);
+		ScriptTextOutputCallback test = new ScriptTextOutputCallback(parameters_table);
+		callbacks.add(test);
+
+		String headers_table = "   // const headers = [\n" +
+				"    //     \"accept\",\n" +
+				"    //     \"accept-api-version\",\n" +
+				"    //     \"accept-encoding\",\n" +
+				"    //     \"accept-language\",\n" +
+				"    //     \"cache-control\",\n" +
+				"    //     \"connection\",\n" +
+				"    //     \"content-length\",\n" +
+				"    //     \"content-type\",\n" +
+				"    //     \"cookie\",\n" +
+				"    //     \"host\",\n" +
+				"    //     \"origin\",\n" +
+				"    //     \"referer\",\n" +
+				"    //     \"user-agent\",\n" +
+				"    //     \"x-nosession\",\n" +
+				"    //     \"x-password\",\n" +
+				"    //     \"x-requested-with\",\n" +
+				"    //     \"x-username\"\n" +
+				"    // ];\n" +
+				"    //\n" +
+				"    // let table = '';\n" +
+				"    // let first = true;\n" +
+				"    // let very_end = false;\n" +
+				"    // let trimmed;\n" +
+				"    // //Loops through divs\n" +
+				"    // for (const val of document.querySelectorAll('div')) {\n" +
+				"    //         //iterates through keys in list to find place I want to make table\n" +
+				"    //         for(key in headers){\n" +
+				"    //\n" +
+				"    //             if(val.textContent.startsWith(headers[key])){\n" +
+				"    //                 //First time coming into loop so this is the beginning\n" +
+				"    //                if(first === true){\n" +
+				"    //                    table += \"<div class=\\\"react-bootstrap-table\\\"> <table class='table table-bordered table-striped table-detail'>\";\n" +
+				"    //                    first = false;\n" +
+				"    //                }\n" +
+				"    //                //This is the last key\n" +
+				"    //                 else if(val.textContent.startsWith(headers[headers.length-1])){\n" +
+				"    //                    const string = val.textContent;\n" +
+				"    //                    trimmed = '';\n" +
+				"    //                    for(letter in string){\n" +
+				"    //                        if(string[letter] === \"[\"){\n" +
+				"    //                            break;\n" +
+				"    //                        }else{\n" +
+				"    //                            trimmed += string[letter]\n" +
+				"    //                        }\n" +
+				"    //\n" +
+				"    //                    }\n" +
+				"    //                    //Creates final row and closes table tag\n" +
+				"    //                    table += \"<tr><td><code>\" + trimmed + \"</code></td><td>\"+ val.textContent.replace(headers[key], \"\")+\"</td></tr></table></div>\"\n" +
+				"    //                    very_end = true;\n" +
+				"    //                 }\n" +
+				"    //                 else{\n" +
+				"    //                     //If not first or last it creates the table row and removes that div\n" +
+				"    //                    //If I don't remove the div it still has the original value with the old styling\n" +
+				"    //                    const string = val.textContent;\n" +
+				"    //                    trimmed = '';\n" +
+				"    //                     for(letter in string){\n" +
+				"    //                         if(string[letter] === \"[\"){\n" +
+				"    //                             break;\n" +
+				"    //                         }else{\n" +
+				"    //                             trimmed += string[letter]\n" +
+				"    //                         }\n" +
+				"    //                     }\n" +
+				"    //                     table += \"<tr><td><code>\" + trimmed + \"</code></td><td>\"+ val.textContent.replace(headers[key], \"\")+\"</td></tr>\"\n" +
+				"    //                     //<table class=\"table table-hover\"><thead><tr><th class=\"selection-cell-header\" data-row-selection=\"true\"><div class=\"checkbox\"><input class=\"react-bs-select-all\" id=\"checkboxHeader\" name=\"checkboxHeader\" type=\"checkbox\"><label for=\"checkboxHeader\"></label></div></th><th tabindex=\"0\" aria-label=\"Username sortable\" class=\"sortable\">Username<span class=\"order\"><span class=\"dropdown\"><span class=\"caret\"></span></span><span class=\"dropup\"><span class=\"caret\"></span></span></span></th><th tabindex=\"0\">Full name</th><th tabindex=\"0\">Email address</th><th tabindex=\"0\">Status</th></tr></thead><tbody><tr><td class=\"selection-cell\"><div class=\"checkbox\"><input id=\"checkbox0\" name=\"checkbox0\" type=\"checkbox\"><label for=\"checkbox0\"></label></div></td><td title=\"demo\"><span class=\"am-table-icon-cell\"><span class=\"fa-stack fa-lg am-table-icon-cell-stack\"><i class=\"fa fa-circle fa-stack-2x text-primary\"></i><i class=\"fa fa-address-card fa-stack-1x fa-inverse\"></i></span> <span><span>demo</span></span></span></td><td title=\"demo\"><span>demo</span></td><td><span>demo@example.com</span></td><td><span class=\"text-success\"><i class=\"fa fa-check-circle\"></i> Active</span></td></tr><tr><td class=\"selection-cell\"><div class=\"checkbox\"><input id=\"checkbox1\" name=\"checkbox1\" type=\"checkbox\"><label for=\"checkbox1\"></label></div></td><td title=\"test_iproov\"><span class=\"am-table-icon-cell\"><span class=\"fa-stack fa-lg am-table-icon-cell-stack\"><i class=\"fa fa-circle fa-stack-2x text-primary\"></i><i class=\"fa fa-address-card fa-stack-1x fa-inverse\"></i></span> <span><span>test_iproov</span></span></span></td><td title=\"test_iproov\"><span>test_iproov</span></td><td><span>testiproov@mailinator.com</span></td><td><span class=\"text-success\"><i class=\"fa fa-check-circle\"></i> Active</span></td></tr></tbody></table></div>\n" +
+				"    //                    document.getElementById(val.id).remove()\n" +
+				"    //                }\n" +
+				"    //                 if(very_end){\n" +
+				"    //                     val.innerHTML = table;\n" +
+				"    //                 }\n" +
+				"    //            }\n" +
+				"    //        }\n" +
+				"    // }\n";
+
+		ScriptTextOutputCallback knew = new ScriptTextOutputCallback(headers_table);
+				callbacks.add(knew);
+
+		String single_tables = "function singleItemTable(string){\n" +
+				"        const keys = [\n" +
+				"            \"Server URL\",\n" +
+				"            \"HostName\",\n" +
+				"            \"Preferred Locale\",\n" +
+				"            \"ClientIP\",\n" +
+				"            \"amlbcookie\",\n" +
+				"            \"AuthID\"\n" +
+				"        ];\n" +
+				"        table = '';\n" +
+				"        first = true;\n" +
+				"        very_end = false;\n" +
+				"        key = 0;\n" +
+				"        for (const val of document.querySelectorAll('div')) {\n" +
+				"\n" +
+				"            for(key in keys) {\n" +
+				"                if (val.textContent.startsWith(string)) {\n" +
+				"\n" +
+				"                    console.log(val.textContent)\n" +
+				"                    table += \"<div class ='react-bootstrap-table'><table class='table table-bordered table-striped table-detail'>\";\n" +
+				"\n" +
+				"\n" +
+				"                    if (string === \"HostName\") {\n" +
+				"                        table += \"<tr><td><code>\" + \"HostName\" + \"</code></td><td>\" + val.textContent.replace(\"HostName\", \"\") + \"</td></tr></table></div>\"\n" +
+				"                        very_end = true;\n" +
+				"                        if (very_end) {\n" +
+				"                            console.log(table)\n" +
+				"                            val.innerHTML = table;\n" +
+				"                            break;\n" +
+				"                        }\n" +
+				"                    } else if (string === \"Server URL\") {\n" +
+				"                        table += \"<tr><td><code>\" + \"Server URL\" + \"</code></td><td>\" + val.textContent.replace(\"Server URL\", \"\") + \"</td></tr></table></div>\"\n" +
+				"                        very_end = true;\n" +
+				"                        if (very_end) {\n" +
+				"                            console.log(table)\n" +
+				"                            val.innerHTML = table;\n" +
+				"                            break;\n" +
+				"                        }\n" +
+				"                    } else if (string === \"Preferred Locale\") {\n" +
+				"                        table += \"<tr><td><code>\" + \"Preferred Locale\" + \"</code></td><td>\" + val.textContent.replace(\"Preferred Locale\", \"\") + \"</td></tr></table></div>\"\n" +
+				"                        very_end = true;\n" +
+				"                        if (very_end) {\n" +
+				"                            console.log(table)\n" +
+				"                            val.innerHTML = table;\n" +
+				"                            break;\n" +
+				"                        }\n" +
+				"                    } else if (string === \"ClientIp\") {\n" +
+				"                        table += \"<tr><td><code>\" + \"ClientIp\" + \"</code></td><td>\" + val.textContent.replace(\"ClientIp\", \"\") + \"</td></tr></table></div>\"\n" +
+				"                        very_end = true;\n" +
+				"                        if (very_end) {\n" +
+				"                            console.log(table)\n" +
+				"                            val.innerHTML = table;\n" +
+				"                            break;\n" +
+				"                        }\n" +
+				"                    } else if (string === \"amlbcookie\") {\n" +
+				"                        table += \"<tr><td><code>\" + \"amlbcookie\" + \"</code></td><td>\" + val.textContent.replace(\"amlbcookie\", \"\") + \"</td></tr></table></div>\"\n" +
+				"                        very_end = true;\n" +
+				"                        if (very_end) {\n" +
+				"                            console.log(table)\n" +
+				"                            val.innerHTML = table;\n" +
+				"                            break;\n" +
+				"                        }\n" +
+				"                    } else if (string === \"AuthID\") {\n" +
+				"                        table += \"<tr><td><code>\" + \"AuthID\" + \"</code></td><td>\" + val.textContent.replace(\"AuthID\", \"\") + \"</td></tr></table></div>\"\n" +
+				"                        very_end = true;\n" +
+				"                        if (very_end) {\n" +
+				"                            console.log(table)\n" +
+				"                            val.innerHTML = table;\n" +
+				"                            break;\n" +
+				"                        }\n" +
+				"                    }\n" +
+				"                }\n" +
+				"            }\n" +
+				"        }\n" +
+				"    }\n" +
+				"singleItemTable(\"HostName\")\n" +
+				"singleItemTable(\"Server URL\")\n" +
+				"singleItemTable(\"ClientIp\")\n" +
+				"singleItemTable(\"Preferred Locale\")\n" +
+				"singleItemTable(\"AuthID\")\n" +
+				"singleItemTable(\"amlbcookie\")";
+		ScriptTextOutputCallback single = new ScriptTextOutputCallback(single_tables);
+		callbacks.add(single);
 	}
 
 	private static String escapeHTML(String s) {
