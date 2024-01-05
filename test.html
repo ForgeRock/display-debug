@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 </head>
 <body>
 <form action="" method="post" class="form login col-sm-6 col-sm-offset-3" autocomplete="off" data-stage="">
@@ -622,6 +623,7 @@ to such license between the licensee and ForgeRock AS.
         </div>
 
         <div class="form-group">
+
             <!--
 Copyright 2015-2019 ForgeRock AS. All Rights Reserved
 
@@ -680,7 +682,7 @@ to such license between the licensee and ForgeRock AS.
             <div id="callback_51"></div>
 
         </div>
-
+        <br>
         <div class="form-group">
             <!--
 Copyright 2015-2019 ForgeRock AS. All Rights Reserved
@@ -688,9 +690,9 @@ Copyright 2015-2019 ForgeRock AS. All Rights Reserved
 Use of this code requires a commercial software license with ForgeRock AS.
 or with one of its affiliates. All use shall be exclusively subject
 to such license between the licensee and ForgeRock AS.
--->
+--><br>
             <div id="callback_52" class="0" role="presentation">h3SERVER URL/h3</div>
-
+            <br>
         </div>
 
         <div class="form-group">
@@ -756,7 +758,6 @@ to such license between the licensee and ForgeRock AS.
         </div>
 
 
-
         <!--
           Copyright 2015-2019 ForgeRock AS. All Rights Reserved
 
@@ -766,59 +767,74 @@ to such license between the licensee and ForgeRock AS.
         -->
 
 
-
     </fieldset>
 </form>
 <script>
-    const keys = [  "AuthID",
-                    "accept",
-                    "accept-api-version",
-                    "accept-encoding",
-                    "accept-language",
-                    "cache-control",
-                    "connection",
-                    "content-length",
-                    "content-type",
-                    'cookie',
-                    "host",
-                    "origin",
-                    "referer",
-                    "user-agent",
-                    "x-nosession",
-                    "x-password",
-                    "x-requested-with",
-                    "LOCALE",
-                    "x-username",
-                    "ClientIP",
-                    "amlbcookie",
-                    "HostName",
-                    "Preferred",
-                    "Locale",
-                    "authIndexType",
-                    "authIndexValue",
-                    "realm",
-                    "service",
-                    "Server",
-                    "URL"
+
+
+
+    const keys = [
+        "authIndexType",
+        "authIndexValue",
+        "realm",
+        "service"
     ];
-    var table = '';
 
+    let table = '';
+    let first = true;
+    let very_end = false;
+    let trimmed;
+    //Loops through divs
     for (const val of document.querySelectorAll('div')) {
+            //iterates through keys in list to find place I want to make table
+            for(key in keys){
 
-            if(val.textContent === "h3NODE STATE/h3" ||
-                val.textContent === "h3AUTHID/h3" ||
-                val.textContent === "h3HEADERS/h3"||
-                val.textContent === "h3CLIENT IP/h3" ||
-                val.textContent === "h3COOKIES/h3" ||
-                val.textContent === "h3HOSTNAME/h3" ||
-                val.textContent === "h3LOCALE/h3" ||
-                val.textContent === "h3PARAMETERS/h3" ||
-                val.textContent === "h3SERVER URL/h3"||
-                val.textContent === "h3SHARED STATE/h3") {
+                if(val.textContent.startsWith(keys[key])){
+                    //First time coming into loop so this is the beginning
+                   if(first === true){
+                       table += "<table class=\"table table-bordered table-striped table-detail\">";
+                       first = false;
+                   }
+                   //This is the last key
+                    else if(val.textContent.startsWith(keys[keys.length-1])){
+                       const string = val.textContent;
+                       trimmed = '';
+                       for(letter in string){
+                           if(string[letter] === "["){
+                               break;
+                           }else{
+                               trimmed += string[letter]
+                           }
 
-                val.outerHTML = "<h3 style='border-bottom: 2px solid black; padding-top: 5px'>" + val.outerHTML.replace("h3", "").replace("/h3","") + "</h3>";
-            }
+                       }
+                       //Creates final row and closes table tag
+                       table += "<tr><td><code>" + trimmed + "</code></td><td>"+ val.textContent.replace(keys[key], "")+"</td></tr></table>"
+                       very_end = true;
+                    }
+                    else{
+                        //If not first or last it creates the table row and removes that div
+                       //If I don't remove the div it still has the original value with the old styling
+                       const string = val.textContent;
+                       trimmed = '';
+                        for(letter in string){
+                            if(string[letter] === "["){
+                                break;
+                            }else{
+                                trimmed += string[letter]
+                            }
+                        }
+                        table += "<tr><td><code>" + trimmed + "</code></td><td>"+ val.textContent.replace(keys[key], "")+"</td></tr>"
+                        document.getElementById(val.id).remove()
+                   }
+                    if(very_end){
+                        val.innerHTML = table;
+                    }
+               }
+
+           }
+
     }
+
 
 </script>
 </body>

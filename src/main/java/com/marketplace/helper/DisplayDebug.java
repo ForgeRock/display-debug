@@ -328,6 +328,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 					}
 
 					if (config.cookies() && context.request != null && context.request.cookies != null) {
+						System.out.println("In if statement...");
 						callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, h3 + "COOKIES" +h3_close));
 						Map<String, String> theCookies = context.request.cookies;
 						Set<String> cookieKeys = theCookies.keySet();
@@ -340,6 +341,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 					}
 
 					if (config.hostName()) {
+						System.out.println("In if statement...");
 						callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, h3 + "HOSTNAME" + h3_close));
 						String theHostName = context.request.hostName;
 						TextOutputCallback txtOutputCallback = new TextOutputCallback(TextOutputCallback.INFORMATION, "HostName" + " " + escapeHTML(theHostName));
@@ -347,6 +349,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 					}
 
 					if (config.locales()) {
+						System.out.println("In if statement...");
 						callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, h3 + "LOCALE" +h3_close));
 						PreferredLocales theLocales = context.request.locales;
 						TextOutputCallback txtOutputCallback = new TextOutputCallback(TextOutputCallback.INFORMATION, "Preferred Locale" + " " + escapeHTML(theLocales.getPreferredLocale().getDisplayName()));
@@ -354,6 +357,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 					}
 
 					if (config.parameters() && context.request != null && context.request.parameters != null) {
+						System.out.println("In if statement...");
 						callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, h3 + "PARAMETERS" + h3_close));
 						Map<String, List<String>> theParms = context.request.parameters;
 						Set<String> parmKeys = theParms.keySet();
@@ -365,19 +369,22 @@ public class DisplayDebug extends AbstractDecisionNode {
 						* 4) Pass html variable into function that creates
 						* 	 The html
 						* */
-						String table = "";
+						String table = "<table class= 'table table-bordered table-striped table-detail' border='1px'>"; //class="table table-bordered table-striped table-detail"
+						table+= "<tbody>";
 						for (Iterator<String> i = parmKeys.iterator(); i.hasNext(); ) {
 							table += "<tr>";
 							String thisKey = i.next();
 							List<String> thisParamVal = theParms.get(thisKey);
 
 							TextOutputCallback txtOutputCallback = new TextOutputCallback(TextOutputCallback.INFORMATION, thisKey + " " + escapeHTML(thisParamVal.toString()));
-							table +="<td><code>" + thisKey + "</code></td>";
+							table +="<td><code style='color: red'>" + thisKey + "</code></td>";
 							table +="<td>" + thisParamVal + "</td>";
-							callbacks.add(txtOutputCallback);
 							table += "</tr>";
+							callbacks.add(txtOutputCallback);
 						}
-						//displayhtml(table, callbacks);
+						table += "</tbody>";
+						table += "</table>";
+						displayhtml(table, callbacks);
 					}
 
 					if (config.serverUrl()) {
@@ -460,14 +467,156 @@ public class DisplayDebug extends AbstractDecisionNode {
 				}
 
 
+
+
 			return Action.goTo(NEXT_OUTCOME.name()).build();
 	}
 
 	public void displayhtml(String html, ArrayList<Callback> callbacks){
-		String write = "document.write(<table >" + html + "</table>);";
-		System.out.println(html);
-		ScriptTextOutputCallback script = new ScriptTextOutputCallback(write);
+
+
+String bootstrap = "var sc = document.createElement('link'); "
+						+ "sc.setAttribute('rel', 'stylesheet');"
+						+ "sc.setAttribute('href', 'https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css');"
+						+ "sc.setAttribute('integrity', 'sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T');"
+						+ "sc.setAttribute('crossorigin', 'anonymous');"
+						+ "document.head.appendChild(sc);";
+
+		ScriptTextOutputCallback script = new ScriptTextOutputCallback(bootstrap);
 		callbacks.add(script);
+
+		String parameters_table = "\n" +
+				"\n" +
+				"\n" +
+				"    const keys = [\n" +
+				"        \"authIndexType\",\n" +
+				"        \"authIndexValue\",\n" +
+				"        \"realm\",\n" +
+				"        \"service\"\n" +
+				"    ];\n" +
+				"    var wait;\n" +
+				"    var i = 0;\n" +
+				"    var table = '';\n" +
+				"    var first = true;\n" +
+				"    var last = false\n" +
+				"    var very_end = false\n" +
+				"    for (const val of document.querySelectorAll('div')) {\n" +
+				"            for(key in keys){\n" +
+				"\n" +
+				"                if(val.textContent.startsWith(keys[key])){\n" +
+				"                   if(first === true){\n" +
+				"                       table += \"<table>\";\n" +
+				"                       first = false;\n" +
+				"                   }\n" +
+				"                    else if(val.textContent.startsWith(\"service\")){\n" +
+				"                        //console.log(\"Found last with: \" + val.textContent)\n" +
+				"                       var string = val.textContent;\n" +
+				"                       var trimmed = '';\n" +
+				"                       for(letter in string){\n" +
+				"                           if(string[letter] === \"[\"){\n" +
+				"                               break;\n" +
+				"                           }else{\n" +
+				"                               trimmed += string[letter]\n" +
+				"                           }\n" +
+				"\n" +
+				"                       }\n" +
+				"\n" +
+				"                       table += \"<tr><td><code>\" + trimmed + \"</code></td><td>\"+ val.textContent.replace(keys[key], \"\")+\"</td></tr></table>\"\n" +
+				"                       very_end = true;\n" +
+				"                    }\n" +
+				"                    else{\n" +
+				"                        var string = val.textContent;\n" +
+				"                        var trimmed = '';\n" +
+				"                        for(letter in string){\n" +
+				"                            if(string[letter] === \"[\"){\n" +
+				"                                break;\n" +
+				"                            }else{\n" +
+				"                                trimmed += string[letter]\n" +
+				"                            }\n" +
+				"\n" +
+				"                        }\n" +
+				"\n" +
+				"                        table += \"<tr><td><code>\" + trimmed + \"</code></td><td>\"+ val.textContent.replace(keys[key], \"\")+\"</td></tr>\"\n" +
+				"                   }\n" +
+				"                    if(very_end){\n" +
+				"                        val.innerHTML = table;\n" +
+				"                    }\n" +
+				"               }\n" +
+				"\n" +
+				"           }\n" +
+				"\n" +
+				"    }\n" +
+				"\n";
+//		ScriptTextOutputCallback test = new ScriptTextOutputCallback(parameters_table);
+//		callbacks.add(test);
+
+		String justTesting = "\n" +
+				"\n" +
+				"\n" +
+				"    const keys = [\n" +
+				"        \"authIndexType\",\n" +
+				"        \"authIndexValue\",\n" +
+				"        \"realm\",\n" +
+				"        \"service\"\n" +
+				"    ];\n" +
+				"\n" +
+				"    let table = '';\n" +
+				"    let first = true;\n" +
+				"    let very_end = false;\n" +
+				"    let trimmed;\n" +
+				"    //Loops through divs\n" +
+				"    for (const val of document.querySelectorAll('div')) {\n" +
+				"            //iterates through keys in list to find place I want to make table\n" +
+				"            for(key in keys){\n" +
+				"\n" +
+				"                if(val.textContent.startsWith(keys[key])){\n" +
+				"                    //First time coming into loop so this is the beginning\n" +
+				"                   if(first === true){\n" +
+				"                       table += \"<table class=\\\"table table-bordered table-striped table-detail\\\">\";\n" +
+				"                       first = false;\n" +
+				"                   }\n" +
+				"                   //This is the last key\n" +
+				"                    else if(val.textContent.startsWith(\"service\")){\n" +
+				"                       var string = val.textContent;\n" +
+				"                       trimmed = '';\n" +
+				"                       for(letter in string){\n" +
+				"                           if(string[letter] === \"[\"){\n" +
+				"                               break;\n" +
+				"                           }else{\n" +
+				"                               trimmed += string[letter]\n" +
+				"                           }\n" +
+				"\n" +
+				"                       }\n" +
+				"                       //Creates final row and closes table tag\n" +
+				"                       table += \"<tr><td><code>\" + trimmed + \"</code></td><td>\"+ val.textContent.replace(keys[key], \"\")+\"</td></tr></table>\"\n" +
+				"                       very_end = true;\n" +
+				"                    }\n" +
+				"                    else{\n" +
+				"                        //If not first or last it creates the table row and removes that div\n" +
+				"                       //If I don't remove the div it still has the original value with the old styling\n" +
+				"                       const string = val.textContent;\n" +
+				"                       trimmed = '';\n" +
+				"                        for(letter in string){\n" +
+				"                            if(string[letter] === \"[\"){\n" +
+				"                                break;\n" +
+				"                            }else{\n" +
+				"                                trimmed += string[letter]\n" +
+				"                            }\n" +
+				"                        }\n" +
+				"                        table += \"<tr><td><code>\" + trimmed + \"</code></td><td>\"+ val.textContent.replace(keys[key], \"\")+\"</td></tr>\"\n" +
+				"                        document.getElementById(val.id).remove()\n" +
+				"                   }\n" +
+				"                    if(very_end){\n" +
+				"                        val.innerHTML = table;\n" +
+				"                    }\n" +
+				"               }\n" +
+				"\n" +
+				"           }\n" +
+				"\n" +
+				"    }\n" +
+				"\n";
+				ScriptTextOutputCallback test = new ScriptTextOutputCallback(justTesting);
+				callbacks.add(test);
 	}
 
 	private static String escapeHTML(String s) {
