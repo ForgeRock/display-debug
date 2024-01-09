@@ -39,9 +39,11 @@ import javax.swing.text.EditorKit;
 import javax.swing.text.html.HTMLEditorKit;
 
 import com.google.common.html.HtmlEscapers;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import groovy.lang.Script;
+import it.unimi.dsi.fastutil.Hash;
 import org.forgerock.guava.common.collect.ListMultimap;
 import org.forgerock.json.JsonValue;
 import org.forgerock.openam.annotations.sm.Attribute;
@@ -54,6 +56,7 @@ import org.forgerock.openam.auth.node.api.TreeContext;
 import org.forgerock.openam.authentication.callbacks.StringAttributeInputCallback;
 import org.forgerock.openam.core.realms.Realm;
 import org.forgerock.openam.headers.SetHeadersFilter;
+import org.forgerock.util.Pair;
 import org.forgerock.util.i18n.PreferredLocales;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -304,17 +307,19 @@ public class DisplayDebug extends AbstractDecisionNode {
 						callbacks.add(txtOutputCallback);
 					}
 
-
 					Boolean xml_flag = false;
+					List<String> headerKeys = new ArrayList<>();
 					if (config.headers()) {
 						callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, h3 + "HEADERS" + h3_close));
 						ListMultimap<String, String> headers = context.request.headers;
 						if(headers.containsValue("XMLHttpRequest")){
 							xml_flag = true;
 						}
+
 						Set<String> headersKey = headers.keySet();
 						for (Iterator<String> i = headersKey.iterator(); i.hasNext(); ) {
 							String thisKey = i.next();
+							headerKeys.add("\""+thisKey+"\"");
 							List  thisHeaderVal = headers.get(thisKey);
 							TextOutputCallback txtOutputCallback = new TextOutputCallback(TextOutputCallback.INFORMATION, thisKey + " " + escapeHTML(thisHeaderVal.toString()));
 							callbacks.add(txtOutputCallback);
@@ -354,6 +359,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 						callbacks.add(txtOutputCallback);
 					}
 
+					List<String> paramKeys = new ArrayList<>();
 					if (config.parameters() && context.request != null && context.request.parameters != null) {
 						callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, h3 + "PARAMETERS" + h3_close));
 						Map<String, List<String>> theParms = context.request.parameters;
@@ -362,10 +368,11 @@ public class DisplayDebug extends AbstractDecisionNode {
 						for (Iterator<String> i = parmKeys.iterator(); i.hasNext(); ) {
 							String thisKey = i.next();
 							List<String> thisParamVal = theParms.get(thisKey);
+							paramKeys.add("\""+thisKey+"\"");
 							TextOutputCallback txtOutputCallback = new TextOutputCallback(TextOutputCallback.INFORMATION, thisKey + " " + escapeHTML(thisParamVal.toString()));
 							callbacks.add(txtOutputCallback);
 						}
-
+						displayhtml(callbacks, paramKeys, headerKeys);
 					}
 
 					if (config.serverUrl()) {
@@ -377,9 +384,9 @@ public class DisplayDebug extends AbstractDecisionNode {
 					}
 
 
-					if(config.pretty()) {
-						displayhtml(callbacks);
-						}
+					if(config.pretty()){
+						displayhtml(callbacks, paramKeys, headerKeys);
+					}
 
 					return Action.send(callbacks).build();
 				} catch (Exception ex) {
@@ -397,8 +404,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 			return Action.goTo(NEXT_OUTCOME.name()).build();
 	}
 
-	public void displayhtml(ArrayList<Callback> callbacks){
-
+	public void displayhtml(ArrayList<Callback> callbacks, List<String> paramKeys, List<String> headerKeys){
 
 		String javascript = "\n" +
 				"\n" +
@@ -406,7 +412,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 				"    for (const val of document.querySelectorAll('div')) {\n" +
 				"        if (val.textContent === \"h3NODE STATE/h3\" ||\n" +
 				"            val.textContent === \"h3AUTHID/h3\" ||\n" +
-				"            val.textContent === \"h3HEADERS\" ||\n" +
+				"            val.textContent === \"h3HEADERS/h3\" ||\n" +
 				"            val.textContent === \"h3CLIENT IP/h3\" ||\n" +
 				"            val.textContent === \"h3COOKIES/h3\" ||\n" +
 				"            val.textContent === \"h3HOSTNAME/h3\" ||\n" +
@@ -423,13 +429,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 				"    }\n" +
 				"\n" +
 				"    // For Parameters\n" +
-				"    const keys = [\n" +
-				"        \"authIndexType\",\n" +
-				"        \"authIndexValue\",\n" +
-				"        \"realm\",\n" +
-				"        \"service\"\n" +
-				"\n" +
-				"    ];\n" +
+				"    const keys = "+ paramKeys+";\n" +
 				"\n" +
 				"    let table = '';\n" +
 				"    let first = true;\n" +
@@ -486,7 +486,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 				"    }\n" +
 				"\n" +
 				"    function singleItemTable(string) {\n" +
-				"        const keys = [\n" +
+				"        const singleKeys = [\n" +
 				"            \"Server URL\",\n" +
 				"            \"HostName\",\n" +
 				"            \"Preferred Locale\",\n" +
@@ -557,25 +557,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 				"    singleItemTable(\"amlbcookie\")\n" +
 				"\n" +
 				"\n" +
-				"    const headers = [\n" +
-				"        \"accept\",\n" +
-				"        \"accept-api-version\",\n" +
-				"        \"accept-encoding\",\n" +
-				"        \"accept-language\",\n" +
-				"        \"cache-control\",\n" +
-				"        \"connection\",\n" +
-				"        \"content-length\",\n" +
-				"        \"content-type\",\n" +
-				"        \"cookie\",\n" +
-				"        \"host\",\n" +
-				"        \"origin\",\n" +
-				"        \"referer\",\n" +
-				"        \"user-agent\",\n" +
-				"        \"x-nosession\",\n" +
-				"        \"x-password\",\n" +
-				"        \"x-requested-with\",\n" +
-				"        \"x-username\"\n" +
-				"    ];\n" +
+				"    const headers = "+ headerKeys +";\n" +
 				"\n" +
 				"    let headers_table = '';\n" +
 				"    let first_headers = true;\n" +
@@ -651,6 +633,12 @@ public class DisplayDebug extends AbstractDecisionNode {
 				"            break\n" +
 				"        }\n" +
 				"    }\n";
+
+
+		System.out.println("Begin===========Begin");
+		System.out.println(javascript);
+		System.out.println("End=============End");
+
 
 		ScriptTextOutputCallback script = new ScriptTextOutputCallback(javascript);
 		callbacks.add(script);

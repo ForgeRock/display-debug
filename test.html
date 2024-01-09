@@ -907,9 +907,12 @@ to such license between the licensee and ForgeRock AS.
         "authIndexValue",
         "realm",
         "service"
-
     ];
-
+    const list = String([authindextype, realm, service]);
+    for(item in list){
+        list[item] = String(list[item])
+    }
+    console.log(list)
     let table = '';
     let first = true;
     let very_end = false;
