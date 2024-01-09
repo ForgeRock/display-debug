@@ -1,11 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
-          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-</head>
 <body>
 <form action="" method="post" class="form login col-sm-6 col-sm-offset-3" autocomplete="off" data-stage="">
     <fieldset class="row">
@@ -783,356 +777,315 @@ to such license between the licensee and ForgeRock AS.
                    class="btn btn-lg btn-block btn-uppercase btn-primary">
 
         </div>
-        <div class='react-bootstrap-table'>
-            <table class='table table-bordered table-striped table-detail'>
-                <tr>
-                    <td><code>accept </code></td>
-                    <td> [application/json, text/javascript, */*; q=0.01]</td>
-                </tr>
-                <tr>
-                    <td><code>accept-api-version </code></td>
-                    <td>-api-version [protocol=1.0,resource=2.1]</td>
-                </tr>
-                <tr>
-                    <td><code>accept-api-version </code></td>
-                    <td> [protocol=1.0,resource=2.1]</td>
-                </tr>
-                <tr>
-                    <td><code>accept-encoding </code></td>
-                    <td>-encoding [gzip, deflate]</td>
-                </tr>
-                <tr>
-                    <td><code>accept-encoding </code></td>
-                    <td> [gzip, deflate]</td>
-                </tr>
-                <tr>
-                    <td><code>accept-language </code></td>
-                    <td>-language [en-US]</td>
-                </tr>
-                <tr>
-                    <td><code>accept-language </code></td>
-                    <td> [en-US]</td>
-                </tr>
-                <tr>
-                    <td><code>cache-control </code></td>
-                    <td> [no-cache]</td>
-                </tr>
-                <tr>
-                    <td><code>connection </code></td>
-                    <td> [keep-alive]</td>
-                </tr>
-                <tr>
-                    <td><code>content-length </code></td>
-                    <td> [2006]</td>
-                </tr>
-                <tr>
-                    <td><code>content-type </code></td>
-                    <td> [application/json]</td>
-                </tr>
-                <tr>
-                    <td><code>cookie </code></td>
-                    <td> [amlbcookie=01]</td>
-                </tr>
-                <tr>
-                    <td><code>host </code></td>
-                    <td> [openam.example.com:8080]</td>
-                </tr>
-                <tr>
-                    <td><code>origin </code></td>
-                    <td> [http://openam.example.com:8080]</td>
-                </tr>
-                <tr>
-                    <td><code>referer </code></td>
-                    <td> [http://openam.example.com:8080/openam/XUI/?service=Display-Debug-Tree]</td>
-                </tr>
-                <tr>
-                    <td><code>user-agent </code></td>
-                    <td> [Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko)
-                        Chrome/120.0.0.0 Safari/537.36]
-                    </td>
-                </tr>
-                <tr>
-                    <td><code>x-nosession </code></td>
-                    <td> [true]</td>
-                </tr>
-                <tr>
-                    <td><code>x-password </code></td>
-                    <td> [anonymous]</td>
-                </tr>
-                <tr>
-                    <td><code>x-requested-with </code></td>
-                    <td> [XMLHttpRequest]</td>
-                </tr>
-                <tr>
-                    <td><code>x-username </code></td>
-                    <td>x-username [anonymous]</td>
-                </tr>
-            </table>
-        </div>
-        <!--
-          Copyright 2015-2019 ForgeRock AS. All Rights Reserved
 
-          Use of this code requires a commercial software license with ForgeRock AS.
-          or with one of its affiliates. All use shall be exclusively subject
-          to such license between the licensee and ForgeRock AS.
-        -->
+
 
     </fieldset>
 </form>
 <script>
 
 
-    for (const val of document.querySelectorAll('div')) {
-        if (val.textContent === "h3NODE STATE/h3" ||
-            val.textContent === "h3AUTHID/h3" ||
-            val.textContent === "h3HEADERS" ||
-            val.textContent === "h3CLIENT IP/h3" ||
-            val.textContent === "h3COOKIES/h3" ||
-            val.textContent === "h3HOSTNAME/h3" ||
-            val.textContent === "h3LOCALE/h3" ||
-            val.textContent === "h3PARAMETERS/h3" ||
-            val.textContent === "h3SERVER URL/h3" ||
-            val.textContent === "h3SHARED STATE/h3") {
 
-            val.outerHTML = "<h3 style='border-bottom: 2px solid black; padding-top: 5px'>" + val.outerHTML.replace("h3", "").replace("/h3", "") + "</h3>"
-        }
-        if(val.textContent === "Key" || val.textContent === "Value"){
-            val.innerHTML = "<h4>" + val.outerHTML+"</h4>"
-        }
-    }
+    //    for (const val of document.querySelectorAll('div')) {
+//        if (val.textContent === "h3NODE STATE/h3" ||
+//            val.textContent === "h3AUTHID/h3" ||
+//            val.textContent === "h3HEADERS" ||
+//            val.textContent === "h3CLIENT IP/h3" ||
+//            val.textContent === "h3COOKIES/h3" ||
+//            val.textContent === "h3HOSTNAME/h3" ||
+//            val.textContent === "h3LOCALE/h3" ||
+//            val.textContent === "h3PARAMETERS/h3" ||
+//            val.textContent === "h3SERVER URL/h3" ||
+//            val.textContent === "h3SHARED STATE/h3") {
+//
+//            val.outerHTML = "<h3 style='border-bottom: 2px solid black; padding-top: 5px'>" + val.outerHTML.replace("h3", "").replace("/h3", "") + "</h3>"
+//        }
+//        if (val.textContent === "Key" || val.textContent === "Value") {
+//            val.innerHTML = "<h4>" + val.outerHTML + "</h4>"
+//        }
+//    }
+//
+//    // For Parameters
+//    const keys = paramKeys
+//
+//    let table = '';
+//    let first = true;
+//    let very_end = false;
+//    let trimmed;
+//    //Loops through divs
+//    for (const val of document.querySelectorAll('div')) {
+//        //iterates through keys in list to find place I want to make table
+//        for (key in keys) {
+//
+//            if (val.textContent.startsWith(keys[key])) {
+//                //First time coming into loop so this is the beginning
+//                if (first === true) {
+//                    table += "<div class ='react-bootstrap-table'><table class='table table-bordered table-striped table-detail'>";
+//                    first = false;
+//                }
+//                //This is the last key
+//                else if (val.textContent.startsWith(keys[keys.length - 1])) {
+//                    const string = val.textContent;
+//                    trimmed = '';
+//                    for (letter in string) {
+//                        if (string[letter] === "[") {
+//                            break;
+//                        } else {
+//                            trimmed += string[letter]
+//                        }
+//
+//                    }
+//                    //Creates final row and closes table tag
+//                    table += "<tr><td><code>" + trimmed + "</code></td><td>" + val.textContent.replace(keys[key], "") + "</td></tr></table></div>"
+//                    very_end = true;
+//                } else {
+//                    //If not first or last it creates the table row and removes that div
+//                    //If I don't remove the div it still has the original value with the old styling
+//                    const string = val.textContent;
+//                    trimmed = '';
+//                    for (letter in string) {
+//                        if (string[letter] === "[") {
+//                            break;
+//                        } else {
+//                            trimmed += string[letter]
+//                        }
+//                    }
+//                    table += "<tr><td><code>" + trimmed + "</code></td><td>" + val.textContent.replace(keys[key], "") + "</td></tr>"
+//                    //<table class="table table-hover"><thead><tr><th class="selection-cell-header" data-row-selection="true"><div class="checkbox"><input class="react-bs-select-all" id="checkboxHeader" name="checkboxHeader" type="checkbox"><label for="checkboxHeader"></label></div></th><th tabindex="0" aria-label="Username sortable" class="sortable">Username<span class="order"><span class="dropdown"><span class="caret"></span></span><span class="dropup"><span class="caret"></span></span></span></th><th tabindex="0">Full name</th><th tabindex="0">Email address</th><th tabindex="0">Status</th></tr></thead><tbody><tr><td class="selection-cell"><div class="checkbox"><input id="checkbox0" name="checkbox0" type="checkbox"><label for="checkbox0"></label></div></td><td title="demo"><span class="am-table-icon-cell"><span class="fa-stack fa-lg am-table-icon-cell-stack"><i class="fa fa-circle fa-stack-2x text-primary"></i><i class="fa fa-address-card fa-stack-1x fa-inverse"></i></span> <span><span>demo</span></span></span></td><td title="demo"><span>demo</span></td><td><span>demo@example.com</span></td><td><span class="text-success"><i class="fa fa-check-circle"></i> Active</span></td></tr><tr><td class="selection-cell"><div class="checkbox"><input id="checkbox1" name="checkbox1" type="checkbox"><label for="checkbox1"></label></div></td><td title="test_iproov"><span class="am-table-icon-cell"><span class="fa-stack fa-lg am-table-icon-cell-stack"><i class="fa fa-circle fa-stack-2x text-primary"></i><i class="fa fa-address-card fa-stack-1x fa-inverse"></i></span> <span><span>test_iproov</span></span></span></td><td title="test_iproov"><span>test_iproov</span></td><td><span>testiproov@mailinator.com</span></td><td><span class="text-success"><i class="fa fa-check-circle"></i> Active</span></td></tr></tbody></table></div>
+//                    document.getElementById(val.id).remove()
+//                }
+//                if (very_end) {
+//                    val.innerHTML = table;
+//                }
+//            }
+//        }
+//    }
+//
+   function singleItemTable(string) {
 
-    // For Parameters
-    const keys = [
-        "authIndexType",
-        "authIndexValue",
-        "realm",
-        "service"
-    ];
-    const list = String([authindextype, realm, service]);
-    for(item in list){
-        list[item] = String(list[item])
-    }
-    console.log(list)
-    let table = '';
-    let first = true;
-    let very_end = false;
-    let trimmed;
-    //Loops through divs
-    for (const val of document.querySelectorAll('div')) {
-            //iterates through keys in list to find place I want to make table
-            for(key in keys){
+       let table = '';
 
-                if(val.textContent.startsWith(keys[key])){
-                    //First time coming into loop so this is the beginning
-                   if(first === true){
-                       table += "<div class ='react-bootstrap-table'><table class='table table-bordered table-striped table-detail'>";
-                       first = false;
+       let very_end = false;
+
+       for (const val of document.querySelectorAll('div')) {
+           if (val.textContent.startsWith(string)) {
+               table += "<div class ='react-bootstrap-table'><table class='table table-bordered table-striped table-detail'>";
+               if (string === "HostName") {
+                   table += "<tr><td><code>" + "HostName" + "</code></td><td>" + val.textContent.replace("HostName", "") + "</td></tr></table></div>"
+                   very_end = true;
+                   if (very_end) {
+                       val.innerHTML = table;
+                       break;
                    }
-                   //This is the last key
-                    else if(val.textContent.startsWith(keys[keys.length-1])){
-                       const string = val.textContent;
-                       trimmed = '';
-                       for(letter in string){
-                           if(string[letter] === "["){
-                               break;
-                           }else{
-                               trimmed += string[letter]
-                           }
-
-                       }
-                       //Creates final row and closes table tag
-                       table += "<tr><td><code>" + trimmed + "</code></td><td>"+ val.textContent.replace(keys[key], "")+"</td></tr></table></div>"
-                       very_end = true;
-                    }
-                    else{
-                        //If not first or last it creates the table row and removes that div
-                       //If I don't remove the div it still has the original value with the old styling
-                       const string = val.textContent;
-                       trimmed = '';
-                        for(letter in string){
-                            if(string[letter] === "["){
-                                break;
-                            }else{
-                                trimmed += string[letter]
-                            }
-                        }
-                        table += "<tr><td><code>" + trimmed + "</code></td><td>"+ val.textContent.replace(keys[key], "")+"</td></tr>"
-                        //<table class="table table-hover"><thead><tr><th class="selection-cell-header" data-row-selection="true"><div class="checkbox"><input class="react-bs-select-all" id="checkboxHeader" name="checkboxHeader" type="checkbox"><label for="checkboxHeader"></label></div></th><th tabindex="0" aria-label="Username sortable" class="sortable">Username<span class="order"><span class="dropdown"><span class="caret"></span></span><span class="dropup"><span class="caret"></span></span></span></th><th tabindex="0">Full name</th><th tabindex="0">Email address</th><th tabindex="0">Status</th></tr></thead><tbody><tr><td class="selection-cell"><div class="checkbox"><input id="checkbox0" name="checkbox0" type="checkbox"><label for="checkbox0"></label></div></td><td title="demo"><span class="am-table-icon-cell"><span class="fa-stack fa-lg am-table-icon-cell-stack"><i class="fa fa-circle fa-stack-2x text-primary"></i><i class="fa fa-address-card fa-stack-1x fa-inverse"></i></span> <span><span>demo</span></span></span></td><td title="demo"><span>demo</span></td><td><span>demo@example.com</span></td><td><span class="text-success"><i class="fa fa-check-circle"></i> Active</span></td></tr><tr><td class="selection-cell"><div class="checkbox"><input id="checkbox1" name="checkbox1" type="checkbox"><label for="checkbox1"></label></div></td><td title="test_iproov"><span class="am-table-icon-cell"><span class="fa-stack fa-lg am-table-icon-cell-stack"><i class="fa fa-circle fa-stack-2x text-primary"></i><i class="fa fa-address-card fa-stack-1x fa-inverse"></i></span> <span><span>test_iproov</span></span></span></td><td title="test_iproov"><span>test_iproov</span></td><td><span>testiproov@mailinator.com</span></td><td><span class="text-success"><i class="fa fa-check-circle"></i> Active</span></td></tr></tbody></table></div>
-                       document.getElementById(val.id).remove()
+               } else if (string === "Server URL") {
+                   table += "<tr><td><code>" + "Server URL" + "</code></td><td>" + val.textContent.replace("Server URL", "") + "</td></tr></table></div>"
+                   very_end = true;
+                   if (very_end) {
+                       val.innerHTML = table;
+                       break;
                    }
-                    if(very_end){
-                        val.innerHTML = table;
-                    }
+               } else if (string === "Preferred Locale") {
+                   table += "<tr><td><code>" + "Preferred Locale" + "</code></td><td>" + val.textContent.replace("Preferred Locale", "") + "</td></tr></table></div>"
+                   very_end = true;
+                   if (very_end) {
+                       val.innerHTML = table;
+                       break;
+                   }
+               } else if (string === "ClientIP") {
+                   table += "<tr><td><code>" + "ClientIP" + "</code></td><td>" + val.textContent.replace("ClientIP", "") + "</td></tr></table></div>"
+                   very_end = true;
+                   if (very_end) {
+                       val.innerHTML = table;
+                       break;
+                   }
+               } else if (string === "AuthID") {
+                   table += "<tr><td><code>" + "AuthID" + "</code></td><td>" + val.textContent.replace("AuthID", "") + "</td></tr></table></div>"
+                   very_end = true;
+                   if (very_end) {
+                       val.innerHTML = table;
+                       break;
+                   }
+               }else if (string === "amlbcookie") {
+                   table += "<tr><td><code>" + "amlbcookie" + "</code></td><td>" + val.textContent.replace("amlbcookie", "") + "</td></tr></table></div>"
+                   very_end = true;
+                   if (very_end) {
+                       val.innerHTML = table;
+                       break;
+                   }
                }
            }
-    }
 
-    function singleItemTable(string) {
-        const keys = [
-            "Server URL",
-            "HostName",
-            "Preferred Locale",
-            "ClientIP",
-            "amlbcookie",
-            "AuthID"
-        ];
-        let table = '';
-        let first = true;
-        let very_end = false;
-        let key = 0;
-        for (const val of document.querySelectorAll('div')) {
-                if (val.textContent.startsWith(string)) {
-                    table += "<div class ='react-bootstrap-table'><table class='table table-bordered table-striped table-detail'>";
-                    if (string === "HostName") {
-                        table += "<tr><td><code>" + "HostName" + "</code></td><td>" + val.textContent.replace("HostName", "") + "</td></tr></table></div>"
-                        very_end = true;
-                        if (very_end) {
-                            val.innerHTML = table;
-                            break;
-                        }
-                    } else if (string === "Server URL") {
-                        table += "<tr><td><code>" + "Server URL" + "</code></td><td>" + val.textContent.replace("Server URL", "") + "</td></tr></table></div>"
-                        very_end = true;
-                        if (very_end) {
-                            val.innerHTML = table;
-                            break;
-                        }
-                    } else if (string === "Preferred Locale") {
-                        table += "<tr><td><code>" + "Preferred Locale" + "</code></td><td>" + val.textContent.replace("Preferred Locale", "") + "</td></tr></table></div>"
-                        very_end = true;
-                        if (very_end) {
-                            val.innerHTML = table;
-                            break;
-                        }
-                    } else if (string === "ClientIP") {
-                        table += "<tr><td><code>" + "ClientIP" + "</code></td><td>" + val.textContent.replace("ClientIP", "") + "</td></tr></table></div>"
-                        very_end = true;
-                        if (very_end) {
-                            val.innerHTML = table;
-                            break;
-                        }
-                    } else if (string === "amlbcookie") {
-                        table += "<tr><td><code>" + "amlbcookie" + "</code></td><td>" + val.textContent.replace("amlbcookie", "") + "</td></tr></table></div>"
-                        very_end = true;
-                        if (very_end) {
-                            val.innerHTML = table;
-                            break;
-                        }
-                    } else if (string === "AuthID") {
-                        table += "<tr><td><code>" + "AuthID" + "</code></td><td>" + val.textContent.replace("AuthID", "") + "</td></tr></table></div>"
-                        very_end = true;
-                        if (very_end) {
-                            val.innerHTML = table;
-                            break;
-                        }
-                    }
-                }
+       }
+   }
 
-        }
-    }
-
-    singleItemTable("HostName")
-    singleItemTable("Server URL")
-    singleItemTable("ClientIP")
-    singleItemTable("Preferred Locale")
-    singleItemTable("AuthID")
-    singleItemTable("amlbcookie")
+   singleItemTable("HostName")
+   singleItemTable("Server URL")
+   singleItemTable("ClientIP")
+   singleItemTable("Preferred Locale")
+   singleItemTable("AuthID")
+   singleItemTable("amlbcookie")
 
 
-    const headers = [
-        "accept",
-        "accept-api-version",
-        "accept-encoding",
-        "accept-language",
-        "cache-control",
-        "connection",
-        "content-length",
-        "content-type",
-        "cookie",
-        "host",
-        "origin",
-        "referer",
-        "user-agent",
-        "x-nosession",
-        "x-password",
-        "x-requested-with",
-        "x-username"
-    ];
+//    const headers = ["accept", "accept-api-version", "accept-encoding", "accept-language", "cache-control", "connection", "content-length", "content-type", "cookie", "host", "origin", "referer", "user-agent", "x-nosession", "x-password", "x-requested-with", "x-username"]
+//
+//    let headers_table = '';
+//    let first_headers = true;
+//    let very_end_headers = false;
+//    let trimmed_headers;
+//    //Loops through divs
+//    for (const val of document.querySelectorAll('div')) {
+//        if (very_end_headers) {
+//            break;
+//        }
+////iterates through keys in list to find place I want to make table
+//        for (key in headers) {
+//            if (val.textContent.startsWith(headers[key]) && first_headers === true) {
+////First time coming into loop so this is the beginning
+//                if (first_headers === true) {
+//                    headers_table += "<table class='table table-bordered table-striped table-detail'>";
+//                    first_headers = false;
+//                }
+//                //This is the last key
+//                const string = val.textContent;
+//                trimmed_headers = '';
+//                for (letter in string) {
+//                    if (string[letter] === "[") {
+//                        break;
+//                    } else {
+//                        trimmed_headers += string[letter]
+//                    }
+//
+//                }
+//                //Creates final row and closes table tag
+//
+//                headers_table += "<tr><td><code>" + trimmed_headers + "</code></td><td>" + val.textContent.replace(headers[key], "") + "</td></tr>"
+//                val.innerHTML = ""
+//            } else if (val.textContent.startsWith(headers[key])) {
+//
+//                //If not first or last it creates the table row and removes that div
+//                //If I don't remove the div it still has the original value with the old styling
+//                const string = val.textContent;
+//                trimmed_headers = '';
+//                for (letter in string) {
+//                    if (string[letter] === "[") {
+//                        break;
+//                    } else {
+//                        trimmed_headers += string[letter]
+//                    }
+//                }
+//
+//                headers_table += "<tr><td><code>" + trimmed_headers + "</code></td><td>" + val.textContent.replace(headers[key], "") + "</td></tr>"
+//                val.innerHTML = ""
+//
+//            } else if (val.textContent.startsWith(headers[headers.length - 1])) {
+//                const string = val.textContent;
+//                trimmed_headers = '';
+//                for (letter in string) {
+//                    if (string[letter] === "[") {
+//                        break;
+//                    } else {
+//                        trimmed_headers += string[letter]
+//                    }
+//
+//                }
+//                //Creates final row and closes table tag
+//                headers_table += "<tr><td><code>" + trimmed_headers + "</code></td><td>" + val.textContent.replace(headers[key], "") + "</td></tr></table>"
+//                very_end_headers = true;
+//                val.innerHTML = ""
+//                break
+//
+//            }
+//        }
+//        if (very_end_headers) {
+//            val.innerHTML = headers_table;
+//            break
+//        }
+//    }
+//
+//
+//    const cookies = cookies
+//
+//    let cookies_table = '';
+//    let first_cookie = true;
+//    let very_end_cookie = false;
+//    let trimmed_cookie;
+//    //Loops through divs
+//    for (const val of document.querySelectorAll('div')) {
+//        if (very_end_cookie) {
+//            break;
+//        }
+////iterates through keys in list to find place I want to make table
+//        for (key in cookies) {
+//            if (val.textContent.startsWith(headers[key]) && first_cookie === true) {
+////First time coming into loop so this is the beginning
+//                if (first_cookie === true) {
+//                    cookies_table += "<div class ='react-bootstrap-table'><table class='table table-bordered table-striped table-detail'>";
+//                    first_cookie = false;
+//                }
+//                //This is the last key
+//                const string = val.textContent;
+//                trimmed_cookie = '';
+//                for (letter in string) {
+//                    if (string[letter] === "[") {
+//                        break;
+//                    } else {
+//                        trimmed_cookie += string[letter]
+//                    }
+//
+//                }
+//                //Creates final row and closes table tag
+//
+//                cookies_table += "<tr><td><code>" + trimmed_cookie + "</code></td><td>" + val.textContent.replace(cookies[key], "") + "</td></tr>"
+//                val.innerHTML = ""
+//            } else if (val.textContent.startsWith(cookies[key])) {
+//
+//                //If not first or last it creates the table row and removes that div
+//                //If I don't remove the div it still has the original value with the old styling
+//                const string = val.textContent;
+//                trimmed_cookie = '';
+//                for (letter in string) {
+//                    if (string[letter] === "[") {
+//                        break;
+//                    } else {
+//                        trimmed_cookie += string[letter]
+//                    }
+//                }
+//
+//                cookies_table += "<tr><td><code>" + trimmed_cookie + "</code></td><td>" + val.textContent.replace(cookies[key], "") + "</td></tr>"
+//                val.innerHTML = ""
+//
+//            } else if (val.textContent.startsWith(cookies[cookies.length - 1])) {
+//                const string = val.textContent;
+//                trimmed_cookie = '';
+//                for (letter in string) {
+//                    if (string[letter] === "[") {
+//                        break;
+//                    } else {
+//                        trimmed_cookie += string[letter]
+//                    }
+//
+//                }
+//                //Creates final row and closes table tag
+//                cookies_table += "<tr><td><code>" + trimmed_cookie + "</code></td><td>" + val.textContent.replace(cookies[key], "") + "</td></tr></table></div>"
+//                very_end_cookie = true;
+//                val.innerHTML = ""
+//                break
+//
+//            }
+//        }
+//        if (very_end_cookie) {
+//            val.innerHTML = cookies_table;
+//            break
+//        }
+//    }
 
-    let headers_table = '';
-    let first_headers = true;
-    let very_end_headers = false;
-    let trimmed_headers;
-    //Loops through divs
-    for (const val of document.querySelectorAll('div')) {
-        if (very_end_headers) {
-            break;
-        }
-        //iterates through keys in list to find place I want to make table
-        for (key in headers) {
-            if (val.textContent.startsWith(headers[key]) && first_headers === true) {
-                //First time coming into loop so this is the beginning
-                if (first_headers === true) {
-                    headers_table += "<div class ='react-bootstrap-table'><table class='table table-bordered table-striped table-detail'>";
-                    first_headers = false;
-                }
-                //This is the last key
-                const string = val.textContent;
-                trimmed_headers = '';
-                for (letter in string) {
-                    if (string[letter] === "[") {
-                        break;
-                    } else {
-                        trimmed_headers += string[letter]
-                    }
 
-                }
-                //Creates final row and closes table tag
-
-                headers_table += "<tr><td><code>" + trimmed_headers + "</code></td><td>" + val.textContent.replace(headers[key], "") + "</td></tr>"
-                val.innerHTML = ""
-            } else if (val.textContent.startsWith(headers[key])) {
-
-                //If not first or last it creates the table row and removes that div
-                //If I don't remove the div it still has the original value with the old styling
-                const string = val.textContent;
-                trimmed_headers = '';
-                for (letter in string) {
-                    if (string[letter] === "[") {
-                        break;
-                    } else {
-                        trimmed_headers += string[letter]
-                    }
-                }
-
-                headers_table += "<tr><td><code>" + trimmed_headers + "</code></td><td>" + val.textContent.replace(headers[key], "") + "</td></tr>"
-                headers_table += "<tr><td><code>" + trimmed_headers + "</code></td><td>" + val.textContent.replace(headers[key], "") + "</td></tr>"
-                val.innerHTML = ""
-
-            } else if (val.textContent.startsWith(headers[headers.length - 1])) {
-                const string = val.textContent;
-                trimmed_headers = '';
-                for (letter in string) {
-                    if (string[letter] === "[") {
-                        break;
-                    } else {
-                        trimmed_headers += string[letter]
-                    }
-
-                }
-                //Creates final row and closes table tag
-                headers_table += "<tr><td><code>" + trimmed_headers + "</code></td><td>" + val.textContent.replace(headers[key], "") + "</td></tr></table></div>"
-                very_end_headers = true;
-                 val.innerHTML = ""
-                break
-
-            }
-        }
-        if (very_end_headers) {
-            val.innerHTML = headers_table;
-            break
-        }
-    }
 </script>
 </body>
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
 </html>
