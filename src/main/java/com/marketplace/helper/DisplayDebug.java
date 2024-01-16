@@ -721,7 +721,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 			"       for (key in cookies) {\n" +
 			"           if (val.textContent.startsWith(cookies[key]) && first_cookie === true) {\n" +
 			"\n" +
-			"//First time coming into loop so this is the beginning\n" +
+
 			"               if (first_cookie === true) {\n" +
 			"                   cookies_table += \"<div class ='react-bootstrap-table'><table class='table table-bordered table-striped table-detail'>\";\n" +
 			"                   first_cookie = false;\n" +
