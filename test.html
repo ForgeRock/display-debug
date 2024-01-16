@@ -580,6 +580,16 @@ to such license between the licensee and ForgeRock AS.
 -->
             <div id="callback_41" class="0" role="presentation">amlbcookie 01</div>
 
+        </div>  <div class="form-group">
+            <!--
+Copyright 2015-2019 ForgeRock AS. All Rights Reserved
+
+Use of this code requires a commercial software license with ForgeRock AS.
+or with one of its affiliates. All use shall be exclusively subject
+to such license between the licensee and ForgeRock AS.
+-->
+            <div id="callback_99" class="0" role="presentation">IPlanetDirectory 01</div>
+
         </div>
 
         <div class="form-group">
@@ -923,7 +933,7 @@ to such license between the licensee and ForgeRock AS.
    singleItemTable("ClientIP")
    singleItemTable("Preferred Locale")
    singleItemTable("AuthID")
-   singleItemTable("amlbcookie")
+
 
 
 //    const headers = ["accept", "accept-api-version", "accept-encoding", "accept-language", "cache-control", "connection", "content-length", "content-type", "cookie", "host", "origin", "referer", "user-agent", "x-nosession", "x-password", "x-requested-with", "x-username"]
@@ -1002,82 +1012,92 @@ to such license between the licensee and ForgeRock AS.
 //        }
 //    }
 //
-//
-//    const cookies = cookies
-//
-//    let cookies_table = '';
-//    let first_cookie = true;
-//    let very_end_cookie = false;
-//    let trimmed_cookie;
-//    //Loops through divs
-//    for (const val of document.querySelectorAll('div')) {
-//        if (very_end_cookie) {
-//            break;
-//        }
-////iterates through keys in list to find place I want to make table
-//        for (key in cookies) {
-//            if (val.textContent.startsWith(headers[key]) && first_cookie === true) {
-////First time coming into loop so this is the beginning
-//                if (first_cookie === true) {
-//                    cookies_table += "<div class ='react-bootstrap-table'><table class='table table-bordered table-striped table-detail'>";
-//                    first_cookie = false;
-//                }
-//                //This is the last key
-//                const string = val.textContent;
-//                trimmed_cookie = '';
-//                for (letter in string) {
-//                    if (string[letter] === "[") {
-//                        break;
-//                    } else {
-//                        trimmed_cookie += string[letter]
-//                    }
-//
-//                }
-//                //Creates final row and closes table tag
-//
-//                cookies_table += "<tr><td><code>" + trimmed_cookie + "</code></td><td>" + val.textContent.replace(cookies[key], "") + "</td></tr>"
-//                val.innerHTML = ""
-//            } else if (val.textContent.startsWith(cookies[key])) {
-//
-//                //If not first or last it creates the table row and removes that div
-//                //If I don't remove the div it still has the original value with the old styling
-//                const string = val.textContent;
-//                trimmed_cookie = '';
-//                for (letter in string) {
-//                    if (string[letter] === "[") {
-//                        break;
-//                    } else {
-//                        trimmed_cookie += string[letter]
-//                    }
-//                }
-//
-//                cookies_table += "<tr><td><code>" + trimmed_cookie + "</code></td><td>" + val.textContent.replace(cookies[key], "") + "</td></tr>"
-//                val.innerHTML = ""
-//
-//            } else if (val.textContent.startsWith(cookies[cookies.length - 1])) {
-//                const string = val.textContent;
-//                trimmed_cookie = '';
-//                for (letter in string) {
-//                    if (string[letter] === "[") {
-//                        break;
-//                    } else {
-//                        trimmed_cookie += string[letter]
-//                    }
-//
-//                }
-//                //Creates final row and closes table tag
-//                cookies_table += "<tr><td><code>" + trimmed_cookie + "</code></td><td>" + val.textContent.replace(cookies[key], "") + "</td></tr></table></div>"
-//                very_end_cookie = true;
-//                val.innerHTML = ""
-//                break
-//
-//            }
-//        }
-//        if (very_end_cookie) {
-//            val.innerHTML = cookies_table;
-//            break
-//        }
-//    }
+
+   const cookies = cookies
+
+   let cookies_table = '';
+   let first_cookie = true;
+   let very_end_cookie = false;
+   let trimmed_cookie;
+   //Loops through divs
+   for (const val of document.querySelectorAll('div')) {
+       if (very_end_cookie) {
+           break;
+       }
+
+//iterates through keys in list to find place I want to make table
+       for (key in cookies) {
+           if (val.textContent.startsWith(cookies[key]) && first_cookie === true) {
+
+//First time coming into loop so this is the beginning
+               if (first_cookie === true) {
+                   cookies_table += "<div class ='react-bootstrap-table'><table class='table table-bordered table-striped table-detail'>";
+                   first_cookie = false;
+               }
+               //This is the last key
+               const string = val.textContent;
+               trimmed_cookie = '';
+               for (letter in string) {
+                   if (string[letter] === "[") {
+                       break;
+                   } else {
+                       trimmed_cookie += string[letter]
+                   }
+
+               }
+               //Creates final row and closes table tag
+
+               cookies_table += "<tr><td><code>" + trimmed_cookie + "</code></td><td>" + val.textContent.replace(cookies[key], "") + "</td></tr>"
+               val.innerHTML = ""
+
+               if(cookies.length === 1) {
+                   cookies_table += "</table></div>"
+                   very_end_cookie = true
+                   break
+               }
+           } else if (val.textContent.startsWith(cookies[key])) {
+
+               //If not first or last it creates the table row and removes that div
+               //If I don't remove the div it still has the original value with the old styling
+               const string = val.textContent;
+               trimmed_cookie = '';
+               for (letter in string) {
+                   if (string[letter] === "[") {
+                       break;
+                   } else {
+                       trimmed_cookie += string[letter]
+                   }
+               }
+
+               cookies_table += "<tr><td><code>" + trimmed_cookie + "</code></td><td>" + val.textContent.replace(cookies[key], "") + "</td></tr>"
+               val.innerHTML = ""
+            console.log(cookies[key])
+           }
+
+           else if (val.textContent.startsWith(cookies[cookies.length - 1])) {
+               const string = val.textContent;
+               trimmed_cookie = '';
+               for (letter in string) {
+                   if (string[letter] === "[") {
+                       break;
+                   } else {
+                       trimmed_cookie += string[letter]
+                   }
+
+               }
+               //Creates final row and closes table tag
+               cookies_table += "<tr><td><code>" + trimmed_cookie + "</code></td><td>" + val.textContent.replace(cookies[key], "") + "</td></tr></table></div>"
+               very_end_cookie = true;
+               val.innerHTML = ""
+               break
+
+           }
+       }
+       if (very_end_cookie) {
+           val.innerHTML = cookies_table;
+           break
+       }
+   }
 
 
 </script>

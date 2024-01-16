@@ -185,7 +185,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 						int i = 0;
 						int size = stringCallbacks.size();
 						int pair = 2;
-						System.out.println(callbacks);
+
 
 						//For loop to iterate through StringAttribute callbacks
 						while (i < size) {
@@ -195,8 +195,6 @@ public class DisplayDebug extends AbstractDecisionNode {
 							//Get key, value pair in stringCallbacks
 							String key = currentCallback.getName();
 							String value = currentCallback.getValue();
-
-							System.out.println("value: " + value);
 
 							if (key.startsWith("text-boxes") && pair == 2) {
 								pair--;
@@ -315,9 +313,11 @@ public class DisplayDebug extends AbstractDecisionNode {
 						callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, h3 + "HEADERS" + h3_close));
 						ListMultimap<String, String> headers = context.request.headers;
 						if(headers.containsValue("XMLHttpRequest")){
+							System.out.println("In on-prem...");
 							on_prem_flag = true;
 						}
 						else if(headers.containsValue("forgerock-sdk")){
+							System.out.println("In cloud for some reason...");
 							cloud_flag = true;
 						}
 
@@ -392,7 +392,9 @@ public class DisplayDebug extends AbstractDecisionNode {
 
 
 					if(config.pretty() && on_prem_flag){
-						displayhtml_OnPrem(callbacks, paramKeys, headerKeys, cookies);
+						Integer num = 0;
+						displayhtml_OnPrem(callbacks, paramKeys, headerKeys, cookies, num);
+
 					}
 					else if(config.pretty() && cloud_flag){
 						displayhtml_Cloud(callbacks, paramKeys, headerKeys, cookies);
@@ -414,7 +416,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 			return Action.goTo(NEXT_OUTCOME.name()).build();
 	}
 
-	public void displayhtml_OnPrem(ArrayList<Callback> callbacks, List<String> paramKeys, List<String> headerKeys,List<String> cookies){
+	public void displayhtml_OnPrem(ArrayList<Callback> callbacks, List<String> paramKeys, List<String> headerKeys,List<String> cookies, Integer num){
 
 		String javascript = "\n" +
 				"\n" +
@@ -438,7 +440,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 				"    }\n" +
 				"\n" +
 				"    // For Parameters\n" +
-				"    const keys = " + paramKeys + "\n" +
+				"    const keys= " + paramKeys + "\n" +
 
 				"    let table = '';\n" +
 				"    let first = true;\n" +
@@ -554,93 +556,12 @@ public class DisplayDebug extends AbstractDecisionNode {
 				"    singleItemTable(\"ClientIp\")\n" +
 				"    singleItemTable(\"Preferred Locale\")\n" +
 				"    singleItemTable(\"AuthID\")\n" +
-				"    singleItemTable(\"amlbcookie\")\n" +
-
-				"\n" +
-				"\n" +
-
-				"\n" +
-				"    const cookies = " + cookies + "\n" +
-				"\n" +
-				"    let cookies_table = '';\n" +
-				"    let first_cookie = true;\n" +
-				"    let very_end_cookie = false;\n" +
-				"    let trimmed_cookie;\n" +
-				"    //Loops through divs\n" +
-				"    for (const val of document.querySelectorAll('div')) {\n" +
-				"        if (very_end_cookie) {\n" +
-				"            break;\n" +
-				"        }\n" +
-				"//iterates through keys in list to find place I want to make table\n" +
-				"        for (key in cookies) {\n" +
-				"            if (val.textContent.startsWith(headers[key]) && first_cookie === true) {\n" +
-				"//First time coming into loop so this is the beginning\n" +
-				"                if (first_cookie === true) {\n" +
-				"                    cookies_table += \"<div class ='react-bootstrap-table'><table class='table table-bordered table-striped table-detail'>\";\n" +
-				"                    first_cookie = false;\n" +
-				"                }\n" +
-				"                //This is the last key\n" +
-				"                const string = val.textContent;\n" +
-				"                trimmed_cookie = '';\n" +
-				"                for (letter in string) {\n" +
-				"                    if (string[letter] === \"[\") {\n" +
-				"                        break;\n" +
-				"                    } else {\n" +
-				"                        trimmed_cookie += string[letter]\n" +
-				"                    }\n" +
-				"\n" +
-				"                }\n" +
-				"                //Creates final row and closes table tag\n" +
-				"\n" +
-				"                cookies_table += \"<tr><td><code>\" + trimmed_cookie + \"</code></td><td>\" + val.textContent.replace(cookies[key], \"\") + \"</td></tr>\"\n" +
-				"                val.innerHTML = \"\"\n" +
-				"            } else if (val.textContent.startsWith(cookies[key])) {\n" +
-				"\n" +
-				"                //If not first or last it creates the table row and removes that div\n" +
-				"                //If I don't remove the div it still has the original value with the old styling\n" +
-				"                const string = val.textContent;\n" +
-				"                trimmed_cookie = '';\n" +
-				"                for (letter in string) {\n" +
-				"                    if (string[letter] === \"[\") {\n" +
-				"                        break;\n" +
-				"                    } else {\n" +
-				"                        trimmed_cookie += string[letter]\n" +
-				"                    }\n" +
-				"                }\n" +
-				"\n" +
-				"                cookies_table += \"<tr><td><code>\" + trimmed_cookie + \"</code></td><td>\" + val.textContent.replace(cookies[key], \"\") + \"</td></tr>\"\n" +
-				"                val.innerHTML = \"\"\n" +
-				"\n" +
-				"            } else if (val.textContent.startsWith(cookies[cookies.length - 1])) {\n" +
-				"                const string = val.textContent;\n" +
-				"                trimmed_cookie = '';\n" +
-				"                for (letter in string) {\n" +
-				"                    if (string[letter] === \"[\") {\n" +
-				"                        break;\n" +
-				"                    } else {\n" +
-				"                        trimmed_cookie += string[letter]\n" +
-				"                    }\n" +
-				"\n" +
-				"                }\n" +
-				"                //Creates final row and closes table tag\n" +
-				"                cookies_table += \"<tr><td><code>\" + trimmed_cookie + \"</code></td><td>\" + val.textContent.replace(cookies[key], \"\") + \"</td></tr></table></div>\"\n" +
-				"                very_end_cookie = true;\n" +
-				"                val.innerHTML = \"\"\n" +
-				"                break\n" +
-				"\n" +
-				"            }\n" +
-				"        }\n" +
-				"        if (very_end_cookie) {\n" +
-				"            val.innerHTML = cookies_table;\n" +
-				"            break\n" +
-				"        }\n" +
-				"    }";
-
+				"    singleItemTable(\"amlbcookie\")\n" ;
 		ScriptTextOutputCallback script = new ScriptTextOutputCallback(javascript);
 		callbacks.add(script);
 
-		String test = "\n" +
-				"    const headers = " + headerKeys +";\n"+
+		String headers_table = "\n" +
+				"    const headers= " + headerKeys +";\n"+
 				"\n" +
 				"    let headers_table = '';\n" +
 				"    let first_headers = true;\n" +
@@ -714,7 +635,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 				"        }\n" +
 				"    }\n";
 
-		ScriptTextOutputCallback newer = new ScriptTextOutputCallback(test);
+		ScriptTextOutputCallback newer = new ScriptTextOutputCallback(headers_table);
 		callbacks.add(newer);
 
 		String single = "   function singleItemTable(string) {\n" +
@@ -782,6 +703,97 @@ public class DisplayDebug extends AbstractDecisionNode {
 				"   singleItemTable(\"amlbcookie\")\n";
 	ScriptTextOutputCallback single_tables = new ScriptTextOutputCallback(single);
 		callbacks.add(single_tables);
+
+
+	String cookies_table = "  const cookies = cookies\n" +
+			"\n" +
+			"   let cookies_table = '';\n" +
+			"   let first_cookie = true;\n" +
+			"   let very_end_cookie = false;\n" +
+			"   let trimmed_cookie;\n" +
+			"   //Loops through divs\n" +
+			"   for (const val of document.querySelectorAll('div')) {\n" +
+			"       if (very_end_cookie) {\n" +
+			"           break;\n" +
+			"       }\n" +
+			"\n" +
+			"//iterates through keys in list to find place I want to make table\n" +
+			"       for (key in cookies) {\n" +
+			"           if (val.textContent.startsWith(cookies[key]) && first_cookie === true) {\n" +
+			"\n" +
+			"//First time coming into loop so this is the beginning\n" +
+			"               if (first_cookie === true) {\n" +
+			"                   cookies_table += \"<div class ='react-bootstrap-table'><table class='table table-bordered table-striped table-detail'>\";\n" +
+			"                   first_cookie = false;\n" +
+			"               }\n" +
+			"               //This is the last key\n" +
+			"               const string = val.textContent;\n" +
+			"               trimmed_cookie = '';\n" +
+			"               for (letter in string) {\n" +
+			"                   if (string[letter] === \"[\") {\n" +
+			"                       break;\n" +
+			"                   } else {\n" +
+			"                       trimmed_cookie += string[letter]\n" +
+			"                   }\n" +
+			"\n" +
+			"               }\n" +
+			"               //Creates final row and closes table tag\n" +
+			"\n" +
+			"               cookies_table += \"<tr><td><code>\" + trimmed_cookie + \"</code></td><td>\" + val.textContent.replace(cookies[key], \"\") + \"</td></tr>\"\n" +
+			"               val.innerHTML = \"\"\n" +
+			"\n" +
+			"               if(cookies.length === 1) {\n" +
+			"                   cookies_table += \"</table></div>\"\n" +
+			"                   very_end_cookie = true\n" +
+			"                   break\n" +
+			"               }\n" +
+			"           } else if (val.textContent.startsWith(cookies[key])) {\n" +
+			"\n" +
+			"               //If not first or last it creates the table row and removes that div\n" +
+			"               //If I don't remove the div it still has the original value with the old styling\n" +
+			"               const string = val.textContent;\n" +
+			"               trimmed_cookie = '';\n" +
+			"               for (letter in string) {\n" +
+			"                   if (string[letter] === \"[\") {\n" +
+			"                       break;\n" +
+			"                   } else {\n" +
+			"                       trimmed_cookie += string[letter]\n" +
+			"                   }\n" +
+			"               }\n" +
+			"\n" +
+			"               cookies_table += \"<tr><td><code>\" + trimmed_cookie + \"</code></td><td>\" + val.textContent.replace(cookies[key], \"\") + \"</td></tr>\"\n" +
+			"               val.innerHTML = \"\"\n" +
+			"            console.log(cookies[key])\n" +
+			"           }\n" +
+			"\n" +
+			"           else if (val.textContent.startsWith(cookies[cookies.length - 1])) {\n" +
+			"               const string = val.textContent;\n" +
+			"               trimmed_cookie = '';\n" +
+			"               for (letter in string) {\n" +
+			"                   if (string[letter] === \"[\") {\n" +
+			"                       break;\n" +
+			"                   } else {\n" +
+			"                       trimmed_cookie += string[letter]\n" +
+			"                   }\n" +
+			"\n" +
+			"               }\n" +
+			"               //Creates final row and closes table tag\n" +
+			"               cookies_table += \"<tr><td><code>\" + trimmed_cookie + \"</code></td><td>\" + val.textContent.replace(cookies[key], \"\") + \"</td></tr></table></div>\"\n" +
+			"               very_end_cookie = true;\n" +
+			"               val.innerHTML = \"\"\n" +
+			"               break\n" +
+			"\n" +
+			"           }\n" +
+			"       }\n" +
+			"       if (very_end_cookie) {\n" +
+			"           val.innerHTML = cookies_table;\n" +
+			"           break\n" +
+			"       }\n" +
+			"   }\n" +
+			"\n";
+
+		ScriptTextOutputCallback script_cookies = new ScriptTextOutputCallback(cookies_table);
+		callbacks.add(script_cookies);
 	}
 
 	public void displayhtml_Cloud(ArrayList<Callback> callbacks, List<String> paramKeys, List<String> headerKeys,List<String> cookies){
@@ -822,7 +834,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 				"            if (val.textContent.startsWith(keys[key])) {\n" +
 				"                //First time coming into loop so this is the beginning\n" +
 				"                if (first === true) {\n" +
-				"                    table += \"<div data-v-6fc3383e class=\"mb-0 table-responsive\"><table class='table table-bordered table-striped table-detail'>\";\n" +
+				"                    table += \"<table data-testid id=\"list-resource-table\" role=\"table\" aria-busy=\"false\" aria-colcount=\"3\" class=\"table b-table table-hover\">\n\"" +
 				"                    first = false;\n" +
 				"                }\n" +
 				"                //This is the last key\n" +
@@ -1152,6 +1164,15 @@ public class DisplayDebug extends AbstractDecisionNode {
 				"   singleItemTable(\"amlbcookie\")\n";
 		ScriptTextOutputCallback single_tables = new ScriptTextOutputCallback(single);
 		callbacks.add(single_tables);
+
+		String bootstrap = "/*String script = \"var sc = document.createElement('link'); \"\n" +
+				"\t\t\t\t\t\t+ \"sc.setAttribute('rel', 'stylesheet');\"\n" +
+				"\t\t\t\t\t\t+ \"sc.setAttribute('href', 'https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css');\"\n" +
+				"\t\t\t\t\t\t+ \"sc.setAttribute('integrity', 'sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T');\"\n" +
+				"\t\t\t\t\t\t+ \"sc.setAttribute('crossorigin', 'anonymous');\"\n" +
+				"\t\t\t\t\t\t+ \"document.head.appendChild(sc);\";*/";
+	ScriptTextOutputCallback bootstrapClass = new ScriptTextOutputCallback(bootstrap);
+	callbacks.add(bootstrapClass);
 	}
 
 	private static String escapeHTML(String s) {
