@@ -1,19 +1,4 @@
 /*
- * The contents of this file are subject to the terms of the Common Development and
- * Distribution License (the License). You may not use this file except in compliance with the
- * License.
- *
- * You can obtain a copy of the License at legal/CDDLv1.0.txt. See the License for the
- * specific language governing permission and limitations under the License.
- *
- * When distributing Covered Software, include this CDDL Header Notice in each file and include
- * the License file at legal/CDDLv1.0.txt. If applicable, add the following below the CDDL
- * Header, with the fields enclosed by brackets [] replaced by your own identifying
- * information: "Portions copyright [year] [name of copyright owner]".
- *
- * Copyright 2017-2018 ForgeRock AS.
- */
-/*
  * This code is to be used exclusively in connection with ForgeRock’s software or services.
  * ForgeRock only offers ForgeRock software or services to legal entities who have entered
  * into a binding license agreement with ForgeRock.
@@ -282,7 +267,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 							JsonValue thisVal = ns.get(thisKey);
 
 							TextOutputCallback txtOutputCallback; // used for label
-							StringAttributeInputCallback stringCallback;
+							StringAttributeInputCallback stringCallback; // used for text boxes
 
 							if (thisVal.isString()) {
 								txtOutputCallback = new TextOutputCallback(TextOutputCallback.INFORMATION, thisKey + ": " + escapeHTML(thisVal.asString()));
@@ -392,8 +377,8 @@ public class DisplayDebug extends AbstractDecisionNode {
 
 
 					if(config.pretty() && on_prem_flag){
-						Integer num = 0;
-						displayhtml_OnPrem(callbacks, paramKeys, headerKeys, cookies, num);
+
+						displayhtml_OnPrem(callbacks, paramKeys, headerKeys, cookies);
 
 					}
 					else if(config.pretty() && cloud_flag){
@@ -416,7 +401,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 			return Action.goTo(NEXT_OUTCOME.name()).build();
 	}
 
-	public void displayhtml_OnPrem(ArrayList<Callback> callbacks, List<String> paramKeys, List<String> headerKeys,List<String> cookies, Integer num){
+	public void displayhtml_OnPrem(ArrayList<Callback> callbacks, List<String> paramKeys, List<String> headerKeys,List<String> cookies){
 
 		String javascript = "\n" +
 				"\n" +
@@ -705,7 +690,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 		callbacks.add(single_tables);
 
 
-	String cookies_table = "  const cookies = cookies\n" +
+	String cookies_table = "  const cookies = " + cookies + "\n" +
 			"\n" +
 			"   let cookies_table = '';\n" +
 			"   let first_cookie = true;\n" +
@@ -796,7 +781,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 		callbacks.add(script_cookies);
 	}
 
-	public void displayhtml_Cloud(ArrayList<Callback> callbacks, List<String> paramKeys, List<String> headerKeys,List<String> cookies){
+	public void displayhtml_Cloud(ArrayList<Callback> callbacks, List<String> paramKeys, List<String> headerKeys, List<String> cookies){
 
 		String javascript = "\n" +
 				"\n" +
@@ -834,7 +819,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 				"            if (val.textContent.startsWith(keys[key])) {\n" +
 				"                //First time coming into loop so this is the beginning\n" +
 				"                if (first === true) {\n" +
-				"                    table += \"<table data-testid id=\"list-resource-table\" role=\"table\" aria-busy=\"false\" aria-colcount=\"3\" class=\"table b-table table-hover\">\n\"" +
+				"                    table += \"<div class=\"tab-content col\" id=\"__BVID__2569__BV_tab_container_\"><table data-testid id=\"list-resource-table\" role=\"table\" aria-busy=\"false\" aria-colcount=\"3\" class=\"table b-table table-hover\">\n\"" +
 				"                    first = false;\n" +
 				"                }\n" +
 				"                //This is the last key\n" +
@@ -889,7 +874,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 				"        let key = 0;\n" +
 				"        for (const val of document.querySelectorAll('div')) {\n" +
 				"            if (val.textContent.startsWith(string)) {\n" +
-				"                table += \"<div data-v-6fc3383e class=\"mb-0 table-responsive\"><table class='table table-bordered table-striped table-detail'>\";\n" +
+				"                table += \"<div class=\"tab-content col\" id=\"__BVID__2569__BV_tab_container_\"><table>\";\n" +
 				"                if (string === \"HostName\") {\n" +
 				"                    table += \"<tr><td><code>\" + \"HostName\" + \"</code></td><td>\" + val.textContent.replace(\"HostName\", \"\") + \"</td></tr></table></div>\"\n" +
 				"                    very_end = true;\n" +
@@ -958,7 +943,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 				"            if (val.textContent.startsWith(headers[key]) && first_cookie === true) {\n" +
 				"//First time coming into loop so this is the beginning\n" +
 				"                if (first_cookie === true) {\n" +
-				"                    cookies_table += \"<div data-v-6fc3383e class=\"mb-0 table-responsive\"><table class='table table-bordered table-striped table-detail'>\";\n" +
+				"                    cookies_table += \"<div class=\"tab-content col\" id=\"__BVID__2569__BV_tab_container_\"><table>\";\n" +
 				"                    first_cookie = false;\n" +
 				"                }\n" +
 				"                //This is the last key\n" +
@@ -1037,7 +1022,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 				"            if (val.textContent.startsWith(headers[key]) && first_headers === true) {\n" +
 				"\n" +
 				"                if (first_headers === true) {\n" +
-				"                    headers_table += \"<div data-v-6fc3383e class=\"mb-0 table-responsive\"><table class='table table-bordered table-striped table-detail'>\";\n" +
+				"                    headers_table += \"<div class=\"tab-content col\" id=\"__BVID__2569__BV_tab_container_\"><table>\";\n" +
 				"                    first_headers = false;\n" +
 				"                }\n" +
 				"                //This is the last key\n" +
@@ -1107,7 +1092,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 				"\n" +
 				"       for (const val of document.querySelectorAll('div')) {\n" +
 				"           if (val.textContent.startsWith(string)) {\n" +
-				"               table += \"<div data-v-6fc3383e class=\"mb-0 table-responsive\"><table class='table table-bordered table-striped table-detail'>\";\n" +
+				"               table += \"<div class=\"tab-content col\" id=\"__BVID__2569__BV_tab_container_\"><table>\";\n" +
 				"               if (string === \"HostName\") {\n" +
 				"                   table += \"<tr><td><code>\" + \"HostName\" + \"</code></td><td>\" + val.textContent.replace(\"HostName\", \"\") + \"</td></tr></table></div>\"\n" +
 				"                   very_end = true;\n" +
