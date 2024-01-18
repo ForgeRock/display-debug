@@ -116,7 +116,7 @@ public class DisplayDebugPlugin extends AbstractNodeAmPlugin {
      */	
 	@Override
 	public void upgrade(String fromVersion) throws PluginException {
-		pluginTools.upgradeAuthNode(DisplayDebugPlugin.class);
+		pluginTools.upgradeAuthNode(DisplayDebug.class);
 		super.upgrade(fromVersion);
 	}
 

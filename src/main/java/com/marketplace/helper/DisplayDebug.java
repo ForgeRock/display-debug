@@ -7,28 +7,24 @@
 
 package com.marketplace.helper;
 
-import java.io.PrintWriter;
+import static com.marketplace.helper.DisplayDebug.DisplayDebugOutcome.NEXT_OUTCOME;
+
 import java.io.Reader;
 import java.io.StringReader;
-import java.io.StringWriter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.ResourceBundle;
+import java.util.Set;
 
 import javax.inject.Inject;
-import javax.print.attribute.IntegerSyntax;
 import javax.security.auth.callback.Callback;
-import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.TextOutputCallback;
-import javax.swing.*;
 import javax.swing.text.Document;
 import javax.swing.text.EditorKit;
 import javax.swing.text.html.HTMLEditorKit;
 
-import com.google.common.html.HtmlEscapers;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import groovy.lang.Script;
-import it.unimi.dsi.fastutil.Hash;
 import org.forgerock.guava.common.collect.ListMultimap;
 import org.forgerock.json.JsonValue;
 import org.forgerock.openam.annotations.sm.Attribute;
@@ -40,19 +36,13 @@ import org.forgerock.openam.auth.node.api.NodeState;
 import org.forgerock.openam.auth.node.api.TreeContext;
 import org.forgerock.openam.authentication.callbacks.StringAttributeInputCallback;
 import org.forgerock.openam.core.realms.Realm;
-import org.forgerock.openam.headers.SetHeadersFilter;
-import org.forgerock.util.Pair;
 import org.forgerock.util.i18n.PreferredLocales;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ImmutableList;
 import com.google.inject.assistedinject.Assisted;
 import com.sun.identity.authentication.callbacks.ScriptTextOutputCallback;
-import org.w3c.dom.html.HTMLDocument;
-
-import static com.marketplace.helper.DisplayDebug.DisplayDebugOutcome.NEXT_OUTCOME;
 
 /**
  * Display Debug Node
