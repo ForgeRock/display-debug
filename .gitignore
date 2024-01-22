@@ -3,3 +3,5 @@ target
 .idea
 git-push.sh
 builder.sh
+on-prem.html
+legal
