@@ -822,12 +822,36 @@
         "authIndexValue",
         "realm"
     ]
-    let already_in_table = []
 
        for (const val of document.querySelectorAll('div')) {
            let string = val.textContent.trimStart(" ").trimEnd(" ")
 
 
+           //Create tables for values that will not change
+            if(string.startsWith("AuthID")){
+                table += '<table>'
+                table += '<tr><td><code>'+string+'</code></td><td>'+string+'</td></tr></table>'
+                val.innerHTML = table
+            } else if(string.startsWith("ClientIp")){
+                table += '<table>'
+                table += '<tr><td><code>'+string+'</code></td><td>'+string+'</td></tr></table>'
+                val.innerHTML = table
+            }else if(string.startsWith("Server URL")){
+                table += '<table>'
+                table += '<tr><td><code>'+string+'</code></td><td>'+string+'</td></tr></table>'
+                val.innerHTML = table
+            }else if(string.startsWith("Preferred Locale")){
+                table += '<table>'
+                table += '<tr><td><code>'+string+'</code></td><td>'+string+'</td></tr></table>'
+                val.innerHTML = table
+            }else if(string.startsWith("HostName")){
+                table += '<table>'
+                table += '<tr><td><code>'+string+'</code></td><td>'+string+'</td></tr></table>'
+                val.innerHTML = table
+            }
+
+
+            //Create h3 tags for headers
            if (string === "h3NODE STATE/h3" ||
                string === "h3AUTHID/h3" ||
                string === "h3HEADERS/h3" ||
@@ -842,25 +866,14 @@
 
                val.outerHTML = "<h3 style='border-bottom: 2px solid black; padding-top: 5px'>" + val.outerHTML.replace("h3", "").replace("/h3", "") + "</h3>"
            }
+           //Create h4 tags for Key: Value pairs
            if (string === "Key" || string === "Value") {
                val.innerHTML = "<h4>" + val.outerHTML + "</h4>"
            }
 
-
-           console.log(string + " IS ENTERING THE FOR LOOP")
-
-           if(already_in_table.includes(string)){
-               console.log(string + " is already in table")
-               break
-           }else{
-           already_in_table += string
-           console.log("IN ELSE>>>>"+ already_in_table)
-           }
-
+        //Create table for Header values
         for(key in headers) {
             if (string.startsWith(headers[key])) {
-
-
 
                 if (first_header === true) {
                     table += "<table>";
@@ -893,10 +906,9 @@
                     break
                 }
                 if (headers_end) {
-                    //console.log(table)
                     val.innerHTML = table
                     headers_end = false
-                    break
+
                 }
 
             }
