@@ -825,29 +825,40 @@
 
        for (const val of document.querySelectorAll('div')) {
            let string = val.textContent.trimStart(" ").trimEnd(" ")
+           val.textContent = "AuthID"
 
 
            //Create tables for values that will not change
             if(string.startsWith("AuthID")){
                 table += '<table>'
                 table += '<tr><td><code>'+string+'</code></td><td>'+string+'</td></tr></table>'
+                console.log("AuthId table \n" + table)
                 val.innerHTML = table
+                table = ''
             } else if(string.startsWith("ClientIp")){
                 table += '<table>'
                 table += '<tr><td><code>'+string+'</code></td><td>'+string+'</td></tr></table>'
+                console.log("ClientIP table \n" + table)
                 val.innerHTML = table
+                table=''
             }else if(string.startsWith("Server URL")){
                 table += '<table>'
                 table += '<tr><td><code>'+string+'</code></td><td>'+string+'</td></tr></table>'
+                console.log("Server URL table \n" + table)
                 val.innerHTML = table
+                table=''
             }else if(string.startsWith("Preferred Locale")){
                 table += '<table>'
                 table += '<tr><td><code>'+string+'</code></td><td>'+string+'</td></tr></table>'
+                console.log("Preferred Locale table \n" + table)
                 val.innerHTML = table
+                table=''
             }else if(string.startsWith("HostName")){
                 table += '<table>'
                 table += '<tr><td><code>'+string+'</code></td><td>'+string+'</td></tr></table>'
+                console.log("Hostname table \n" + table)
                 val.innerHTML = table
+                table = ''
             }
 
 
@@ -863,12 +874,13 @@
                string === "h3SERVER URL/h3" ||
                string === "h3SHARED\n" +
                "                                                                STATE/h3") {
-
+                console.log("Changing Header for "+string+ " to <h3>...")
                val.outerHTML = "<h3 style='border-bottom: 2px solid black; padding-top: 5px'>" + val.outerHTML.replace("h3", "").replace("/h3", "") + "</h3>"
            }
            //Create h4 tags for Key: Value pairs
            if (string === "Key" || string === "Value") {
                val.innerHTML = "<h4>" + val.outerHTML + "</h4>"
+               console.log("Changing "+string +"to h4...")
            }
 
         //Create table for Header values
@@ -888,6 +900,7 @@
                             trimmed += string[letter]
                         }
                     }
+                    console.log("Inside headers with trimmed "+ trimmed)
                     table += "<tr><td><code>" + trimmed + "</code></td><td>" + string.replace(trimmed, "") + "</td></tr></table>"
                     val.innerHTML = ""
                     headers_end = true;
@@ -908,11 +921,9 @@
                 if (headers_end) {
                     val.innerHTML = table
                     headers_end = false
-
+                    console.log("table in headers_end \n" + table)
                 }
-
             }
-
         }
        }
 </script>
