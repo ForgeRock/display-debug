@@ -936,82 +936,82 @@ to such license between the licensee and ForgeRock AS.
 
 
 
-//    const headers = ["accept", "accept-api-version", "accept-encoding", "accept-language", "cache-control", "connection", "content-length", "content-type", "cookie", "host", "origin", "referer", "user-agent", "x-nosession", "x-password", "x-requested-with", "x-username"]
-//
-//    let headers_table = '';
-//    let first_headers = true;
-//    let very_end_headers = false;
-//    let trimmed_headers;
-//    //Loops through divs
-//    for (const val of document.querySelectorAll('div')) {
-//        if (very_end_headers) {
-//            break;
-//        }
-////iterates through keys in list to find place I want to make table
-//        for (key in headers) {
-//            if (val.textContent.startsWith(headers[key]) && first_headers === true) {
-////First time coming into loop so this is the beginning
-//                if (first_headers === true) {
-//                    headers_table += "<table class='table table-bordered table-striped table-detail'>";
-//                    first_headers = false;
-//                }
-//                //This is the last key
-//                const string = val.textContent;
-//                trimmed_headers = '';
-//                for (letter in string) {
-//                    if (string[letter] === "[") {
-//                        break;
-//                    } else {
-//                        trimmed_headers += string[letter]
-//                    }
-//
-//                }
-//                //Creates final row and closes table tag
-//
-//                headers_table += "<tr><td><code>" + trimmed_headers + "</code></td><td>" + val.textContent.replace(headers[key], "") + "</td></tr>"
-//                val.innerHTML = ""
-//            } else if (val.textContent.startsWith(headers[key])) {
-//
-//                //If not first or last it creates the table row and removes that div
-//                //If I don't remove the div it still has the original value with the old styling
-//                const string = val.textContent;
-//                trimmed_headers = '';
-//                for (letter in string) {
-//                    if (string[letter] === "[") {
-//                        break;
-//                    } else {
-//                        trimmed_headers += string[letter]
-//                    }
-//                }
-//
-//                headers_table += "<tr><td><code>" + trimmed_headers + "</code></td><td>" + val.textContent.replace(headers[key], "") + "</td></tr>"
-//                val.innerHTML = ""
-//
-//            } else if (val.textContent.startsWith(headers[headers.length - 1])) {
-//                const string = val.textContent;
-//                trimmed_headers = '';
-//                for (letter in string) {
-//                    if (string[letter] === "[") {
-//                        break;
-//                    } else {
-//                        trimmed_headers += string[letter]
-//                    }
-//
-//                }
-//                //Creates final row and closes table tag
-//                headers_table += "<tr><td><code>" + trimmed_headers + "</code></td><td>" + val.textContent.replace(headers[key], "") + "</td></tr></table>"
-//                very_end_headers = true;
-//                val.innerHTML = ""
-//                break
-//
-//            }
-//        }
-//        if (very_end_headers) {
-//            val.innerHTML = headers_table;
-//            break
-//        }
-//    }
-//
+   const headers = ["accept", "accept-api-version", "accept-encoding", "accept-language", "cache-control", "connection", "content-length", "content-type", "cookie", "host", "origin", "referer", "user-agent", "x-nosession", "x-password", "x-requested-with", "x-username"]
+
+   let headers_table = '';
+   let first_headers = true;
+   let very_end_headers = false;
+   let trimmed_headers;
+   //Loops through divs
+   for (const val of document.querySelectorAll('div')) {
+       if (very_end_headers) {
+           break;
+       }
+//iterates through keys in list to find place I want to make table
+       for (key in headers) {
+           if (val.textContent.startsWith(headers[key]) && first_headers === true) {
+//First time coming into loop so this is the beginning
+               if (first_headers === true) {
+                   headers_table += "<table class='table table-bordered table-striped table-detail'>";
+                   first_headers = false;
+               }
+               //This is the last key
+               const string = val.textContent;
+               trimmed_headers = '';
+               for (letter in string) {
+                   if (string[letter] === "[") {
+                       break;
+                   } else {
+                       trimmed_headers += string[letter]
+                   }
+
+               }
+               //Creates final row and closes table tag
+
+               headers_table += "<tr><td><code>" + trimmed_headers + "</code></td><td>" + val.textContent.replace(headers[key], "") + "</td></tr>"
+               val.innerHTML = ""
+           } else if (val.textContent.startsWith(headers[key])) {
+
+               //If not first or last it creates the table row and removes that div
+               //If I don't remove the div it still has the original value with the old styling
+               const string = val.textContent;
+               trimmed_headers = '';
+               for (letter in string) {
+                   if (string[letter] === "[") {
+                       break;
+                   } else {
+                       trimmed_headers += string[letter]
+                   }
+               }
+
+               headers_table += "<tr><td><code>" + trimmed_headers + "</code></td><td>" + val.textContent.replace(headers[key], "") + "</td></tr>"
+               val.innerHTML = ""
+
+           } else if (val.textContent.startsWith(headers[headers.length - 1])) {
+               const string = val.textContent;
+               trimmed_headers = '';
+               for (letter in string) {
+                   if (string[letter] === "[") {
+                       break;
+                   } else {
+                       trimmed_headers += string[letter]
+                   }
+
+               }
+               //Creates final row and closes table tag
+               headers_table += "<tr><td><code>" + trimmed_headers + "</code></td><td>" + val.textContent.replace(headers[key], "") + "</td></tr></table>"
+               very_end_headers = true;
+               val.innerHTML = ""
+               break
+
+           }
+       }
+       if (very_end_headers) {
+           val.innerHTML = headers_table;
+           break
+       }
+   }
+
 
    const cookies = cookies
 

@@ -70,6 +70,10 @@ public class DisplayDebug extends AbstractDecisionNode {
 		default boolean display() {
 			return true;
 		}
+		@Attribute(order = 55)
+		default boolean back2back() {
+			return false;
+		}
 		@Attribute(order = 75)
 		default boolean textBoxes() {
 			return true;
@@ -148,9 +152,15 @@ public class DisplayDebug extends AbstractDecisionNode {
 	public Action process(TreeContext context) throws NodeProcessException {
 		ArrayList<Callback> callbacks = new ArrayList<Callback>();
 		NodeState ns = context.getStateFor(this);
-		JsonValue jsonCounter = ns.get("counter");
-		Integer counter = jsonCounter.asInteger();
-		System.out.println("counter: " + counter);
+		Integer counter;
+		if(config.display() && config.pretty() && config.back2back()){
+			JsonValue jsonCounter = ns.get("counter");
+			counter = jsonCounter.asInteger();
+
+		}else{
+			counter = 0;
+		}
+
 		if(config.display()) {
 				try {
 					callbacks = new ArrayList<Callback>();
@@ -229,6 +239,8 @@ public class DisplayDebug extends AbstractDecisionNode {
 						 h3 = "h3";
 						 h3_close="/h3";
 					}
+
+
 
 					if (config.sharedState()) {
 
@@ -377,8 +389,12 @@ public class DisplayDebug extends AbstractDecisionNode {
 					else if(config.pretty() && cloud_flag){
 						displayhtml_Cloud(callbacks, paramKeys, headerKeys, cookies);
 					}
-					counter++;
-					ns.putShared("counter" ,counter);
+
+					if(config.display() && config.pretty() && config.back2back()) {
+						counter++;
+						ns.putShared("counter", counter);
+					}
+
 					return Action.send(callbacks).build();
 				} catch (Exception ex) {
 					String stackTrace = org.apache.commons.lang.exception.ExceptionUtils.getStackTrace(ex);
@@ -906,146 +922,302 @@ public class DisplayDebug extends AbstractDecisionNode {
 //				"            }\n" +
 //				"        }\n" +
 //				"       }";
+//
+//		String javascript = " let first_header = true\n" +
+//				"    let table = ''\n" +
+//				"    let headers_end = false\n" +
+//				"    const headers = [\n" +
+//				"        \"accept\",\n" +
+//				"        \"accept-api-version\",\n" +
+//				"        \"accept-encoding\",\n" +
+//				"        \"accept-language\",\n" +
+//				"        \"content-length\",\n" +
+//				"        \"content-type\",\n" +
+//				"        \"cookie\",\n" +
+//				"        \"host\",\n" +
+//				"        \"origin\",\n" +
+//				"        \"referer\",\n" +
+//				"        \"sec-ch-ua\",\n" +
+//				"        \"sec-ch-ua-mobile\",\n" +
+//				"        \"sec-ch-ua-platform\",\n" +
+//				"        \"sec-fetch-dest\",\n" +
+//				"        \"sec-fetch-mode\",\n" +
+//				"        \"sec-fetch-site\",\n" +
+//				"        \"user-agent\",\n" +
+//				"        \"x-cloud-trace-context\",\n" +
+//				"        \"x-forgerock-transactionid\",\n" +
+//				"        \"x-forwarded-for\",\n" +
+//				"        \"x-forwarded-proto\",\n" +
+//				"        \"x-real-ip\",\n" +
+//				"        \"x-requested-with\",\n" +
+//				"        \"x-trusted-forwarded-for\"\n" +
+//				"    ]\n" +
+//				"\n" +
+//				"    const parameters = [\n" +
+//				"        \"authIndexType\",\n" +
+//				"        \"authIndexValue\",\n" +
+//				"        \"realm\"\n" +
+//				"    ]\n" +
+//				"\n" +
+//				"       for (const val of document.querySelectorAll('div')) {\n" +
+//				"           let string = val.textContent.trimStart(\" \").trimEnd(\" \")\n" +
+//				"           val.textContent = \"AuthID\"\n" +
+//				"\n" +
+//				"\n" +
+//				"           //Create tables for values that will not change\n" +
+//				"            if(string.startsWith(\"AuthID\")){\n" +
+//				"                table += '<table>'\n" +
+//				"                table += '<tr><td><code>'+string+'</code></td><td>'+string+'</td></tr></table>'\n" +
+//				"                console.log(\"AuthId table \\n\" + table)\n" +
+//				"                val.innerHTML = table\n" +
+//				"                table = ''\n" +
+//				"            } else if(string.startsWith(\"ClientIp\")){\n" +
+//				"                table += '<table>'\n" +
+//				"                table += '<tr><td><code>'+string+'</code></td><td>'+string+'</td></tr></table>'\n" +
+//				"                console.log(\"ClientIP table \\n\" + table)\n" +
+//				"                val.innerHTML = table\n" +
+//				"                table=''\n" +
+//				"            }else if(string.startsWith(\"Server URL\")){\n" +
+//				"                table += '<table>'\n" +
+//				"                table += '<tr><td><code>'+string+'</code></td><td>'+string+'</td></tr></table>'\n" +
+//				"                console.log(\"Server URL table \\n\" + table)\n" +
+//				"                val.innerHTML = table\n" +
+//				"                table=''\n" +
+//				"            }else if(string.startsWith(\"Preferred Locale\")){\n" +
+//				"                table += '<table>'\n" +
+//				"                table += '<tr><td><code>'+string+'</code></td><td>'+string+'</td></tr></table>'\n" +
+//				"                console.log(\"Preferred Locale table \\n\" + table)\n" +
+//				"                val.innerHTML = table\n" +
+//				"                table=''\n" +
+//				"            }else if(string.startsWith(\"HostName\")){\n" +
+//				"                table += '<table>'\n" +
+//				"                table += '<tr><td><code>'+string+'</code></td><td>'+string+'</td></tr></table>'\n" +
+//				"                console.log(\"Hostname table \\n\" + table)\n" +
+//				"                val.innerHTML = table\n" +
+//				"                table = ''\n" +
+//				"            }\n" +
+//				"\n" +
+//				"\n" +
+//				"            //Create h3 tags for headers\n" +
+//				"           if (string === \"h3NODE STATE/h3\" ||\n" +
+//				"               string === \"h3AUTHID/h3\" ||\n" +
+//				"               string === \"h3HEADERS/h3\" ||\n" +
+//				"               string === \"h3CLIENT IP/h3\" ||\n" +
+//				"               string === \"h3COOKIES/h3\" ||\n" +
+//				"               string === \"h3HOSTNAME/h3\" ||\n" +
+//				"               string === \"h3LOCALE/h3\" ||\n" +
+//				"               string === \"h3PARAMETERS/h3\" ||\n" +
+//				"               string === \"h3SERVER URL/h3\" ||\n" +
+//				"               string === \"h3SHARED\\n\" +\n" +
+//				"               \"                                                                STATE/h3\") {\n" +
+//				"                console.log(\"Changing Header for \"+string+ \" to <h3>...\")\n" +
+//				"               val.outerHTML = \"<h3 style='border-bottom: 2px solid black; padding-top: 5px'>\" + val.outerHTML.replace(\"h3\", \"\").replace(\"/h3\", \"\") + \"</h3>\"\n" +
+//				"           }\n" +
+//				"           //Create h4 tags for Key: Value pairs\n" +
+//				"           if (string === \"Key\" || string === \"Value\") {\n" +
+//				"               val.innerHTML = \"<h4>\" + val.outerHTML + \"</h4>\"\n" +
+//				"               console.log(\"Changing \"+string +\"to h4...\")\n" +
+//				"           }\n" +
+//				"\n" +
+//				"        //Create table for Header values\n" +
+//				"        for(key in headers) {\n" +
+//				"            if (string.startsWith(headers[key])) {\n" +
+//				"\n" +
+//				"                if (first_header === true) {\n" +
+//				"                    table += \"<table>\";\n" +
+//				"                    first_header = false;\n" +
+//				"                }\n" +
+//				"                else if (string.startsWith(headers[headers.length - 1])) {\n" +
+//				"                    let trimmed = '';\n" +
+//				"                    for (letter in string) {\n" +
+//				"                        if (string[letter] === \"[\") {\n" +
+//				"                            break;\n" +
+//				"                        } else {\n" +
+//				"                            trimmed += string[letter]\n" +
+//				"                        }\n" +
+//				"                    }\n" +
+//				"                    console.log(\"Inside headers with trimmed \"+ trimmed)\n" +
+//				"                    table += \"<tr><td><code>\" + trimmed + \"</code></td><td>\" + string.replace(trimmed, \"\") + \"</td></tr></table>\"\n" +
+//				"                    val.innerHTML = \"\"\n" +
+//				"                    headers_end = true;\n" +
+//				"\n" +
+//				"                } else {\n" +
+//				"                    let trimmed = '';\n" +
+//				"                    for (letter in string) {\n" +
+//				"                        if (string[letter] === \"[\") {\n" +
+//				"                            break;\n" +
+//				"                        } else {\n" +
+//				"                            trimmed += string[letter]\n" +
+//				"                        }\n" +
+//				"                    }\n" +
+//				"                    table += \"<tr><td><code>\" + trimmed + \"</code></td><td>\" + string.replace(trimmed, \"\") + \"</td></tr>\"\n" +
+//				"                    val.innerHTML = \"\"\n" +
+//				"                    break\n" +
+//				"                }\n" +
+//				"                if (headers_end) {\n" +
+//				"                    val.innerHTML = table\n" +
+//				"                    headers_end = false\n" +
+//				"                    console.log(\"table in headers_end \\n\" + table)\n" +
+//				"                }\n" +
+//				"            }\n" +
+//				"        }\n" +
+//				"       }";
 
-		String javascript = " let first_header = true\n" +
-				"    let table = ''\n" +
-				"    let headers_end = false\n" +
-				"    const headers = [\n" +
-				"        \"accept\",\n" +
-				"        \"accept-api-version\",\n" +
-				"        \"accept-encoding\",\n" +
-				"        \"accept-language\",\n" +
-				"        \"content-length\",\n" +
-				"        \"content-type\",\n" +
-				"        \"cookie\",\n" +
-				"        \"host\",\n" +
-				"        \"origin\",\n" +
-				"        \"referer\",\n" +
-				"        \"sec-ch-ua\",\n" +
-				"        \"sec-ch-ua-mobile\",\n" +
-				"        \"sec-ch-ua-platform\",\n" +
-				"        \"sec-fetch-dest\",\n" +
-				"        \"sec-fetch-mode\",\n" +
-				"        \"sec-fetch-site\",\n" +
-				"        \"user-agent\",\n" +
-				"        \"x-cloud-trace-context\",\n" +
-				"        \"x-forgerock-transactionid\",\n" +
-				"        \"x-forwarded-for\",\n" +
-				"        \"x-forwarded-proto\",\n" +
-				"        \"x-real-ip\",\n" +
-				"        \"x-requested-with\",\n" +
-				"        \"x-trusted-forwarded-for\"\n" +
-				"    ]\n" +
+		String javascript = "\n" +
+				"  (async function onLoad() {\n" +
+				"    // console.log(\"hello justin\");\n" +
+				"    //\n" +
+				"    //\n" +
+				"    // let first_header = true\n" +
+				"    // let table = ''\n" +
+				"    // let headers_end = false\n" +
+				"    // const headers = [\n" +
+				"    //   \"accept\",\n" +
+				"    //   \"accept-api-version\",\n" +
+				"    //   \"accept-encoding\",\n" +
+				"    //   \"accept-language\",\n" +
+				"    //   \"content-length\",\n" +
+				"    //   \"content-type\",\n" +
+				"    //   \"cookie\",\n" +
+				"    //   \"host\",\n" +
+				"    //   \"origin\",\n" +
+				"    //   \"referer\",\n" +
+				"    //   \"sec-ch-ua\",\n" +
+				"    //   \"sec-ch-ua-mobile\",\n" +
+				"    //   \"sec-ch-ua-platform\",\n" +
+				"    //   \"sec-fetch-dest\",\n" +
+				"    //   \"sec-fetch-mode\",\n" +
+				"    //   \"sec-fetch-site\",\n" +
+				"    //   \"user-agent\",\n" +
+				"    //   \"x-cloud-trace-context\",\n" +
+				"    //   \"x-forgerock-transactionid\",\n" +
+				"    //   \"x-forwarded-for\",\n" +
+				"    //   \"x-forwarded-proto\",\n" +
+				"    //   \"x-real-ip\",\n" +
+				"    //   \"x-requested-with\",\n" +
+				"    //   \"x-trusted-forwarded-for\"\n" +
+				"    // ]\n" +
+				"    //\n" +
+				"    // const parameters = [\n" +
+				"    //   \"authIndexType\",\n" +
+				"    //   \"authIndexValue\",\n" +
+				"    //   \"realm\"\n" +
+				"    // ]\n" +
+				"    //\n" +
+				"    // console.log(\"Right before the big for loop.  Here is div query length with new onLoad?: \" + document.getElementsByTagName(\"div\").length);\n" +
+				"     for (const val of document.querySelectorAll('div')) {\n" +
+				"       let string = val.textContent.trimStart(\" \").trimEnd(\" \")\n" +
+				"    //   val.textContent = \"AuthID\"\n" +
+				"    //\n" +
+				"    //\n" +
+				"    //   //Create tables for values that will not change\n" +
+				"    //   if(string.startsWith(\"AuthID\")){\n" +
+				"    //     table += '<table>'\n" +
+				"    //     table += '<tr><td><code>'+string+'</code></td><td>'+string+'</td></tr></table>'\n" +
+				"    //     console.log(\"AuthId table \\n\" + table)\n" +
+				"    //     val.innerHTML = table\n" +
+				"    //     table = ''\n" +
+				"    //   } else if(string.startsWith(\"ClientIp\")){\n" +
+				"    //     table += '<table>'\n" +
+				"    //     table += '<tr><td><code>'+string+'</code></td><td>'+string+'</td></tr></table>'\n" +
+				"    //     console.log(\"ClientIP table \\n\" + table)\n" +
+				"    //     val.innerHTML = table\n" +
+				"    //     table=''\n" +
+				"    //   }else if(string.startsWith(\"Server URL\")){\n" +
+				"    //     table += '<table>'\n" +
+				"    //     table += '<tr><td><code>'+string+'</code></td><td>'+string+'</td></tr></table>'\n" +
+				"    //     console.log(\"Server URL table \\n\" + table)\n" +
+				"    //     val.innerHTML = table\n" +
+				"    //     table=''\n" +
+				"    //   }else if(string.startsWith(\"Preferred Locale\")){\n" +
+				"    //     table += '<table>'\n" +
+				"    //     table += '<tr><td><code>'+string+'</code></td><td>'+string+'</td></tr></table>'\n" +
+				"    //     console.log(\"Preferred Locale table \\n\" + table)\n" +
+				"    //     val.innerHTML = table\n" +
+				"    //     table=''\n" +
+				"    //   }else if(string.startsWith(\"HostName\")){\n" +
+				"    //     table += '<table>'\n" +
+				"    //     table += '<tr><td><code>'+string+'</code></td><td>'+string+'</td></tr></table>'\n" +
+				"    //     console.log(\"Hostname table \\n\" + table)\n" +
+				"    //     val.innerHTML = table\n" +
+				"    //     table = ''\n" +
+				"    //   }\n" +
+				"    //\n" +
 				"\n" +
-				"    const parameters = [\n" +
-				"        \"authIndexType\",\n" +
-				"        \"authIndexValue\",\n" +
-				"        \"realm\"\n" +
-				"    ]\n" +
+				"      //Create h3 tags for headers\n" +
+				"       console.log(string)\n" +
+				"      if (string === \"h3NODE STATE/h3\" ||\n" +
+				"        string === \"h3AUTHID/h3\" ||\n" +
+				"        string === \"h3HEADERS/h3\" ||\n" +
+				"        string === \"h3CLIENT IP/h3\" ||\n" +
+				"        string === \"h3COOKIES/h3\" ||\n" +
+				"        string === \"h3HOSTNAME/h3\" ||\n" +
+				"        string === \"h3LOCALE/h3\" ||\n" +
+				"        string === \"h3PARAMETERS/h3\" ||\n" +
+				"        string === \"h3SERVER URL/h3\" ||\n" +
+				"        string === \"h3SHARED STATE/h3\") {\n" +
+				"        console.log(\"Changing Header for \"+string+ \" to <h3>...\")\n" +
+				"        val.outerHTML = \"<h3 style='border-bottom: 2px solid black; padding-top: 5px'>\" + val.outerHTML.replace(\"h3\", \"\").replace(\"/h3\", \"\") + \"</h3>\"\n" +
+				"      }\n" +
+				"      //Create h4 tags for Key: Value pairs\n" +
+				"      if (string === \"Key\" || string === \"Value\") {\n" +
+				"        val.outerHTML = \"<h4>\" + val.outerHTML + \"</h4>\"\n" +
+				"        console.log(\"Changing \"+string +\"to h4...\")\n" +
+				"      }\n" +
 				"\n" +
-				"       for (const val of document.querySelectorAll('div')) {\n" +
-				"           let string = val.textContent.trimStart(\" \").trimEnd(\" \")\n" +
-				"           val.textContent = \"AuthID\"\n" +
+				"    //   //Create table for Header values\n" +
+				"    //   for(key in headers) {\n" +
+				"    //     if (string.startsWith(headers[key])) {\n" +
+				"    //\n" +
+				"    //       if (first_header === true) {\n" +
+				"    //         table += \"<table>\";\n" +
+				"    //         first_header = false;\n" +
+				"    //       }\n" +
+				"    //       else if (string.startsWith(headers[headers.length - 1])) {\n" +
+				"    //         let trimmed = '';\n" +
+				"    //         for (letter in string) {\n" +
+				"    //           if (string[letter] === \"[\") {\n" +
+				"    //             break;\n" +
+				"    //           } else {\n" +
+				"    //             trimmed += string[letter]\n" +
+				"    //           }\n" +
+				"    //         }\n" +
+				"    //         console.log(\"Inside headers with trimmed \"+ trimmed)\n" +
+				"    //         table += \"<tr><td><code>\" + trimmed + \"</code></td><td>\" + string.replace(trimmed, \"\") + \"</td></tr></table>\"\n" +
+				"    //         val.innerHTML = \"\"\n" +
+				"    //         headers_end = true;\n" +
+				"    //\n" +
+				"    //       } else {\n" +
+				"    //         let trimmed = '';\n" +
+				"    //         for (letter in string) {\n" +
+				"    //           if (string[letter] === \"[\") {\n" +
+				"    //             break;\n" +
+				"    //           } else {\n" +
+				"    //             trimmed += string[letter]\n" +
+				"    //           }\n" +
+				"    //         }\n" +
+				"    //         table += \"<tr><td><code>\" + trimmed + \"</code></td><td>\" + string.replace(trimmed, \"\") + \"</td></tr>\"\n" +
+				"    //         val.innerHTML = \"\"\n" +
+				"    //         break\n" +
+				"    //       }\n" +
+				"    //       if (headers_end) {\n" +
+				"    //         val.innerHTML = table\n" +
+				"    //         headers_end = false\n" +
+				"    //         console.log(\"table in headers_end \\n\" + table)\n" +
+				"    //       }\n" +
+				"    //     }\n" +
+				"    //   }\n" +
+				"     }\n" +
 				"\n" +
 				"\n" +
-				"           //Create tables for values that will not change\n" +
-				"            if(string.startsWith(\"AuthID\")){\n" +
-				"                table += '<table>'\n" +
-				"                table += '<tr><td><code>'+string+'</code></td><td>'+string+'</td></tr></table>'\n" +
-				"                console.log(\"AuthId table \\n\" + table)\n" +
-				"                val.innerHTML = table\n" +
-				"                table = ''\n" +
-				"            } else if(string.startsWith(\"ClientIp\")){\n" +
-				"                table += '<table>'\n" +
-				"                table += '<tr><td><code>'+string+'</code></td><td>'+string+'</td></tr></table>'\n" +
-				"                console.log(\"ClientIP table \\n\" + table)\n" +
-				"                val.innerHTML = table\n" +
-				"                table=''\n" +
-				"            }else if(string.startsWith(\"Server URL\")){\n" +
-				"                table += '<table>'\n" +
-				"                table += '<tr><td><code>'+string+'</code></td><td>'+string+'</td></tr></table>'\n" +
-				"                console.log(\"Server URL table \\n\" + table)\n" +
-				"                val.innerHTML = table\n" +
-				"                table=''\n" +
-				"            }else if(string.startsWith(\"Preferred Locale\")){\n" +
-				"                table += '<table>'\n" +
-				"                table += '<tr><td><code>'+string+'</code></td><td>'+string+'</td></tr></table>'\n" +
-				"                console.log(\"Preferred Locale table \\n\" + table)\n" +
-				"                val.innerHTML = table\n" +
-				"                table=''\n" +
-				"            }else if(string.startsWith(\"HostName\")){\n" +
-				"                table += '<table>'\n" +
-				"                table += '<tr><td><code>'+string+'</code></td><td>'+string+'</td></tr></table>'\n" +
-				"                console.log(\"Hostname table \\n\" + table)\n" +
-				"                val.innerHTML = table\n" +
-				"                table = ''\n" +
-				"            }\n" +
+				"\n" +
+				"  })();\n" +
 				"\n" +
 				"\n" +
-				"            //Create h3 tags for headers\n" +
-				"           if (string === \"h3NODE STATE/h3\" ||\n" +
-				"               string === \"h3AUTHID/h3\" ||\n" +
-				"               string === \"h3HEADERS/h3\" ||\n" +
-				"               string === \"h3CLIENT IP/h3\" ||\n" +
-				"               string === \"h3COOKIES/h3\" ||\n" +
-				"               string === \"h3HOSTNAME/h3\" ||\n" +
-				"               string === \"h3LOCALE/h3\" ||\n" +
-				"               string === \"h3PARAMETERS/h3\" ||\n" +
-				"               string === \"h3SERVER URL/h3\" ||\n" +
-				"               string === \"h3SHARED\\n\" +\n" +
-				"               \"                                                                STATE/h3\") {\n" +
-				"                console.log(\"Changing Header for \"+string+ \" to <h3>...\")\n" +
-				"               val.outerHTML = \"<h3 style='border-bottom: 2px solid black; padding-top: 5px'>\" + val.outerHTML.replace(\"h3\", \"\").replace(\"/h3\", \"\") + \"</h3>\"\n" +
-				"           }\n" +
-				"           //Create h4 tags for Key: Value pairs\n" +
-				"           if (string === \"Key\" || string === \"Value\") {\n" +
-				"               val.innerHTML = \"<h4>\" + val.outerHTML + \"</h4>\"\n" +
-				"               console.log(\"Changing \"+string +\"to h4...\")\n" +
-				"           }\n" +
 				"\n" +
-				"        //Create table for Header values\n" +
-				"        for(key in headers) {\n" +
-				"            if (string.startsWith(headers[key])) {\n" +
 				"\n" +
-				"                if (first_header === true) {\n" +
-				"                    table += \"<table>\";\n" +
-				"                    first_header = false;\n" +
-				"                }\n" +
-				"                else if (string.startsWith(headers[headers.length - 1])) {\n" +
-				"                    let trimmed = '';\n" +
-				"                    for (letter in string) {\n" +
-				"                        if (string[letter] === \"[\") {\n" +
-				"                            break;\n" +
-				"                        } else {\n" +
-				"                            trimmed += string[letter]\n" +
-				"                        }\n" +
-				"                    }\n" +
-				"                    console.log(\"Inside headers with trimmed \"+ trimmed)\n" +
-				"                    table += \"<tr><td><code>\" + trimmed + \"</code></td><td>\" + string.replace(trimmed, \"\") + \"</td></tr></table>\"\n" +
-				"                    val.innerHTML = \"\"\n" +
-				"                    headers_end = true;\n" +
 				"\n" +
-				"                } else {\n" +
-				"                    let trimmed = '';\n" +
-				"                    for (letter in string) {\n" +
-				"                        if (string[letter] === \"[\") {\n" +
-				"                            break;\n" +
-				"                        } else {\n" +
-				"                            trimmed += string[letter]\n" +
-				"                        }\n" +
-				"                    }\n" +
-				"                    table += \"<tr><td><code>\" + trimmed + \"</code></td><td>\" + string.replace(trimmed, \"\") + \"</td></tr>\"\n" +
-				"                    val.innerHTML = \"\"\n" +
-				"                    break\n" +
-				"                }\n" +
-				"                if (headers_end) {\n" +
-				"                    val.innerHTML = table\n" +
-				"                    headers_end = false\n" +
-				"                    console.log(\"table in headers_end \\n\" + table)\n" +
-				"                }\n" +
-				"            }\n" +
-				"        }\n" +
-				"       }";
+				"\n";
 		ScriptTextOutputCallback script = new ScriptTextOutputCallback(javascript);
 		callbacks.add(script);
 	}

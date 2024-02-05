@@ -1,930 +1,856 @@
 <html lang="en">
+<script src="chrome-extension://hkodokikbjolckghdnljbkbhacbhpnkb/ajaxIntercept.js"></script>
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <link data-testid="favicon" id="favicon" rel="icon" href="">
-    <link rel="stylesheet"
-          href="https://fonts.bunny.net/css2?family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&amp;display=swap">
-    <title>displaydebug</title>
-    <script defer="defer" src="js/chunk-vendors.dbf72f23.js"></script>
-    <script defer="defer" src="js/app.6beb8ada.js"></script>
-    <link href="css/chunk-vendors.4d1e8851.css" rel="stylesheet">
-    <link href="css/app.5927ea6e.css" rel="stylesheet">
-    <style type="text/css">.notifications {
-        display: block;
-        position: fixed;
-        z-index: 5000
-    }
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link data-testid="favicon" id="favicon" rel="icon" href="">
+  <link rel="stylesheet"
+        href="https://fonts.bunny.net/css2?family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&amp;display=swap">
+  <title>displaydebug</title>
+  <!--  <script defer="defer" src="https://openam-tntp-display-debug.forgeblocks.com/am/XUI/js/chunk-vendors.dbf72f23.js"></script> -->
+  <script defer="defer" src="https://openam-tntp-display-debug.forgeblocks.com/am/XUI/js/app.6beb8ada.js"></script>
+  <link href="https://openam-tntp-display-debug.forgeblocks.com/am/XUI/css/chunk-vendors.4d1e8851.css" rel="stylesheet">
+  <link href="https://openam-tntp-display-debug.forgeblocks.com/am/XUI/css/app.5927ea6e.css" rel="stylesheet">
+  <style type="text/css">.notifications {
+    display: block;
+    position: fixed;
+    z-index: 5000
+  }
 
-    .notification-wrapper {
-        display: block;
-        overflow: hidden;
-        width: 100%;
-        margin: 0;
-        padding: 0
-    }
+  .notification-wrapper {
+    display: block;
+    overflow: hidden;
+    width: 100%;
+    margin: 0;
+    padding: 0
+  }
 
-    .notification-title {
-        font-weight: 600
-    }
+  .notification-title {
+    font-weight: 600
+  }
 
-    .vue-notification-template {
-        background: #fff
-    }
+  .vue-notification-template {
+    background: #fff
+  }
 
-    .vue-notification, .vue-notification-template {
-        display: block;
-        box-sizing: border-box;
-        text-align: left
-    }
+  .vue-notification, .vue-notification-template {
+    display: block;
+    box-sizing: border-box;
+    text-align: left
+  }
 
-    .vue-notification {
-        font-size: 12px;
-        padding: 10px;
-        margin: 0 5px 5px;
-        color: #fff;
-        background: #44a4fc;
-        border-left: 5px solid #187fe7
-    }
+  .vue-notification {
+    font-size: 12px;
+    padding: 10px;
+    margin: 0 5px 5px;
+    color: #fff;
+    background: #44a4fc;
+    border-left: 5px solid #187fe7
+  }
 
-    .vue-notification.warn {
-        background: #ffb648;
-        border-left-color: #f48a06
-    }
+  .vue-notification.warn {
+    background: #ffb648;
+    border-left-color: #f48a06
+  }
 
-    .vue-notification.error {
-        background: #e54d42;
-        border-left-color: #b82e24
-    }
+  .vue-notification.error {
+    background: #e54d42;
+    border-left-color: #b82e24
+  }
 
-    .vue-notification.success {
-        background: #68cd86;
-        border-left-color: #42a85f
-    }
+  .vue-notification.success {
+    background: #68cd86;
+    border-left-color: #42a85f
+  }
 
-    .vn-fade-enter-active, .vn-fade-leave-active, .vn-fade-move {
-        transition: all .5s
-    }
+  .vn-fade-enter-active, .vn-fade-leave-active, .vn-fade-move {
+    transition: all .5s
+  }
 
-    .vn-fade-enter, .vn-fade-leave-to {
-        opacity: 0
-    }</style>
-    <link rel="stylesheet" type="text/css" href="css/647.9df74c06.css">
-    <link rel="stylesheet" type="text/css" href="css/351.8e94bfb3.css">
+  .vn-fade-enter, .vn-fade-leave-to {
+    opacity: 0
+  }</style>
+  <link rel="stylesheet" type="text/css" href="https://openam-tntp-display-debug.forgeblocks.com/am/XUI/css/647.9df74c06.css">
+  <link rel="stylesheet" type="text/css" href="https://openam-tntp-display-debug.forgeblocks.com/am/XUI/css/351.8e94bfb3.css">
+
 </head>
 <body class="fr-body-image" data-testid="fr-body-image">
 <noscript><strong>We're sorry but login doesn't work properly without JavaScript enabled. Please enable it to
-    continue.</strong></noscript>
+  continue.</strong></noscript>
 <div id="app" class="">
-    <div id="theme-injector">
-        <style><!--
-        --> /** Shared styles */
-        body {
-            background-color: #324054;
-        }
+  <div id="theme-injector">
+    <style><!--
+    --> /** Shared styles */
+    body {
+      background-color: #324054;
+    }
 
-        #app
+    #app
 
-        <!--
-        -->
-        {
-            font-family:, sans-serif
-        ;
-        }
-        .fr-body-image {
-            background-image: url('');
-            background-size: cover;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-        }
+    <!--
+    -->
+    {
+      font-family:, sans-serif
+    ;
+    }
+    .fr-body-image {
+      background-image: url('');
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+    }
 
-        <!--
-        -->
-        .btn:not(.within-input-button .btn) {
-            border-radius: 5px !important;
-        }
+    <!--
+    -->
+    .btn:not(.within-input-button .btn) {
+      border-radius: 5px !important;
+    }
 
-        <!--
-        -->
-        .btn-primary {
-            background-color: #324054 !important;
-            outline-color: #324054 !important;
-            border-color: #324054 !important;
-            color: #ffffff;
-        }
+    <!--
+    -->
+    .btn-primary {
+      background-color: #324054 !important;
+      outline-color: #324054 !important;
+      border-color: #324054 !important;
+      color: #ffffff;
+    }
 
-        <!--
-        -->
-        .btn-primary:disabled {
-            background-color: #242E3C !important;
-        }
+    <!--
+    -->
+    .btn-primary:disabled {
+      background-color: #242E3C !important;
+    }
 
-        <!--
-        -->
-        .btn-primary:hover {
-            background-color: #242E3C !important;
-        }
+    <!--
+    -->
+    .btn-primary:hover {
+      background-color: #242E3C !important;
+    }
 
-        <!--
-        -->
-        a {
-            font-weight: 400;
-            color: #109cf1;
-        }
+    <!--
+    -->
+    a {
+      font-weight: 400;
+      color: #109cf1;
+    }
 
-        <!--
-        -->
-        a:hover {
-            color: #0c85cf;
-        }
+    <!--
+    -->
+    a:hover {
+      color: #0c85cf;
+    }
 
-        <!--
-        -->
-        .btn-link,
+    <!--
+    -->
+    .btn-link,
 
-        <!--
-        -->
-        .nav-link {
-            color: #109cf1;
-        }
+    <!--
+    -->
+    .nav-link {
+      color: #109cf1;
+    }
 
-        <!--
-        -->
-        .btn-link:hover, .nav-link:hover {
-            color: #0c85cf;
-        }
+    <!--
+    -->
+    .btn-link:hover, .nav-link:hover {
+      color: #0c85cf;
+    }
 
-        <!--
-        -->
-        body {
-            color: #23282e;
-        }
+    <!--
+    -->
+    body {
+      color: #23282e;
+    }
 
-        .text-body {
-            color: #23282e !important;
-        }
+    .text-body {
+      color: #23282e !important;
+    }
 
-        <!--
-        -->
-        .text-muted {
-            color: #69788b !important;
-        }
+    <!--
+    -->
+    .text-muted {
+      color: #69788b !important;
+    }
 
-        <!--
-        -->
-        .text-danger {
-            color: #f7685b !important;
-        }
+    <!--
+    -->
+    .text-danger {
+      color: #f7685b !important;
+    }
 
-        <!--
-        -->
-        .text-success {
-            color: !important;
-        }
+    <!--
+    -->
+    .text-success {
+      color: !important;
+    }
 
-        h1 {
-            color: #23282e;
-        }
+    h1 {
+      color: #23282e;
+    }
 
-        .btn-primary:focus {
-            -webkit-box-shadow: 0 0 0 0.0625rem #324054;
-            box-shadow: 0 0 0 0.0625rem #324054;
-        }
+    .btn-primary:focus {
+      -webkit-box-shadow: 0 0 0 0.0625rem #324054;
+      box-shadow: 0 0 0 0.0625rem #324054;
+    }
 
-        .fr-custom-logo {
-            max-width: 80px;
-            align-self: center;
-        }
+    .fr-custom-logo {
+      max-width: 80px;
+      align-self: center;
+    }
 
-        textarea:focus,
+    textarea:focus,
 
-        <!--
-        -->
-        input:focus,
+    <!--
+    -->
+    input:focus,
 
-        <!--
-        -->
-        input[type]:focus, .uneditable-input:focus,
+    <!--
+    -->
+    input[type]:focus, .uneditable-input:focus,
 
-        <!--
-        -->
-        .form-control:focus-within .multiselect__tags {
-            border-color: #324054 !important;
-            -webkit-box-shadow: 0 0 0 0.0625rem #324054;
-            box-shadow: 0 0 0 0.0625rem #324054;
-            outline: 0 none;
-        }
+    <!--
+    -->
+    .form-control:focus-within .multiselect__tags {
+      border-color: #324054 !important;
+      -webkit-box-shadow: 0 0 0 0.0625rem #324054;
+      box-shadow: 0 0 0 0.0625rem #324054;
+      outline: 0 none;
+    }
 
-        .fr-toggle-primary.custom-switch.b-custom-control-lg .custom-control-label::before {
-            background-color: ;
-        }
+    .fr-toggle-primary.custom-switch.b-custom-control-lg .custom-control-label::before {
+      background-color: ;
+    }
 
-        .fr-toggle-primary.custom-switch.b-custom-control-lg .custom-control-input:checked ~ .custom-control-label::before, .custom-control.custom-radio .custom-control-input:checked ~ .custom-control-label::before {
-            background-color: #324054;
-        }
+    .fr-toggle-primary.custom-switch.b-custom-control-lg .custom-control-input:checked ~ .custom-control-label::before, .custom-control.custom-radio .custom-control-input:checked ~ .custom-control-label::before {
+      background-color: #324054;
+    }
 
-        .custom-control.custom-radio .custom-control-input:checked ~ .custom-control-label::before {
-            border-color: #324054
-        }
+    .custom-control.custom-radio .custom-control-input:checked ~ .custom-control-label::before {
+      border-color: #324054
+    }
 
-        .spinner-primary {
-            color: #324054;
-        } </style>
-        <style> .card {
-            border-radius: 4px !important;
-        }
+    .spinner-primary {
+      color: #324054;
+    } </style>
+    <style> .card {
+      border-radius: 4px !important;
+    }
 
-        .card .login-header {
-            border-radius: 4px 4px 0 0 !important;
-        }
+    .card .login-header {
+      border-radius: 4px 4px 0 0 !important;
+    }
 
-        <!--
-        -->
-        .card, .journey-card {
-            background-color: #ffffff !important;
-            color: #5e6d82;
-            box-shadow: rgb(0 0 0 / 13%) 0px 1px 3px;
-        }
+    <!--
+    -->
+    .card, .journey-card {
+      background-color: #ffffff !important;
+      color: #5e6d82;
+      box-shadow: rgb(0 0 0 / 13%) 0px 1px 3px;
+    }
 
-        .login-header {
-            background-color: #ffffff !important;
-        }
+    .login-header {
+      background-color: #ffffff !important;
+    }
 
-        .card .h2, .journey-card .h2 {
-            color: #23282e;
-        }
+    .card .h2, .journey-card .h2 {
+      color: #23282e;
+    }
 
-        <!--
-        -->
-        input,
+    <!--
+    -->
+    input,
 
-        <!--
-        -->
-        .form-label-group .within-input-button .btn,
+    <!--
+    -->
+    .form-label-group .within-input-button .btn,
 
-        <!--
-        -->
-        .multiselect .multiselect__tags,
+    <!--
+    -->
+    .multiselect .multiselect__tags,
 
-        <!--
-        -->
-        .multiselect .multiselect__select,
+    <!--
+    -->
+    .multiselect .multiselect__select,
 
-        <!--
-        -->
-        .multiselect .multiselect__select::before {
-            background-color: #ffffff !important;
-            border-color: #c0c9d5 !important;
-            color: #23282e !important;
-        }
+    <!--
+    -->
+    .multiselect .multiselect__select::before {
+      background-color: #ffffff !important;
+      border-color: #c0c9d5 !important;
+      color: #23282e !important;
+    }
 
-        <!--
-        -->
-        .multiselect .multiselect__element {
-            background-color: #ffffff !important;
-            color: #23282e !important;
-        }
+    <!--
+    -->
+    .multiselect .multiselect__element {
+      background-color: #ffffff !important;
+      color: #23282e !important;
+    }
 
-        <!--
-        -->
-        .multiselect .multiselect__content-wrapper {
-            border-color: #c0c9d5 !important;
-        }
+    <!--
+    -->
+    .multiselect .multiselect__content-wrapper {
+      border-color: #c0c9d5 !important;
+    }
 
-        <!--
-        -->
-        .multiselect .multiselect__option--highlight {
-            background-color: #f6f8fa !important;
-        }
+    <!--
+    -->
+    .multiselect .multiselect__option--highlight {
+      background-color: #f6f8fa !important;
+    }
 
-        <!--
-        -->
-        .multiselect .multiselect__option--selected {
-            background-color: #e4f4fd !important;
-        }
+    <!--
+    -->
+    .multiselect .multiselect__option--selected {
+      background-color: #e4f4fd !important;
+    }
 
-        .form-label-group button span, .multiselect__placeholder,
+    .form-label-group button span, .multiselect__placeholder,
 
-        <!--
-        -->
-        .multiselect__single {
-            color: #23282e !important;
-        }
+    <!--
+    -->
+    .multiselect__single {
+      color: #23282e !important;
+    }
 
-        <!--
-        -->
-        .form-label-group .form-label-group-input .white-label-background ~ label {
-            background-color: #ffffff !important;
-        }
+    <!--
+    -->
+    .form-label-group .form-label-group-input .white-label-background ~ label {
+      background-color: #ffffff !important;
+    }
 
-        <!--
-        -->
-        .form-label-group label {
-            color: #5e6d82 !important;
-        } </style><!----></div>
-    <div id="appContentWrapper" class="h-100">
-        <div data-v-78fc165d="" class="min-vh-100 d-flex flex-column fr-fullscreen-mobile"><!----><!---->
-            <main data-v-78fc165d="" id="callbacksPanel" class="px-0 flex-grow-1 d-flex container">
-                <div data-v-78fc165d="" class="flex-grow-1 d-flex container">
-                    <div data-v-78fc165d="" class="row align-items-center m-0 flex-grow-1">
-                        <div data-v-78fc165d="" class="col-lg-12">
-                            <section data-v-78fc165d="">
-                                <div data-v-3289d8b1="" data-v-78fc165d="" class="px-0 flex-grow-1 d-flex container">
-                                    <div data-v-3289d8b1="" class="fr-m-auto fr-center-card align-self-center">
-                                        <div data-v-3289d8b1=""
-                                             class="card border-xs-0 border-sm d-flex fr-stretch-card"><!----><!---->
-                                            <div data-v-3289d8b1=""
-                                                 class="card-header d-flex align-items-center flex-fill login-header">
-                                                <div data-v-3289d8b1=""
-                                                     class="d-flex flex-fill flex-column justify-content-center"><img
-                                                        data-v-3289d8b1="" alt="Logo" src="img/placeholder.95d0bb8e.svg"
-                                                        class="fr-logo mb-3 mt-2" style="height: 40px;">
-                                                    <div data-v-78fc165d="" data-v-3289d8b1="" aria-live="polite">
-                                                        <!----><!----><p data-v-78fc165d="" data-v-3289d8b1=""
-                                                                         class="sr-only"> h3NODE STATE/h3 </p></div>
-                                                </div>
-                                            </div>
-                                            <div data-v-78fc165d="" data-v-3289d8b1="" class="card-body callbacks-card"
-                                                 tabindex="-1" id="callbacksPanel" data-testid="callbacks_panel"><!---->
-                                                <!----><!----><!---->
-                                                <div data-v-78fc165d="" data-v-3289d8b1="" class="" id="body-append-el">
-                                                    <form data-v-78fc165d="" data-v-3289d8b1="" id="wrapper">
-                                                        <div data-v-78fc165d="" data-v-3289d8b1="">
-                                                            <fieldset data-v-78fc165d="" data-v-3289d8b1=""></fieldset>
-                                                        </div>
-                                                        <div data-v-78fc165d="" data-v-3289d8b1="" class=""
-                                                             id="callback_0"></div><!---->
-                                                        <div data-v-78fc165d="" class="callback-component row mb-2"
-                                                             index="1" floating-label="true" data-v-3289d8b1="">
-                                                            <div aria-hidden="true"
-                                                                 class="text-center text-muted w-100"> h3NODE STATE/h3
-                                                            </div><!----><!----><!----></div>
-                                                        <div data-v-78fc165d="" class="callback-component row mb-2"
-                                                             index="2" floating-label="true" data-v-3289d8b1="">
-                                                            <div class="text-center text-muted w-100"> Key</div><!---->
-                                                            <!----><!----></div>
-                                                        <div data-v-78fc165d="" id="callback_3"
-                                                             data-testid="fr-field-callback_3"
-                                                             class="callback-component fr-field"
-                                                             callback="[object Object]" index="3" step="[object Object]"
-                                                             floating-label="true" errors="" label="Key: " value=" "
-                                                             data-v-3289d8b1=""><span data-v-a2e73f4e=""
-                                                                                      data-v-50231512="" class=""
-                                                                                      original-type="string"
-                                                                                      callback="[object Object]"
-                                                                                      index="3" step="[object Object]"><div
-                                                                data-v-a2e73f4e="" class="w-100"><div data-v-a2e73f4e=""
-                                                                                                      class="floating-label form-label-group"><div
-                                                                data-v-a2e73f4e="" class="form-label-group-input"><input
-                                                                data-v-50231512="" data-vv-as="Key: "
-                                                                id="floatingLabelInput28" name="callback_3"
-                                                                data-testid="input-" type="text"
-                                                                class="form-control polyfill-placeholder"
-                                                                style="height: 51px; padding-top: 22px;"><label
-                                                                data-v-a2e73f4e="" id="floatingLabelInput28-label"
-                                                                for="floatingLabelInput28"
-                                                                class="pe-none"> Key:  </label></div><!----></div><div
-                                                                data-v-a2e73f4e="" role="alert"
-                                                                class="fr-validation-requirements text-left error-messages"></div>
-                                                            <!----></div></span></div>
-                                                        <div data-v-78fc165d="" class="callback-component row mb-2"
-                                                             index="4" floating-label="true" data-v-3289d8b1="">
-                                                            <div class="text-center text-muted w-100"> Value</div>
-                                                            <!----><!----><!----></div>
-                                                        <div data-v-78fc165d="" id="callback_5"
-                                                             data-testid="fr-field-callback_5"
-                                                             class="callback-component fr-field"
-                                                             callback="[object Object]" index="5" step="[object Object]"
-                                                             floating-label="true" errors="" label="Value: " value=" "
-                                                             data-v-3289d8b1=""><span data-v-a2e73f4e=""
-                                                                                      data-v-50231512="" class=""
-                                                                                      original-type="string"
-                                                                                      callback="[object Object]"
-                                                                                      index="5" step="[object Object]"><div
-                                                                data-v-a2e73f4e="" class="w-100"><div data-v-a2e73f4e=""
-                                                                                                      class="floating-label form-label-group"><div
-                                                                data-v-a2e73f4e="" class="form-label-group-input"><input
-                                                                data-v-50231512="" data-vv-as="Value: "
-                                                                id="floatingLabelInput34" name="callback_5"
-                                                                data-testid="input-" type="text"
-                                                                class="form-control polyfill-placeholder"
-                                                                style="height: 51px; padding-top: 22px;"><label
-                                                                data-v-a2e73f4e="" id="floatingLabelInput34-label"
-                                                                for="floatingLabelInput34"
-                                                                class="pe-none"> Value:  </label></div><!----></div><div
-                                                                data-v-a2e73f4e="" role="alert"
-                                                                class="fr-validation-requirements text-left error-messages"></div>
-                                                            <!----></div></span></div>
-                                                        <div data-v-78fc165d="" class="callback-component row mb-2"
-                                                             index="6" floating-label="true" data-v-3289d8b1="">
-                                                            <div class="text-center text-muted w-100"> h3SHARED
-                                                                STATE/h3
-                                                            </div><!----><!----><!----></div>
-                                                        <div data-v-78fc165d="" class="callback-component row mb-2"
-                                                             index="7" floating-label="true" data-v-3289d8b1="">
-                                                            <div class="text-center text-muted w-100"> realm: /alpha
-                                                            </div><!----><!----><!----></div>
-                                                        <div data-v-78fc165d="" id="callback_8"
-                                                             data-testid="fr-field-callback_8"
-                                                             class="callback-component fr-field"
-                                                             callback="[object Object]" index="8" step="[object Object]"
-                                                             floating-label="true" errors="" label="realm: "
-                                                             value="/alpha" data-v-3289d8b1=""><span data-v-a2e73f4e=""
-                                                                                                     data-v-50231512=""
-                                                                                                     class=""
-                                                                                                     original-type="string"
-                                                                                                     callback="[object Object]"
-                                                                                                     index="8"
-                                                                                                     step="[object Object]"><div
-                                                                data-v-a2e73f4e="" class="w-100"><div data-v-a2e73f4e=""
-                                                                                                      class="floating-label form-label-group"><div
-                                                                data-v-a2e73f4e="" class="form-label-group-input"><input
-                                                                data-v-50231512="" data-vv-as="realm: "
-                                                                id="floatingLabelInput40" name="callback_8"
-                                                                data-testid="input-" type="text"
-                                                                class="form-control polyfill-placeholder"
-                                                                style="height: 51px; padding-top: 22px;"><label
-                                                                data-v-a2e73f4e="" id="floatingLabelInput40-label"
-                                                                for="floatingLabelInput40"
-                                                                class="pe-none"> realm:  </label></div><!----></div><div
-                                                                data-v-a2e73f4e="" role="alert"
-                                                                class="fr-validation-requirements text-left error-messages"></div>
-                                                            <!----></div></span></div>
-                                                        <div data-v-78fc165d="" class="callback-component row mb-2"
-                                                             index="9" floating-label="true" data-v-3289d8b1="">
-                                                            <div class="text-center text-muted w-100"> authLevel: 0
-                                                            </div><!----><!----><!----></div>
-                                                        <div data-v-78fc165d="" id="callback_10"
-                                                             data-testid="fr-field-callback_10"
-                                                             class="callback-component fr-field"
-                                                             callback="[object Object]" index="10"
-                                                             step="[object Object]" floating-label="true" errors=""
-                                                             label="authLevel: " value="0" data-v-3289d8b1=""><span
-                                                                data-v-a2e73f4e="" data-v-50231512="" class=""
-                                                                original-type="string" callback="[object Object]"
-                                                                index="10" step="[object Object]"><div
-                                                                data-v-a2e73f4e="" class="w-100"><div data-v-a2e73f4e=""
-                                                                                                      class="floating-label form-label-group"><div
-                                                                data-v-a2e73f4e="" class="form-label-group-input"><input
-                                                                data-v-50231512="" data-vv-as="authLevel: "
-                                                                id="floatingLabelInput46" name="callback_10"
-                                                                data-testid="input-" type="text"
-                                                                class="form-control polyfill-placeholder"
-                                                                style="height: 51px; padding-top: 22px;"><label
-                                                                data-v-a2e73f4e="" id="floatingLabelInput46-label"
-                                                                for="floatingLabelInput46"
-                                                                class="pe-none"> authLevel:  </label></div><!----></div><div
-                                                                data-v-a2e73f4e="" role="alert"
-                                                                class="fr-validation-requirements text-left error-messages"></div>
-                                                            <!----></div></span></div>
-                                                        <div data-v-78fc165d="" class="callback-component row mb-2"
-                                                             index="11" floating-label="true" data-v-3289d8b1="">
-                                                            <div class="text-center text-muted w-100"> objectAttributes:
-                                                                { "userName": "kirk.carron@forgerock.com" }
-                                                            </div><!----><!----><!----></div>
-                                                        <div data-v-78fc165d="" id="callback_12"
-                                                             data-testid="fr-field-callback_12"
-                                                             class="callback-component fr-field"
-                                                             callback="[object Object]" index="12"
-                                                             step="[object Object]" floating-label="true" errors=""
-                                                             label="objectAttributes: "
-                                                             value="{ &quot;userName&quot;: &quot;kirk.carron@forgerock.com&quot; }"
-                                                             data-v-3289d8b1=""><span data-v-a2e73f4e=""
-                                                                                      data-v-50231512="" class=""
-                                                                                      original-type="string"
-                                                                                      callback="[object Object]"
-                                                                                      index="12" step="[object Object]"><div
-                                                                data-v-a2e73f4e="" class="w-100"><div data-v-a2e73f4e=""
-                                                                                                      class="floating-label form-label-group"><div
-                                                                data-v-a2e73f4e="" class="form-label-group-input"><input
-                                                                data-v-50231512="" data-vv-as="objectAttributes: "
-                                                                id="floatingLabelInput52" name="callback_12"
-                                                                data-testid="input-" type="text"
-                                                                class="form-control polyfill-placeholder"
-                                                                style="height: 51px; padding-top: 22px;"><label
-                                                                data-v-a2e73f4e="" id="floatingLabelInput52-label"
-                                                                for="floatingLabelInput52" class="pe-none"> objectAttributes:  </label></div>
-                                                            <!----></div><div data-v-a2e73f4e="" role="alert"
-                                                                              class="fr-validation-requirements text-left error-messages"></div>
-                                                            <!----></div></span></div>
-                                                        <div data-v-78fc165d="" class="callback-component row mb-2"
-                                                             index="13" floating-label="true" data-v-3289d8b1="">
-                                                            <div class="text-center text-muted w-100"> username:
-                                                                kirk.carron@forgerock.com
-                                                            </div><!----><!----><!----></div>
-                                                        <div data-v-78fc165d="" id="callback_14"
-                                                             data-testid="fr-field-callback_14"
-                                                             class="callback-component fr-field"
-                                                             callback="[object Object]" index="14"
-                                                             step="[object Object]" floating-label="true" errors=""
-                                                             label="username: " value="kirk.carron@forgerock.com"
-                                                             data-v-3289d8b1=""><span data-v-a2e73f4e=""
-                                                                                      data-v-50231512="" class=""
-                                                                                      original-type="string"
-                                                                                      callback="[object Object]"
-                                                                                      index="14" step="[object Object]"><div
-                                                                data-v-a2e73f4e="" class="w-100"><div data-v-a2e73f4e=""
-                                                                                                      class="floating-label form-label-group"><div
-                                                                data-v-a2e73f4e="" class="form-label-group-input"><input
-                                                                data-v-50231512="" data-vv-as="username: "
-                                                                id="floatingLabelInput58" name="callback_14"
-                                                                data-testid="input-" type="text"
-                                                                class="form-control polyfill-placeholder"
-                                                                style="height: 51px; padding-top: 22px;"><label
-                                                                data-v-a2e73f4e="" id="floatingLabelInput58-label"
-                                                                for="floatingLabelInput58"
-                                                                class="pe-none"> username:  </label></div><!----></div><div
-                                                                data-v-a2e73f4e="" role="alert"
-                                                                class="fr-validation-requirements text-left error-messages"></div>
-                                                            <!----></div></span></div>
-                                                        <div data-v-78fc165d="" class="callback-component row mb-2"
-                                                             index="15" floating-label="true" data-v-3289d8b1="">
-                                                            <div class="text-center text-muted w-100"> h3AUTHID/h3</div>
-                                                            <!----><!----><!----></div>
-                                                        <div data-v-78fc165d="" class="callback-component row mb-2"
-                                                             index="16" floating-label="true" data-v-3289d8b1="">
-                                                            <div class="text-center text-muted w-100"> AuthID
-                                                                eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdXRoSW5kZXhWYWx1ZSI6ImRpc3BsYXlkZWJ1ZyIsIm90ayI6Im51M2I0aWhxaGs2dGQxZzNiNnNkNmw0MHRtIiwiYXV0aEluZGV4VHlwZSI6InNlcnZpY2UiLCJyZWFsbSI6Ii9hbHBoYSIsInNlc3Npb25JZCI6IipBQUpUU1FBQ01ESUFCSFI1Y0dVQUNFcFhWRjlCVlZSSUFBSlRNUUFDTURFLipleUowZVhBaU9pSktWMVFpTENKamRIa2lPaUpLVjFRaUxDSmhiR2NpT2lKSVV6STFOaUo5LlpYbEtNR1ZZUVdsUGFVcExWakZSYVV4RFNteGliVTFwVDJsS1FrMVVTVFJSTUVwRVRGVm9WRTFxVlRKSmFYZHBXVmQ0YmtscWIybGFSMng1U1c0d0xpNW9iamRZTmtGU01ubHpRMDlhUVVscmRXbFVTMGxCTG1oYWFWVjBPV2RUZEZVMU1FaHVWMjVhU2pCUE1YZE1hbGhrZGtZeVVuZ3dRakZsTlVwQ1ZrUTFUMGRNV0ZGcGN6Sk5USE5HZVVKNmEyZFBiR0ZQZVhsdWNUVkZkbXgxTUhKT05uUlZVRzFWV1RkRmRISnlNRE4yTmxRd01XSnBla0pqUWxVd1dVMUtibTV1VTNkQ2RsWnFjSGhyTFhsNGEzZG5TbG8yY1dVek1XWk1SMVpUVUhkeWNFUllkRlpMVDBKQk9HTjZVR0ZYYzIxVmRXaFVZVnBOYzB3MlYzVTRWWFJGYjJadFVXeEtRa2N5ZERkTGVGbHdOMUoxV0hSb1FVNXpTRkZtVVVwNlQyZzRjRGRZZEc5RWJuVjVhMmREVEhRdFlTMUViME00YlVSMlYwSkpWa3BSVUdkTlQyMTJSR3B6WWxOeU5HcEVVMGgzWTI5MWJESjZTM0k0YkVKamFWTkNUV05WYVROWmRWRXRSWEpqZVZKTFJFMU9WM2MyT0haamNFOVFNMGswV0hnelEweDJhazloUlRCS09GOWphVTVITWpKNFUwWjZVbkJsYkMxMVoxZFVUbGw1TWtwc1R6Wk1UMVk1T1dWZlVFMU9TbDlxUjNsaVdWOXZSM1ZrYjJkeFFrSjRNVkp5ZGxWamRWWlJMWFk1YTFNM2FrTlJURkZ5WldWTlYxZE9NRzAxVlV4cGEyOXJNR0pzWkhSVWNXTmFUV28wTlZWcVluZzVjMFUwWlhSdk9WWXlObEJyWjIxcVdHUlRTbk00UTNodGEwSldPSFZ0ZGkxSGNIaHpjR1JNVEZSMlRqaG1SMW94YURaRlNtVnJWVkJ5VDFCNFExSXhkRFpxTm14eFRXaE1PV0ZYYkdGUVVsTmtRVEo2VUVvNE9FWlhVR05SWWtoV1J6ZFNXbTlmWHpGeE4yWXdNbFp5YlhacmRVZGpkak50VUd0TFVIRndPR2RYVlRaak9WTk9VV3hOTURkU1JXNVRXbVV4TVZwNFJrWkhhMmQ0T0d0b2VITklkRWwwY1dWclkyRkJlRWRpUWtwM01YYzJWa3hIT0UxcFpFOUZVMVIwU21OWU5reDRSR1ZqTW0xRVRISk1ZemhqWWpnNU1sQXpjSE5qWXpWZk1FMHdURzVIVVRsMFIwUTVXVmRJT0VSTFNVdEtlbEpKVkhWcU1XdGxlblpMWTAxMVN6SjVWRUZyTGxGQ1l6SjNSRlUwYkVnd2NtSXROM2RET0V0TVRFRS5KZG85UWU0d1lYNXNrNFhOMkoyTkRCaF94YmFnNzV4aGN4Ty1QTzBWYjg4IiwiZXhwIjoxNzA1OTQxMzYzLCJpYXQiOjE3MDU5NDEwNjN9.XYhZr_autzAFAXXYegjU4MDr9fN_J1Ke3gkY7dC-uSI
-                                                            </div><!----><!----><!----></div>
-                                                        <div data-v-78fc165d="" class="callback-component row mb-2"
-                                                             index="17" floating-label="true" data-v-3289d8b1="">
-                                                            <div class="text-center text-muted w-100"> h3HEADERS/h3
-                                                            </div><!----><!----><!----></div>
-                                                        <div data-v-78fc165d="" class="callback-component row mb-2"
-                                                             index="18" floating-label="true" data-v-3289d8b1="">
-                                                            <div class="text-center text-muted w-100"> accept
-                                                                [application/json]
-                                                            </div><!----><!----><!----></div>
-                                                        <div data-v-78fc165d="" class="callback-component row mb-2"
-                                                             index="19" floating-label="true" data-v-3289d8b1="">
-                                                            <div class="text-center text-muted w-100">
-                                                                accept-api-version [protocol=1.0,resource=2.1]
-                                                            </div><!----><!----><!----></div>
-                                                        <div data-v-78fc165d="" class="callback-component row mb-2"
-                                                             index="20" floating-label="true" data-v-3289d8b1="">
-                                                            <div class="text-center text-muted w-100"> accept-encoding
-                                                                [gzip, deflate, br]
-                                                            </div><!----><!----><!----></div>
-                                                        <div data-v-78fc165d="" class="callback-component row mb-2"
-                                                             index="21" floating-label="true" data-v-3289d8b1="">
-                                                            <div class="text-center text-muted w-100"> accept-language
-                                                                [en-US,en;q=0.9]
-                                                            </div><!----><!----><!----></div>
-                                                        <div data-v-78fc165d="" class="callback-component row mb-2"
-                                                             index="22" floating-label="true" data-v-3289d8b1="">
-                                                            <div class="text-center text-muted w-100"> content-length
-                                                                [2086]
-                                                            </div><!----><!----><!----></div>
-                                                        <div data-v-78fc165d="" class="callback-component row mb-2"
-                                                             index="23" floating-label="true" data-v-3289d8b1="">
-                                                            <div class="text-center text-muted w-100"> content-type
-                                                                [application/json]
-                                                            </div><!----><!----><!----></div>
-                                                        <div data-v-78fc165d="" class="callback-component row mb-2"
-                                                             index="24" floating-label="true" data-v-3289d8b1="">
-                                                            <div class="text-center text-muted w-100"> cookie
-                                                                [amlbcookie=01;
-                                                                4e97d005ed81eb3=XS_gz250YwSUbXejrAyBZdBzOCU.*AAJTSQACMDIAAlNLABxoMDlrdm9XMUZBSTRTQ2RhY1lmQXZaTnZhL2c9AAR0eXBlAANDVFMAAlMxAAIwMQ..*]
-                                                            </div><!----><!----><!----></div>
-                                                        <div data-v-78fc165d="" class="callback-component row mb-2"
-                                                             index="25" floating-label="true" data-v-3289d8b1="">
-                                                            <div class="text-center text-muted w-100"> host
-                                                                [openam-tntp-display-debug.forgeblocks.com]
-                                                            </div><!----><!----><!----></div>
-                                                        <div data-v-78fc165d="" class="callback-component row mb-2"
-                                                             index="26" floating-label="true" data-v-3289d8b1="">
-                                                            <div class="text-center text-muted w-100"> origin
-                                                                [https://openam-tntp-display-debug.forgeblocks.com]
-                                                            </div><!----><!----><!----></div>
-                                                        <div data-v-78fc165d="" class="callback-component row mb-2"
-                                                             index="27" floating-label="true" data-v-3289d8b1="">
-                                                            <div class="text-center text-muted w-100"> referer
-                                                                [https://openam-tntp-display-debug.forgeblocks.com/]
-                                                            </div><!----><!----><!----></div>
-                                                        <div data-v-78fc165d="" class="callback-component row mb-2"
-                                                             index="28" floating-label="true" data-v-3289d8b1="">
-                                                            <div class="text-center text-muted w-100"> sec-ch-ua [&amp;#34;Not_A
-                                                                Brand&amp;#34;;v=&amp;#34;8&amp;#34;, &amp;#34;Chromium&amp;#34;;v=&amp;#34;120&amp;#34;,
-                                                                &amp;#34;Google Chrome&amp;#34;;v=&amp;#34;120&amp;#34;]
-                                                            </div><!----><!----><!----></div>
-                                                        <div data-v-78fc165d="" class="callback-component row mb-2"
-                                                             index="29" floating-label="true" data-v-3289d8b1="">
-                                                            <div class="text-center text-muted w-100"> sec-ch-ua-mobile
-                                                                [?0]
-                                                            </div><!----><!----><!----></div>
-                                                        <div data-v-78fc165d="" class="callback-component row mb-2"
-                                                             index="30" floating-label="true" data-v-3289d8b1="">
-                                                            <div class="text-center text-muted w-100">
-                                                                sec-ch-ua-platform [&amp;#34;macOS&amp;#34;]
-                                                            </div><!----><!----><!----></div>
-                                                        <div data-v-78fc165d="" class="callback-component row mb-2"
-                                                             index="31" floating-label="true" data-v-3289d8b1="">
-                                                            <div class="text-center text-muted w-100"> sec-fetch-dest
-                                                                [empty]
-                                                            </div><!----><!----><!----></div>
-                                                        <div data-v-78fc165d="" class="callback-component row mb-2"
-                                                             index="32" floating-label="true" data-v-3289d8b1="">
-                                                            <div class="text-center text-muted w-100"> sec-fetch-mode
-                                                                [cors]
-                                                            </div><!----><!----><!----></div>
-                                                        <div data-v-78fc165d="" class="callback-component row mb-2"
-                                                             index="33" floating-label="true" data-v-3289d8b1="">
-                                                            <div class="text-center text-muted w-100"> sec-fetch-site
-                                                                [same-origin]
-                                                            </div><!----><!----><!----></div>
-                                                        <div data-v-78fc165d="" class="callback-component row mb-2"
-                                                             index="34" floating-label="true" data-v-3289d8b1="">
-                                                            <div class="text-center text-muted w-100"> user-agent
-                                                                [Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)
-                                                                AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0
-                                                                Safari/537.36]
-                                                            </div><!----><!----><!----></div>
-                                                        <div data-v-78fc165d="" class="callback-component row mb-2"
-                                                             index="35" floating-label="true" data-v-3289d8b1="">
-                                                            <div class="text-center text-muted w-100"> via [1.1
-                                                                google]
-                                                            </div><!----><!----><!----></div>
-                                                        <div data-v-78fc165d="" class="callback-component row mb-2"
-                                                             index="36" floating-label="true" data-v-3289d8b1="">
-                                                            <div class="text-center text-muted w-100">
-                                                                x-cloud-trace-context
-                                                                [658c6f559731a9d924d5e2d27db7d15d/5564460578793676453]
-                                                            </div><!----><!----><!----></div>
-                                                        <div data-v-78fc165d="" class="callback-component row mb-2"
-                                                             index="37" floating-label="true" data-v-3289d8b1="">
-                                                            <div class="text-center text-muted w-100">
-                                                                x-forgerock-transactionid
-                                                                [881493d7-d9c6-4f47-8536-453ddf5b0cc0-request-2/0]
-                                                            </div><!----><!----><!----></div>
-                                                        <div data-v-78fc165d="" class="callback-component row mb-2"
-                                                             index="38" floating-label="true" data-v-3289d8b1="">
-                                                            <div class="text-center text-muted w-100"> x-forwarded-for
-                                                                [152.37.130.42, 34.117.237.198, 10.138.15.212]
-                                                            </div><!----><!----><!----></div>
-                                                        <div data-v-78fc165d="" class="callback-component row mb-2"
-                                                             index="39" floating-label="true" data-v-3289d8b1="">
-                                                            <div class="text-center text-muted w-100"> x-forwarded-proto
-                                                                [https]
-                                                            </div><!----><!----><!----></div>
-                                                        <div data-v-78fc165d="" class="callback-component row mb-2"
-                                                             index="40" floating-label="true" data-v-3289d8b1="">
-                                                            <div class="text-center text-muted w-100"> x-real-ip
-                                                                [152.37.130.42]
-                                                            </div><!----><!----><!----></div>
-                                                        <div data-v-78fc165d="" class="callback-component row mb-2"
-                                                             index="41" floating-label="true" data-v-3289d8b1="">
-                                                            <div class="text-center text-muted w-100"> x-requested-with
-                                                                [forgerock-sdk]
-                                                            </div><!----><!----><!----></div>
-                                                        <div data-v-78fc165d="" class="callback-component row mb-2"
-                                                             index="42" floating-label="true" data-v-3289d8b1="">
-                                                            <div class="text-center text-muted w-100">
-                                                                x-trusted-forwarded-for [152.37.130.42, 34.117.237.198,
-                                                                10.138.15.212]
-                                                            </div><!----><!----><!----></div>
-                                                        <div data-v-78fc165d="" class="callback-component row mb-2"
-                                                             index="43" floating-label="true" data-v-3289d8b1="">
-                                                            <div class="text-center text-muted w-100"> h3CLIENT IP/h3
-                                                            </div><!----><!----><!----></div>
-                                                        <div data-v-78fc165d="" class="callback-component row mb-2"
-                                                             index="44" floating-label="true" data-v-3289d8b1="">
-                                                            <div class="text-center text-muted w-100"> ClientIp
-                                                                152.37.130.42
-                                                            </div><!----><!----><!----></div>
-                                                        <div data-v-78fc165d="" class="callback-component row mb-2"
-                                                             index="45" floating-label="true" data-v-3289d8b1="">
-                                                            <div class="text-center text-muted w-100"> h3COOKIES/h3
-                                                            </div><!----><!----><!----></div>
-                                                        <div data-v-78fc165d="" class="callback-component row mb-2"
-                                                             index="46" floating-label="true" data-v-3289d8b1="">
-                                                            <div class="text-center text-muted w-100"> 4e97d005ed81eb3
-                                                                XS_gz250YwSUbXejrAyBZdBzOCU.*AAJTSQACMDIAAlNLABxoMDlrdm9XMUZBSTRTQ2RhY1lmQXZaTnZhL2c9AAR0eXBlAANDVFMAAlMxAAIwMQ..*
-                                                            </div><!----><!----><!----></div>
-                                                        <div data-v-78fc165d="" class="callback-component row mb-2"
-                                                             index="47" floating-label="true" data-v-3289d8b1="">
-                                                            <div class="text-center text-muted w-100"> amlbcookie 01
-                                                            </div><!----><!----><!----></div>
-                                                        <div data-v-78fc165d="" class="callback-component row mb-2"
-                                                             index="48" floating-label="true" data-v-3289d8b1="">
-                                                            <div class="text-center text-muted w-100"> h3HOSTNAME/h3
-                                                            </div><!----><!----><!----></div>
-                                                        <div data-v-78fc165d="" class="callback-component row mb-2"
-                                                             index="49" floating-label="true" data-v-3289d8b1="">
-                                                            <div class="text-center text-muted w-100"> HostName
-                                                                openam-tntp-display-debug.forgeblocks.com
-                                                            </div><!----><!----><!----></div>
-                                                        <div data-v-78fc165d="" class="callback-component row mb-2"
-                                                             index="50" floating-label="true" data-v-3289d8b1="">
-                                                            <div class="text-center text-muted w-100"> h3LOCALE/h3</div>
-                                                            <!----><!----><!----></div>
-                                                        <div data-v-78fc165d="" class="callback-component row mb-2"
-                                                             index="51" floating-label="true" data-v-3289d8b1="">
-                                                            <div class="text-center text-muted w-100"> Preferred Locale
-                                                                English (United States)
-                                                            </div><!----><!----><!----></div>
-                                                        <div data-v-78fc165d="" class="callback-component row mb-2"
-                                                             index="52" floating-label="true" data-v-3289d8b1="">
-                                                            <div class="text-center text-muted w-100"> h3PARAMETERS/h3
-                                                            </div><!----><!----><!----></div>
-                                                        <div data-v-78fc165d="" class="callback-component row mb-2"
-                                                             index="53" floating-label="true" data-v-3289d8b1="">
-                                                            <div class="text-center text-muted w-100"> authIndexType
-                                                                [service]
-                                                            </div><!----><!----><!----></div>
-                                                        <div data-v-78fc165d="" class="callback-component row mb-2"
-                                                             index="54" floating-label="true" data-v-3289d8b1="">
-                                                            <div class="text-center text-muted w-100"> authIndexValue
-                                                                [displaydebug]
-                                                            </div><!----><!----><!----></div>
-                                                        <div data-v-78fc165d="" class="callback-component row mb-2"
-                                                             index="55" floating-label="true" data-v-3289d8b1="">
-                                                            <div class="text-center text-muted w-100"> realm [/alpha]
-                                                            </div><!----><!----><!----></div>
-                                                        <div data-v-78fc165d="" class="callback-component row mb-2"
-                                                             index="56" floating-label="true" data-v-3289d8b1="">
-                                                            <div class="text-center text-muted w-100"> h3SERVER URL/h3
-                                                            </div><!----><!----><!----></div>
-                                                        <div data-v-78fc165d="" class="callback-component row mb-2"
-                                                             index="57" floating-label="true" data-v-3289d8b1="">
-                                                            <div class="text-center text-muted w-100"> Server URL
-                                                                https://openam-tntp-display-debug.forgeblocks.com:443/am
-                                                            </div><!----><!----><!----></div>
-                                                        <div data-v-78fc165d="" class="callback-component row mb-2"
-                                                             index="58" floating-label="true" data-v-3289d8b1=""><!---->
-                                                            <!----><!---->
-                                                            <div class="w-100"><!----></div>
-                                                        </div>
-                                                        <div data-v-78fc165d="" class="callback-component row mb-2"
-                                                             index="59" floating-label="true" data-v-3289d8b1=""><!---->
-                                                            <!----><!---->
-                                                            <div class="w-100"><!----></div>
-                                                        </div>
-                                                        <div data-v-78fc165d="" class="callback-component row mb-2"
-                                                             index="60" floating-label="true" data-v-3289d8b1=""><!---->
-                                                            <!----><!---->
-                                                            <div class="w-100"><!----></div>
-                                                        </div>
-                                                        <div data-v-78fc165d="" data-v-3289d8b1=""
-                                                             class="d-flex mt-3 flex-column">
-                                                            <button data-v-78fc165d="" data-v-3289d8b1="" type="submit"
-                                                                    class="btn btn-primary"> Next
-                                                            </button>
-                                                        </div>
-                                                        <input data-v-78fc165d="" data-v-3289d8b1="" id="loginButton_0"
-                                                               role="button" type="submit" hidden="hidden"></form>
-                                                </div>
-                                            </div><!----><!----><!----><!----></div>
-                                    </div>
-                                </div>
-                            </section>
-                        </div><!----></div>
+    <!--
+    -->
+    .form-label-group label {
+      color: #5e6d82 !important;
+    } </style><!----></div>
+  <div id="appContentWrapper" class="h-100">
+    <div data-v-78fc165d="" class="min-vh-100 d-flex flex-column fr-fullscreen-mobile"><!----><!---->
+      <main data-v-78fc165d="" id="callbacksPanel" class="px-0 flex-grow-1 d-flex container">
+        <div data-v-78fc165d="" class="flex-grow-1 d-flex container">
+          <div data-v-78fc165d="" class="row align-items-center m-0 flex-grow-1">
+            <div data-v-78fc165d="" class="col-lg-12">
+              <section data-v-78fc165d="">
+                <div data-v-3289d8b1="" data-v-78fc165d="" class="px-0 flex-grow-1 d-flex container">
+                  <div data-v-3289d8b1="" class="fr-m-auto fr-center-card align-self-center">
+                    <div data-v-3289d8b1="" class="card border-xs-0 border-sm d-flex fr-stretch-card"><!----><!---->
+                      <div data-v-3289d8b1="" class="card-header d-flex align-items-center flex-fill login-header">
+                        <div data-v-3289d8b1="" class="d-flex flex-fill flex-column justify-content-center"><img
+                          data-v-3289d8b1="" alt="Logo" src="https://openam-tntp-display-debug.forgeblocks.com/am/XUI/img//placeholder.95d0bb8e.svg" class="fr-logo mb-3 mt-2"
+                          style="height: 40px;">
+                          <div data-v-78fc165d="" data-v-3289d8b1="" aria-live="polite"><!----><!----><p
+                            data-v-78fc165d="" data-v-3289d8b1="" class="sr-only"> NODE STATE </p></div>
+                        </div>
+                      </div>
+                      <div data-v-78fc165d="" data-v-3289d8b1="" class="card-body callbacks-card" tabindex="-1"
+                           id="callbacksPanel" data-testid="callbacks_panel"><!----><!----><!----><!---->
+                        <div data-v-78fc165d="" data-v-3289d8b1="" class="" id="body-append-el">
+                          <form data-v-78fc165d="" data-v-3289d8b1="" id="wrapper"><!----><!---->
+                            <div data-v-78fc165d="" class="callback-component row mb-2" index="1" floating-label="true"
+                                 data-v-3289d8b1="">
+                              <div aria-hidden="true" class="text-center text-muted w-100"> NODE STATE</div><!---->
+                              <!----><!----></div>
+                            <div data-v-78fc165d="" class="callback-component row mb-2" index="2" floating-label="true"
+                                 data-v-3289d8b1="">
+                              <div class="text-center text-muted w-100"> Key</div><!----><!----><!----></div>
+                            <div data-v-78fc165d="" id="callback_3" data-testid="fr-field-callback_3"
+                                 class="callback-component fr-field" callback="[object Object]" index="3"
+                                 step="[object Object]" floating-label="true" errors="" label="Key: " value=" "
+                                 data-v-3289d8b1=""><span data-v-a2e73f4e="" data-v-50231512="" class=""
+                                                          original-type="string" callback="[object Object]" index="3"
+                                                          step="[object Object]"><div data-v-a2e73f4e="" class="w-100"><div
+                              data-v-a2e73f4e="" class="floating-label form-label-group"><div data-v-a2e73f4e=""
+                                                                                              class="form-label-group-input"><input
+                              data-v-50231512="" data-vv-as="Key: " id="floatingLabelInput28" name="callback_3"
+                              data-testid="input-" type="text" class="form-control polyfill-placeholder"
+                              style="height: 51px; padding-top: 22px;"><label data-v-a2e73f4e=""
+                                                                              id="floatingLabelInput28-label"
+                                                                              for="floatingLabelInput28"
+                                                                              class="pe-none"> Key:  </label></div>
+                              <!----></div><div data-v-a2e73f4e="" role="alert"
+                                                class="fr-validation-requirements text-left error-messages"></div>
+                              <!----></div></span></div>
+                            <div data-v-78fc165d="" class="callback-component row mb-2" index="4" floating-label="true"
+                                 data-v-3289d8b1="">
+                              <div class="text-center text-muted w-100"> Value</div><!----><!----><!----></div>
+                            <div data-v-78fc165d="" id="callback_5" data-testid="fr-field-callback_5"
+                                 class="callback-component fr-field" callback="[object Object]" index="5"
+                                 step="[object Object]" floating-label="true" errors="" label="Value: " value=" "
+                                 data-v-3289d8b1=""><span data-v-a2e73f4e="" data-v-50231512="" class=""
+                                                          original-type="string" callback="[object Object]" index="5"
+                                                          step="[object Object]"><div data-v-a2e73f4e="" class="w-100"><div
+                              data-v-a2e73f4e="" class="floating-label form-label-group"><div data-v-a2e73f4e=""
+                                                                                              class="form-label-group-input"><input
+                              data-v-50231512="" data-vv-as="Value: " id="floatingLabelInput34" name="callback_5"
+                              data-testid="input-" type="text" class="form-control polyfill-placeholder"
+                              style="height: 51px; padding-top: 22px;"><label data-v-a2e73f4e=""
+                                                                              id="floatingLabelInput34-label"
+                                                                              for="floatingLabelInput34"
+                                                                              class="pe-none"> Value:  </label></div>
+                              <!----></div><div data-v-a2e73f4e="" role="alert"
+                                                class="fr-validation-requirements text-left error-messages"></div>
+                              <!----></div></span></div>
+                            <div data-v-78fc165d="" class="callback-component row mb-2" index="6" floating-label="true"
+                                 data-v-3289d8b1="">
+                              <div class="text-center text-muted w-100"> SHARED STATE</div><!----><!----><!----></div>
+                            <div data-v-78fc165d="" class="callback-component row mb-2" index="7" floating-label="true"
+                                 data-v-3289d8b1="">
+                              <div class="text-center text-muted w-100"> realm: /alpha</div><!----><!----><!----></div>
+                            <div data-v-78fc165d="" id="callback_8" data-testid="fr-field-callback_8"
+                                 class="callback-component fr-field" callback="[object Object]" index="8"
+                                 step="[object Object]" floating-label="true" errors="" label="realm: " value="/alpha"
+                                 data-v-3289d8b1=""><span data-v-a2e73f4e="" data-v-50231512="" class=""
+                                                          original-type="string" callback="[object Object]" index="8"
+                                                          step="[object Object]"><div data-v-a2e73f4e="" class="w-100"><div
+                              data-v-a2e73f4e="" class="floating-label form-label-group"><div data-v-a2e73f4e=""
+                                                                                              class="form-label-group-input"><input
+                              data-v-50231512="" data-vv-as="realm: " id="floatingLabelInput40" name="callback_8"
+                              data-testid="input-" type="text" class="form-control polyfill-placeholder"
+                              style="height: 51px; padding-top: 22px;"><label data-v-a2e73f4e=""
+                                                                              id="floatingLabelInput40-label"
+                                                                              for="floatingLabelInput40"
+                                                                              class="pe-none"> realm:  </label></div>
+                              <!----></div><div data-v-a2e73f4e="" role="alert"
+                                                class="fr-validation-requirements text-left error-messages"></div>
+                              <!----></div></span></div>
+                            <div data-v-78fc165d="" class="callback-component row mb-2" index="9" floating-label="true"
+                                 data-v-3289d8b1="">
+                              <div class="text-center text-muted w-100"> counter: 0.0</div><!----><!----><!----></div>
+                            <div data-v-78fc165d="" id="callback_10" data-testid="fr-field-callback_10"
+                                 class="callback-component fr-field" callback="[object Object]" index="10"
+                                 step="[object Object]" floating-label="true" errors="" label="counter: " value="0.0"
+                                 data-v-3289d8b1=""><span data-v-a2e73f4e="" data-v-50231512="" class=""
+                                                          original-type="string" callback="[object Object]" index="10"
+                                                          step="[object Object]"><div data-v-a2e73f4e="" class="w-100"><div
+                              data-v-a2e73f4e="" class="floating-label form-label-group"><div data-v-a2e73f4e=""
+                                                                                              class="form-label-group-input"><input
+                              data-v-50231512="" data-vv-as="counter: " id="floatingLabelInput46" name="callback_10"
+                              data-testid="input-" type="text" class="form-control polyfill-placeholder"
+                              style="height: 51px; padding-top: 22px;"><label data-v-a2e73f4e=""
+                                                                              id="floatingLabelInput46-label"
+                                                                              for="floatingLabelInput46"
+                                                                              class="pe-none"> counter:  </label></div>
+                              <!----></div><div data-v-a2e73f4e="" role="alert"
+                                                class="fr-validation-requirements text-left error-messages"></div>
+                              <!----></div></span></div>
+                            <div data-v-78fc165d="" class="callback-component row mb-2" index="11" floating-label="true"
+                                 data-v-3289d8b1="">
+                              <div class="text-center text-muted w-100"> authLevel: 0</div><!----><!----><!----></div>
+                            <div data-v-78fc165d="" id="callback_12" data-testid="fr-field-callback_12"
+                                 class="callback-component fr-field" callback="[object Object]" index="12"
+                                 step="[object Object]" floating-label="true" errors="" label="authLevel: " value="0"
+                                 data-v-3289d8b1=""><span data-v-a2e73f4e="" data-v-50231512="" class=""
+                                                          original-type="string" callback="[object Object]" index="12"
+                                                          step="[object Object]"><div data-v-a2e73f4e="" class="w-100"><div
+                              data-v-a2e73f4e="" class="floating-label form-label-group"><div data-v-a2e73f4e=""
+                                                                                              class="form-label-group-input"><input
+                              data-v-50231512="" data-vv-as="authLevel: " id="floatingLabelInput52" name="callback_12"
+                              data-testid="input-" type="text" class="form-control polyfill-placeholder"
+                              style="height: 51px; padding-top: 22px;"><label data-v-a2e73f4e=""
+                                                                              id="floatingLabelInput52-label"
+                                                                              for="floatingLabelInput52"
+                                                                              class="pe-none"> authLevel:  </label></div>
+                              <!----></div><div data-v-a2e73f4e="" role="alert"
+                                                class="fr-validation-requirements text-left error-messages"></div>
+                              <!----></div></span></div>
+                            <div data-v-78fc165d="" class="callback-component row mb-2" index="13" floating-label="true"
+                                 data-v-3289d8b1="">
+                              <div class="text-center text-muted w-100"> objectAttributes: { "userName": "asdfasdf" }
+                              </div><!----><!----><!----></div>
+                            <div data-v-78fc165d="" id="callback_14" data-testid="fr-field-callback_14"
+                                 class="callback-component fr-field" callback="[object Object]" index="14"
+                                 step="[object Object]" floating-label="true" errors="" label="objectAttributes: "
+                                 value="{ &quot;userName&quot;: &quot;asdfasdf&quot; }" data-v-3289d8b1=""><span
+                              data-v-a2e73f4e="" data-v-50231512="" class="" original-type="string"
+                              callback="[object Object]" index="14" step="[object Object]"><div data-v-a2e73f4e=""
+                                                                                                class="w-100"><div
+                              data-v-a2e73f4e="" class="floating-label form-label-group"><div data-v-a2e73f4e=""
+                                                                                              class="form-label-group-input"><input
+                              data-v-50231512="" data-vv-as="objectAttributes: " id="floatingLabelInput58"
+                              name="callback_14" data-testid="input-" type="text"
+                              class="form-control polyfill-placeholder" style="height: 51px; padding-top: 22px;"><label
+                              data-v-a2e73f4e="" id="floatingLabelInput58-label" for="floatingLabelInput58"
+                              class="pe-none"> objectAttributes:  </label></div><!----></div><div data-v-a2e73f4e=""
+                                                                                                  role="alert"
+                                                                                                  class="fr-validation-requirements text-left error-messages"></div>
+                              <!----></div></span></div>
+                            <div data-v-78fc165d="" class="callback-component row mb-2" index="15" floating-label="true"
+                                 data-v-3289d8b1="">
+                              <div class="text-center text-muted w-100"> username: asdfasdf</div><!----><!----><!---->
+                            </div>
+                            <div data-v-78fc165d="" id="callback_16" data-testid="fr-field-callback_16"
+                                 class="callback-component fr-field" callback="[object Object]" index="16"
+                                 step="[object Object]" floating-label="true" errors="" label="username: "
+                                 value="asdfasdf" data-v-3289d8b1=""><span data-v-a2e73f4e="" data-v-50231512=""
+                                                                           class="" original-type="string"
+                                                                           callback="[object Object]" index="16"
+                                                                           step="[object Object]"><div
+                              data-v-a2e73f4e="" class="w-100"><div data-v-a2e73f4e=""
+                                                                    class="floating-label form-label-group"><div
+                              data-v-a2e73f4e="" class="form-label-group-input"><input data-v-50231512=""
+                                                                                       data-vv-as="username: "
+                                                                                       id="floatingLabelInput64"
+                                                                                       name="callback_16"
+                                                                                       data-testid="input-" type="text"
+                                                                                       class="form-control polyfill-placeholder"
+                                                                                       style="height: 51px; padding-top: 22px;"><label
+                              data-v-a2e73f4e="" id="floatingLabelInput64-label" for="floatingLabelInput64"
+                              class="pe-none"> username:  </label></div><!----></div><div data-v-a2e73f4e=""
+                                                                                          role="alert"
+                                                                                          class="fr-validation-requirements text-left error-messages"></div>
+                              <!----></div></span></div>
+                            <div data-v-78fc165d="" class="callback-component row mb-2" index="17" floating-label="true"
+                                 data-v-3289d8b1="">
+                              <div class="text-center text-muted w-100"> AUTHID</div><!----><!----><!----></div>
+                            <div data-v-78fc165d="" class="callback-component row mb-2" index="18" floating-label="true"
+                                 data-v-3289d8b1="">
+                              <div class="text-center text-muted w-100"> AuthID
+                                eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdXRoSW5kZXhWYWx1ZSI6ImRpc3BsYXlkZWJ1ZyIsIm90ayI6ImtwbjgwdHY4ZWFrcGR2cWl2ZDBjZDlnMXZzIiwiYXV0aEluZGV4VHlwZSI6InNlcnZpY2UiLCJyZWFsbSI6Ii9hbHBoYSIsInNlc3Npb25JZCI6IipBQUpUU1FBQ01ESUFCSFI1Y0dVQUNFcFhWRjlCVlZSSUFBSlRNUUFDTURFLipleUowZVhBaU9pSktWMVFpTENKamRIa2lPaUpLVjFRaUxDSmhiR2NpT2lKSVV6STFOaUo5LlpYbEtNR1ZZUVdsUGFVcExWakZSYVV4RFNteGliVTFwVDJsS1FrMVVTVFJSTUVwRVRGVm9WRTFxVlRKSmFYZHBXVmQ0YmtscWIybGFSMng1U1c0d0xpNXhhSEJTUm5jMWVWOVRlbXRDZEVNelozSmlRbUozTG5GUVEwaEdMVlZOU0ZoRGIxYzJielpMTjAweVlWbEhjbkZLYzJOak9GVkhXalJJVG1aTFNuQmlUMGRPYVdoa1NTMVZkVk5CVTNOUVpFaEZjMFJIYkRGV2F5MUVZVnBmYVVwWVkzVjVNRVpJYWxsVlMxTm9TblpZVlZsb1pVaHFhVXAwY2pOSFFtTndkV3BFUzJOYWVXMVhOa3BDYzBOQkxYaDRZa3g2T0hOU01sRjRWRzlVYkVvM1lWWkRVRVp2UmpadlpXdFRVM2RSTVdoelkzVlFhRWt3TW5sRlFtMDJWRVUyTUU0eGJtTmFaekZGWDJ0R1l6RklXbTVrV21aelRtMUxVWGxKUm1WVGJYQmhTWGx6YkdKRWMyMWFaMTlZWW5SRk4zaGhaVlZpZW1wblFsWnpZVkpZYVRSaFJtTjBXR2szVW5kclREWktTa0pDUjJOMFpVeFlVMWx0WWtsNmIxSndTR1JGYzBwSGNXTTJUbE13ZFVSeFpVWmtNMUUwY1c5Rk5HSnhjM3AxVjFoVWFDMVBSRWMwTkRKNlVWRk9UR3hqWWpGb1IxSllNME10UzJJNFMwTnRhM2xUZUc5alNqTkJUMWRxUjBSS05GUnJTVmhuYVVvMmNFWnpaSGxGVUZoSWNISjNibk5EVVdOSlNEaElMVzFRUVVaTFlWaHBhV3R3WWt4R2JITnpNVVpLU1hwQlgySmZTSEpNU1ZjMmFXeDBOR1V3YkVkSk1YWjNhVzVLWTFkcWQzaDNUbE56YlZGWWMzUXlZVmxzWWxNdGRWQklNblZWZFRCRFgyVlRSMUphUkZCYVZESmFVbUpETkRKVVpXaHBZemxzWms1RFpsQlVkR1oxYTJoWVRXRTBja0l0WDNaVFh6QmFXRlJvZFZkTVUzaHlUVEZQYUVadGRGSm5NelZ3ZUdGM056RkZaRmt5VlhwR1kwSjVhalpHWXpGVWFuUjBTMmh1Vm1WU1NVNXROM3B6TmxoRGIzcEpNblEzYlZCMmNqZzJVbUUwYVVSWllscHRSWFJxT0ZSM1owZExhREJuU21wRFZFOW1XR0ZwYjBkTVgwSlhUVUZ4WjNjMVpsaERWRkV1ZEhCSVltNDBZbXBMVDBGdWFtOU5URUZJYkRCWlVRLlVkQVBpbnpFOGZlN1NKYlo0OHpPYW1aWGJJTjlhYlNsTHlzcE56NGp0V1kiLCJleHAiOjE3MDY4MTk2MTcsImlhdCI6MTcwNjgxOTMxN30.qxHla9LPDpSu_qOlj1kyMEtCbSVyaeJLsxKOnpGQPSQ
+                              </div><!----><!----><!----></div>
+                            <div data-v-78fc165d="" class="callback-component row mb-2" index="19" floating-label="true"
+                                 data-v-3289d8b1="">
+                              <div class="text-center text-muted w-100"> HEADERS</div><!----><!----><!----></div>
+                            <div data-v-78fc165d="" class="callback-component row mb-2" index="20" floating-label="true"
+                                 data-v-3289d8b1="">
+                              <div class="text-center text-muted w-100"> accept [application/json]</div><!----><!---->
+                              <!----></div>
+                            <div data-v-78fc165d="" class="callback-component row mb-2" index="21" floating-label="true"
+                                 data-v-3289d8b1="">
+                              <div class="text-center text-muted w-100"> accept-api-version
+                                [protocol=1.0,resource=2.1]
+                              </div><!----><!----><!----></div>
+                            <div data-v-78fc165d="" class="callback-component row mb-2" index="22" floating-label="true"
+                                 data-v-3289d8b1="">
+                              <div class="text-center text-muted w-100"> accept-encoding [gzip, deflate, br]</div>
+                              <!----><!----><!----></div>
+                            <div data-v-78fc165d="" class="callback-component row mb-2" index="23" floating-label="true"
+                                 data-v-3289d8b1="">
+                              <div class="text-center text-muted w-100"> accept-language [en-US,en;q=0.9]</div><!---->
+                              <!----><!----></div>
+                            <div data-v-78fc165d="" class="callback-component row mb-2" index="24" floating-label="true"
+                                 data-v-3289d8b1="">
+                              <div class="text-center text-muted w-100"> content-length [1956]</div><!----><!---->
+                              <!----></div>
+                            <div data-v-78fc165d="" class="callback-component row mb-2" index="25" floating-label="true"
+                                 data-v-3289d8b1="">
+                              <div class="text-center text-muted w-100"> content-type [application/json]</div><!---->
+                              <!----><!----></div>
+                            <div data-v-78fc165d="" class="callback-component row mb-2" index="26" floating-label="true"
+                                 data-v-3289d8b1="">
+                              <div class="text-center text-muted w-100"> cookie [amlbcookie=01]</div><!----><!---->
+                              <!----></div>
+                            <div data-v-78fc165d="" class="callback-component row mb-2" index="27" floating-label="true"
+                                 data-v-3289d8b1="">
+                              <div class="text-center text-muted w-100"> host
+                                [openam-tntp-display-debug.forgeblocks.com]
+                              </div><!----><!----><!----></div>
+                            <div data-v-78fc165d="" class="callback-component row mb-2" index="28" floating-label="true"
+                                 data-v-3289d8b1="">
+                              <div class="text-center text-muted w-100"> origin
+                                [https://openam-tntp-display-debug.forgeblocks.com]
+                              </div><!----><!----><!----></div>
+                            <div data-v-78fc165d="" class="callback-component row mb-2" index="29" floating-label="true"
+                                 data-v-3289d8b1="">
+                              <div class="text-center text-muted w-100"> referer
+                                [https://openam-tntp-display-debug.forgeblocks.com/]
+                              </div><!----><!----><!----></div>
+                            <div data-v-78fc165d="" class="callback-component row mb-2" index="30" floating-label="true"
+                                 data-v-3289d8b1="">
+                              <div class="text-center text-muted w-100"> sec-ch-ua [&amp;#34;Google Chrome&amp;#34;;v=&amp;#34;119&amp;#34;,
+                                &amp;#34;Chromium&amp;#34;;v=&amp;#34;119&amp;#34;, &amp;#34;Not?A_Brand&amp;#34;;v=&amp;#34;24&amp;#34;]
+                              </div><!----><!----><!----></div>
+                            <div data-v-78fc165d="" class="callback-component row mb-2" index="31" floating-label="true"
+                                 data-v-3289d8b1="">
+                              <div class="text-center text-muted w-100"> sec-ch-ua-mobile [?0]</div><!----><!---->
+                              <!----></div>
+                            <div data-v-78fc165d="" class="callback-component row mb-2" index="32" floating-label="true"
+                                 data-v-3289d8b1="">
+                              <div class="text-center text-muted w-100"> sec-ch-ua-platform [&amp;#34;macOS&amp;#34;]
+                              </div><!----><!----><!----></div>
+                            <div data-v-78fc165d="" class="callback-component row mb-2" index="33" floating-label="true"
+                                 data-v-3289d8b1="">
+                              <div class="text-center text-muted w-100"> sec-fetch-dest [empty]</div><!----><!---->
+                              <!----></div>
+                            <div data-v-78fc165d="" class="callback-component row mb-2" index="34" floating-label="true"
+                                 data-v-3289d8b1="">
+                              <div class="text-center text-muted w-100"> sec-fetch-mode [cors]</div><!----><!---->
+                              <!----></div>
+                            <div data-v-78fc165d="" class="callback-component row mb-2" index="35" floating-label="true"
+                                 data-v-3289d8b1="">
+                              <div class="text-center text-muted w-100"> sec-fetch-site [same-origin]</div><!---->
+                              <!----><!----></div>
+                            <div data-v-78fc165d="" class="callback-component row mb-2" index="36" floating-label="true"
+                                 data-v-3289d8b1="">
+                              <div class="text-center text-muted w-100"> user-agent [Mozilla/5.0 (Macintosh; Intel Mac
+                                OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36]
+                              </div><!----><!----><!----></div>
+                            <div data-v-78fc165d="" class="callback-component row mb-2" index="37" floating-label="true"
+                                 data-v-3289d8b1="">
+                              <div class="text-center text-muted w-100"> via [1.1 google]</div><!----><!----><!---->
+                            </div>
+                            <div data-v-78fc165d="" class="callback-component row mb-2" index="38" floating-label="true"
+                                 data-v-3289d8b1="">
+                              <div class="text-center text-muted w-100"> x-cloud-trace-context
+                                [416651bd6fbd982ff46e438c6aa1ed21/8212581440640608282]
+                              </div><!----><!----><!----></div>
+                            <div data-v-78fc165d="" class="callback-component row mb-2" index="39" floating-label="true"
+                                 data-v-3289d8b1="">
+                              <div class="text-center text-muted w-100"> x-forgerock-transactionid
+                                [805baf08-bcb4-4881-b265-9f861bf9d60e-request-2/0]
+                              </div><!----><!----><!----></div>
+                            <div data-v-78fc165d="" class="callback-component row mb-2" index="40" floating-label="true"
+                                 data-v-3289d8b1="">
+                              <div class="text-center text-muted w-100"> x-forwarded-for [76.218.232.195,
+                                34.117.237.198, 10.138.15.213]
+                              </div><!----><!----><!----></div>
+                            <div data-v-78fc165d="" class="callback-component row mb-2" index="41" floating-label="true"
+                                 data-v-3289d8b1="">
+                              <div class="text-center text-muted w-100"> x-forwarded-proto [https]</div><!----><!---->
+                              <!----></div>
+                            <div data-v-78fc165d="" class="callback-component row mb-2" index="42" floating-label="true"
+                                 data-v-3289d8b1="">
+                              <div class="text-center text-muted w-100"> x-real-ip [76.218.232.195]</div><!----><!---->
+                              <!----></div>
+                            <div data-v-78fc165d="" class="callback-component row mb-2" index="43" floating-label="true"
+                                 data-v-3289d8b1="">
+                              <div class="text-center text-muted w-100"> x-requested-with [forgerock-sdk]</div><!---->
+                              <!----><!----></div>
+                            <div data-v-78fc165d="" class="callback-component row mb-2" index="44" floating-label="true"
+                                 data-v-3289d8b1="">
+                              <div class="text-center text-muted w-100"> x-trusted-forwarded-for [76.218.232.195,
+                                34.117.237.198, 10.138.15.213]
+                              </div><!----><!----><!----></div>
+                            <div data-v-78fc165d="" class="callback-component row mb-2" index="45" floating-label="true"
+                                 data-v-3289d8b1="">
+                              <div class="text-center text-muted w-100"> CLIENT IP</div><!----><!----><!----></div>
+                            <div data-v-78fc165d="" class="callback-component row mb-2" index="46" floating-label="true"
+                                 data-v-3289d8b1="">
+                              <div class="text-center text-muted w-100"> ClientIp 76.218.232.195</div><!----><!---->
+                              <!----></div>
+                            <div data-v-78fc165d="" class="callback-component row mb-2" index="47" floating-label="true"
+                                 data-v-3289d8b1="">
+                              <div class="text-center text-muted w-100"> COOKIES</div><!----><!----><!----></div>
+                            <div data-v-78fc165d="" class="callback-component row mb-2" index="48" floating-label="true"
+                                 data-v-3289d8b1="">
+                              <div class="text-center text-muted w-100"> amlbcookie 01</div><!----><!----><!----></div>
+                            <div data-v-78fc165d="" class="callback-component row mb-2" index="49" floating-label="true"
+                                 data-v-3289d8b1="">
+                              <div class="text-center text-muted w-100"> HOSTNAME</div><!----><!----><!----></div>
+                            <div data-v-78fc165d="" class="callback-component row mb-2" index="50" floating-label="true"
+                                 data-v-3289d8b1="">
+                              <div class="text-center text-muted w-100"> HostName
+                                openam-tntp-display-debug.forgeblocks.com
+                              </div><!----><!----><!----></div>
+                            <div data-v-78fc165d="" class="callback-component row mb-2" index="51" floating-label="true"
+                                 data-v-3289d8b1="">
+                              <div class="text-center text-muted w-100"> LOCALE</div><!----><!----><!----></div>
+                            <div data-v-78fc165d="" class="callback-component row mb-2" index="52" floating-label="true"
+                                 data-v-3289d8b1="">
+                              <div class="text-center text-muted w-100"> Preferred Locale English (United States)</div>
+                              <!----><!----><!----></div>
+                            <div data-v-78fc165d="" class="callback-component row mb-2" index="53" floating-label="true"
+                                 data-v-3289d8b1="">
+                              <div class="text-center text-muted w-100"> PARAMETERS</div><!----><!----><!----></div>
+                            <div data-v-78fc165d="" class="callback-component row mb-2" index="54" floating-label="true"
+                                 data-v-3289d8b1="">
+                              <div class="text-center text-muted w-100"> authIndexType [service]</div><!----><!---->
+                              <!----></div>
+                            <div data-v-78fc165d="" class="callback-component row mb-2" index="55" floating-label="true"
+                                 data-v-3289d8b1="">
+                              <div class="text-center text-muted w-100"> authIndexValue [displaydebug]</div><!---->
+                              <!----><!----></div>
+                            <div data-v-78fc165d="" class="callback-component row mb-2" index="56" floating-label="true"
+                                 data-v-3289d8b1="">
+                              <div class="text-center text-muted w-100"> realm [/alpha]</div><!----><!----><!----></div>
+                            <div data-v-78fc165d="" class="callback-component row mb-2" index="57" floating-label="true"
+                                 data-v-3289d8b1="">
+                              <div class="text-center text-muted w-100"> SERVER URL</div><!----><!----><!----></div>
+                            <div data-v-78fc165d="" class="callback-component row mb-2" index="58" floating-label="true"
+                                 data-v-3289d8b1="">
+                              <div class="text-center text-muted w-100"> Server URL
+                                https://openam-tntp-display-debug.forgeblocks.com:443/am
+                              </div><!----><!----><!----></div>
+                            <div data-v-78fc165d="" data-v-3289d8b1="" class="d-flex mt-3 flex-column">
+                              <button data-v-78fc165d="" data-v-3289d8b1="" type="submit" class="btn btn-primary">
+                                Next
+                              </button>
+                            </div><!----></form>
+                        </div>
+                      </div><!----><!----><!----><!----></div>
+                  </div>
                 </div>
-            </main><!----></div>
-    </div>
-    <div class="notifications ml-3" style="width: 320px; bottom: 0px; left: 0px;"><span></span></div>
+              </section>
+            </div><!----></div>
+        </div>
+      </main><!----></div>
+  </div>
+  <div class="notifications ml-3" style="width: 320px; bottom: 0px; left: 0px;"><span></span></div>
 </div>
 <div id="user-theme-script-container"></div>
-</body>
+
+
+
 <script>
-    let first_header = true
-    let table = ''
-    let headers_end = false
-    const headers = [
-        "accept",
-        "accept-api-version",
-        "accept-encoding",
-        "accept-language",
-        "content-length",
-        "content-type",
-        "cookie",
-        "host",
-        "origin",
-        "referer",
-        "sec-ch-ua",
-        "sec-ch-ua-mobile",
-        "sec-ch-ua-platform",
-        "sec-fetch-dest",
-        "sec-fetch-mode",
-        "sec-fetch-site",
-        "user-agent",
-        "x-cloud-trace-context",
-        "x-forgerock-transactionid",
-        "x-forwarded-for",
-        "x-forwarded-proto",
-        "x-real-ip",
-        "x-requested-with",
-        "x-trusted-forwarded-for"
-    ]
 
-    const parameters = [
-        "authIndexType",
-        "authIndexValue",
-        "realm"
-    ]
+  (async function onLoad() {
+    // console.log("hello justin");
+    //
+    //
+    // let first_header = true
+     let table = ''
+    // let headers_end = false
+    // const headers = [
+    //   "accept",
+    //   "accept-api-version",
+    //   "accept-encoding",
+    //   "accept-language",
+    //   "content-length",
+    //   "content-type",
+    //   "cookie",
+    //   "host",
+    //   "origin",
+    //   "referer",
+    //   "sec-ch-ua",
+    //   "sec-ch-ua-mobile",
+    //   "sec-ch-ua-platform",
+    //   "sec-fetch-dest",
+    //   "sec-fetch-mode",
+    //   "sec-fetch-site",
+    //   "user-agent",
+    //   "x-cloud-trace-context",
+    //   "x-forgerock-transactionid",
+    //   "x-forwarded-for",
+    //   "x-forwarded-proto",
+    //   "x-real-ip",
+    //   "x-requested-with",
+    //   "x-trusted-forwarded-for"
+    // ]
+    //
+    // const parameters = [
+    //   "authIndexType",
+    //   "authIndexValue",
+    //   "realm"
+    // ]
+    //
+    // console.log("Right before the big for loop.  Here is div query length with new onLoad?: " + document.getElementsByTagName("div").length);
+    function trimmer(string){
+       let trimmed = ''
 
-       for (const val of document.querySelectorAll('div')) {
-           let string = val.textContent.trimStart(" ").trimEnd(" ")
-           val.textContent = "AuthID"
-
-
-           //Create tables for values that will not change
-            if(string.startsWith("AuthID")){
-                table += '<table>'
-                table += '<tr><td><code>'+string+'</code></td><td>'+string+'</td></tr></table>'
-                console.log("AuthId table \n" + table)
-                val.innerHTML = table
-                table = ''
-            } else if(string.startsWith("ClientIp")){
-                table += '<table>'
-                table += '<tr><td><code>'+string+'</code></td><td>'+string+'</td></tr></table>'
-                console.log("ClientIP table \n" + table)
-                val.innerHTML = table
-                table=''
-            }else if(string.startsWith("Server URL")){
-                table += '<table>'
-                table += '<tr><td><code>'+string+'</code></td><td>'+string+'</td></tr></table>'
-                console.log("Server URL table \n" + table)
-                val.innerHTML = table
-                table=''
-            }else if(string.startsWith("Preferred Locale")){
-                table += '<table>'
-                table += '<tr><td><code>'+string+'</code></td><td>'+string+'</td></tr></table>'
-                console.log("Preferred Locale table \n" + table)
-                val.innerHTML = table
-                table=''
-            }else if(string.startsWith("HostName")){
-                table += '<table>'
-                table += '<tr><td><code>'+string+'</code></td><td>'+string+'</td></tr></table>'
-                console.log("Hostname table \n" + table)
-                val.innerHTML = table
-                table = ''
-            }
-
-
-            //Create h3 tags for headers
-           if (string === "h3NODE STATE/h3" ||
-               string === "h3AUTHID/h3" ||
-               string === "h3HEADERS/h3" ||
-               string === "h3CLIENT IP/h3" ||
-               string === "h3COOKIES/h3" ||
-               string === "h3HOSTNAME/h3" ||
-               string === "h3LOCALE/h3" ||
-               string === "h3PARAMETERS/h3" ||
-               string === "h3SERVER URL/h3" ||
-               string === "h3SHARED\n" +
-               "                                                                STATE/h3") {
-                console.log("Changing Header for "+string+ " to <h3>...")
-               val.outerHTML = "<h3 style='border-bottom: 2px solid black; padding-top: 5px'>" + val.outerHTML.replace("h3", "").replace("/h3", "") + "</h3>"
-           }
-           //Create h4 tags for Key: Value pairs
-           if (string === "Key" || string === "Value") {
-               val.innerHTML = "<h4>" + val.outerHTML + "</h4>"
-               console.log("Changing "+string +"to h4...")
-           }
-
-        //Create table for Header values
-        for(key in headers) {
-            if (string.startsWith(headers[key])) {
-
-                if (first_header === true) {
-                    table += "<table>";
-                    first_header = false;
-                }
-                else if (string.startsWith(headers[headers.length - 1])) {
-                    let trimmed = '';
-                    for (letter in string) {
-                        if (string[letter] === "[") {
-                            break;
-                        } else {
-                            trimmed += string[letter]
-                        }
-                    }
-                    console.log("Inside headers with trimmed "+ trimmed)
-                    table += "<tr><td><code>" + trimmed + "</code></td><td>" + string.replace(trimmed, "") + "</td></tr></table>"
-                    val.innerHTML = ""
-                    headers_end = true;
-
-                } else {
-                    let trimmed = '';
-                    for (letter in string) {
-                        if (string[letter] === "[") {
-                            break;
-                        } else {
-                            trimmed += string[letter]
-                        }
-                    }
-                    table += "<tr><td><code>" + trimmed + "</code></td><td>" + string.replace(trimmed, "") + "</td></tr>"
-                    val.innerHTML = ""
-                    break
-                }
-                if (headers_end) {
-                    val.innerHTML = table
-                    headers_end = false
-                    console.log("table in headers_end \n" + table)
-                }
-            }
+      if(string.startsWith("ClientIp") || string.startsWith("HostName") || string.startsWith("AuthID")){
+        for(letter in string){
+          if(string[letter] === " "){
+            break
+          }
+          else{
+            trimmed += string[letter]
+          }
         }
+       } else if(string.startsWith("Preferred Locale") || string.startsWith("Server URL")){
+        let space_counter = 0;
+        for(letter in string){
+          if(space_counter === 2){
+            space_counter = 0
+            break
+          }
+          if(string[letter] === " "){
+            trimmed += string[letter]
+            space_counter += 1
+          } else{
+            trimmed += string[letter]
+          }
+        }
+      }
+      return trimmed;
+    }
+
+
+    const headers = [
+            "authIndexType",
+            "authIndexValue",
+            "realm"
+    ]
+    let headers_table = '';
+    let first_headers = true;
+    let very_end_headers = false;
+    let trimmed_headers;
+     for (const val of document.querySelectorAll('div')) {
+       let string = val.textContent.trimStart(" ").trimEnd(" ")
+
+       let trimmer_val;
+       //Create tables for values that will not change
+       if (string.startsWith("AuthID")) {
+         trimmer_val = trimmer(string);
+         table += '<table>'
+         table += '<tr><td><code>' + trimmer_val + '</code></td><td style="overflow-wrap: anywhere">' + val.textContent.replace("AuthID", "") + '</td></tr></table>'
+         trimmer_val = ''
+         val.innerHTML = table
+         table = ''
+       } else if (string.startsWith("ClientIp")) {
+         trimmer_val = trimmer(string);
+         table += '<table>'
+         table += '<tr><td><code>' + trimmer_val + '</code></td><td>' + val.textContent.replace("ClientIp", "") + '</td></tr></table>'
+         val.innerHTML = table
+         table = ''
+       } else if (string.startsWith("Server URL")) {
+         trimmer_val = trimmer(string)
+         table += '<table>'
+         table += '<tr><td><code>' + trimmer_val + '</code></td><td>' + string.replace("Server URL", "") + '</td></tr></table>'
+         val.innerHTML = table
+         table = ''
+       } else if (string.startsWith("Preferred Locale")) {
+         trimmer_val = trimmer(string)
+         table += '<table>'
+         table += '<tr><td><code>' + trimmer_val + '</code></td><td>' + string.replace("Preferred Locale", "") + '</td></tr></table>'
+         val.innerHTML = table
+         table = ''
+       } else if (string.startsWith("HostName")) {
+         trimmer_val = trimmer(string)
+         table += '<table>'
+         table += '<tr><td><code>' + trimmer_val + '</code></td><td>' + string.replace("HostName", "") + '</td></tr></table>'
+         val.innerHTML = table
+         table = ''
        }
+
+
+       //Create h3 tags for headers
+       if (string === "NODE STATE" ||
+               string === "AUTHID" ||
+               string === "HEADERS" ||
+               string === "CLIENT IP" ||
+               string === "COOKIES" ||
+               string === "HOSTNAME" ||
+               string === "LOCALE" ||
+               string === "PARAMETERS" ||
+               string === "SERVER URL" ||
+               string === "SHARED STATE") {
+         val.outerHTML = "<h3 style='border-bottom: 2px solid black; padding-top: 5px'>" + val.outerHTML.replace("h3", "").replace("/h3", "") + "</h3>"
+       }
+       //Create h4 tags for Key: Value pairs
+       if (string === "Key" || string === "Value") {
+         val.outerHTML = "<h4>" + val.outerHTML + "</h4>"
+       }
+
+
+
+
+     }
+
+
+    // for (const val of document.querySelectorAll('div')) {
+    //   let string = val.textContent.trimStart(" ").trimEnd(" ")
+    //
+    //   for(key in headers){
+    //     if(string.startsWith(headers[key])){
+    //       console.log("match with " + string)
+    //     }
+    //   }
+    //
+    //
+    // }
+  })();
+
 </script>
+
+</body>
 </html>
