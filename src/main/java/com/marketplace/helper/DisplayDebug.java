@@ -797,427 +797,353 @@ public class DisplayDebug extends AbstractDecisionNode {
 
 	public void displayhtml_Cloud(ArrayList<Callback> callbacks, List<String> paramKeys, List<String> headerKeys, List<String> cookies){
 
-//		String javascript = "    let first_header = true\n" +
-//				"    let table = ''\n" +
-//				"    let headers_end = false\n" +
-//				"    const headers = [\n" +
-//				"        \"accept\",\n" +
-//				"        \"accept-api-version\",\n" +
-//				"        \"accept-encoding\",\n" +
-//				"        \"accept-language\",\n" +
-//				"        \"content-length\",\n" +
-//				"        \"content-type\",\n" +
-//				"        \"cookie\",\n" +
-//				"        \"host\",\n" +
-//				"        \"origin\",\n" +
-//				"        \"referer\",\n" +
-//				"        \"sec-ch-ua\",\n" +
-//				"        \"sec-ch-ua-mobile\",\n" +
-//				"        \"sec-ch-ua-platform\",\n" +
-//				"        \"sec-fetch-dest\",\n" +
-//				"        \"sec-fetch-mode\",\n" +
-//				"        \"sec-fetch-site\",\n" +
-//				"        \"user-agent\",\n" +
-//				"        \"x-cloud-trace-context\",\n" +
-//				"        \"x-forgerock-transactionid\",\n" +
-//				"        \"x-forwarded-for\",\n" +
-//				"        \"x-forwarded-proto\",\n" +
-//				"        \"x-real-ip\",\n" +
-//				"        \"x-requested-with\",\n" +
-//				"        \"x-trusted-forwarded-for\"\n" +
-//				"    ]\n" +
-//				"\n" +
-//				"    const parameters = [\n" +
-//				"        \"authIndexType\",\n" +
-//				"        \"authIndexValue\",\n" +
-//				"        \"realm\"\n" +
-//				"    ]\n" +
-//				"\n" +
-//				"       for (const val of document.querySelectorAll('div')) {\n" +
-//				"           let string = val.textContent.trimStart(\" \").trimEnd(\" \")\n" +
-//				"\n" +
-//				"\n" +
-//				"           //Create tables for values that will not change\n" +
-//				"            if(string.startsWith(\"AuthID\")){\n" +
-//				"                table += '<table>'\n" +
-//				"                table += '<tr><td><code>'+string+'</code></td><td>'+string+'</td></tr></table>'\n" +
-//				"                val.innerHTML = table\n" +
-//				"            } else if(string.startsWith(\"ClientIp\")){\n" +
-//				"                table += '<table>'\n" +
-//				"                table += '<tr><td><code>'+string+'</code></td><td>'+string+'</td></tr></table>'\n" +
-//				"                val.innerHTML = table\n" +
-//				"            }else if(string.startsWith(\"Server URL\")){\n" +
-//				"                table += '<table>'\n" +
-//				"                table += '<tr><td><code>'+string+'</code></td><td>'+string+'</td></tr></table>'\n" +
-//				"                val.innerHTML = table\n" +
-//				"            }else if(string.startsWith(\"Preferred Locale\")){\n" +
-//				"                table += '<table>'\n" +
-//				"                table += '<tr><td><code>'+string+'</code></td><td>'+string+'</td></tr></table>'\n" +
-//				"                val.innerHTML = table\n" +
-//				"            }else if(string.startsWith(\"HostName\")){\n" +
-//				"                table += '<table>'\n" +
-//				"                table += '<tr><td><code>'+string+'</code></td><td>'+string+'</td></tr></table>'\n" +
-//				"                val.innerHTML = table\n" +
-//				"            }\n" +
-//				"\n" +
-//				"\n" +
-//				"            //Create h3 tags for headers\n" +
-//				"           if (string === \"h3NODE STATE/h3\" ||\n" +
-//				"               string === \"h3AUTHID/h3\" ||\n" +
-//				"               string === \"h3HEADERS/h3\" ||\n" +
-//				"               string === \"h3CLIENT IP/h3\" ||\n" +
-//				"               string === \"h3COOKIES/h3\" ||\n" +
-//				"               string === \"h3HOSTNAME/h3\" ||\n" +
-//				"               string === \"h3LOCALE/h3\" ||\n" +
-//				"               string === \"h3PARAMETERS/h3\" ||\n" +
-//				"               string === \"h3SERVER URL/h3\" ||\n" +
-//				"               string === \"h3SHARED\\n\" +\n" +
-//				"               \"                                                                STATE/h3\") {\n" +
-//				"\n" +
-//				"               val.outerHTML = \"<h3 style='border-bottom: 2px solid black; padding-top: 5px'>\" + val.outerHTML.replace(\"h3\", \"\").replace(\"/h3\", \"\") + \"</h3>\"\n" +
-//				"           }\n" +
-//				"           //Create h4 tags for Key: Value pairs\n" +
-//				"           if (string === \"Key\" || string === \"Value\") {\n" +
-//				"               val.innerHTML = \"<h4>\" + val.outerHTML + \"</h4>\"\n" +
-//				"           }\n" +
-//				"\n" +
-//				"        //Create table for Header values\n" +
-//				"        for(key in headers) {\n" +
-//				"            if (string.startsWith(headers[key])) {\n" +
-//				"\n" +
-//				"                if (first_header === true) {\n" +
-//				"                    table += \"<table>\";\n" +
-//				"                    first_header = false;\n" +
-//				"                }\n" +
-//				"                else if (string.startsWith(headers[headers.length - 1])) {\n" +
-//				"                    let trimmed = '';\n" +
-//				"                    for (letter in string) {\n" +
-//				"                        if (string[letter] === \"[\") {\n" +
-//				"                            break;\n" +
-//				"                        } else {\n" +
-//				"                            trimmed += string[letter]\n" +
-//				"                        }\n" +
-//				"                    }\n" +
-//				"                    table += \"<tr><td><code>\" + trimmed + \"</code></td><td>\" + string.replace(trimmed, \"\") + \"</td></tr></table>\"\n" +
-//				"                    val.innerHTML = \"\"\n" +
-//				"                    headers_end = true;\n" +
-//				"\n" +
-//				"                } else {\n" +
-//				"                    let trimmed = '';\n" +
-//				"                    for (letter in string) {\n" +
-//				"                        if (string[letter] === \"[\") {\n" +
-//				"                            break;\n" +
-//				"                        } else {\n" +
-//				"                            trimmed += string[letter]\n" +
-//				"                        }\n" +
-//				"                    }\n" +
-//				"                    table += \"<tr><td><code>\" + trimmed + \"</code></td><td>\" + string.replace(trimmed, \"\") + \"</td></tr>\"\n" +
-//				"                    val.innerHTML = \"\"\n" +
-//				"                    break\n" +
-//				"                }\n" +
-//				"                if (headers_end) {\n" +
-//				"                    val.innerHTML = table\n" +
-//				"                    headers_end = false\n" +
-//				"                }\n" +
-//				"            }\n" +
-//				"        }\n" +
-//				"       }";
-//
-//		String javascript = " let first_header = true\n" +
-//				"    let table = ''\n" +
-//				"    let headers_end = false\n" +
-//				"    const headers = [\n" +
-//				"        \"accept\",\n" +
-//				"        \"accept-api-version\",\n" +
-//				"        \"accept-encoding\",\n" +
-//				"        \"accept-language\",\n" +
-//				"        \"content-length\",\n" +
-//				"        \"content-type\",\n" +
-//				"        \"cookie\",\n" +
-//				"        \"host\",\n" +
-//				"        \"origin\",\n" +
-//				"        \"referer\",\n" +
-//				"        \"sec-ch-ua\",\n" +
-//				"        \"sec-ch-ua-mobile\",\n" +
-//				"        \"sec-ch-ua-platform\",\n" +
-//				"        \"sec-fetch-dest\",\n" +
-//				"        \"sec-fetch-mode\",\n" +
-//				"        \"sec-fetch-site\",\n" +
-//				"        \"user-agent\",\n" +
-//				"        \"x-cloud-trace-context\",\n" +
-//				"        \"x-forgerock-transactionid\",\n" +
-//				"        \"x-forwarded-for\",\n" +
-//				"        \"x-forwarded-proto\",\n" +
-//				"        \"x-real-ip\",\n" +
-//				"        \"x-requested-with\",\n" +
-//				"        \"x-trusted-forwarded-for\"\n" +
-//				"    ]\n" +
-//				"\n" +
-//				"    const parameters = [\n" +
-//				"        \"authIndexType\",\n" +
-//				"        \"authIndexValue\",\n" +
-//				"        \"realm\"\n" +
-//				"    ]\n" +
-//				"\n" +
-//				"       for (const val of document.querySelectorAll('div')) {\n" +
-//				"           let string = val.textContent.trimStart(\" \").trimEnd(\" \")\n" +
-//				"           val.textContent = \"AuthID\"\n" +
-//				"\n" +
-//				"\n" +
-//				"           //Create tables for values that will not change\n" +
-//				"            if(string.startsWith(\"AuthID\")){\n" +
-//				"                table += '<table>'\n" +
-//				"                table += '<tr><td><code>'+string+'</code></td><td>'+string+'</td></tr></table>'\n" +
-//				"                console.log(\"AuthId table \\n\" + table)\n" +
-//				"                val.innerHTML = table\n" +
-//				"                table = ''\n" +
-//				"            } else if(string.startsWith(\"ClientIp\")){\n" +
-//				"                table += '<table>'\n" +
-//				"                table += '<tr><td><code>'+string+'</code></td><td>'+string+'</td></tr></table>'\n" +
-//				"                console.log(\"ClientIP table \\n\" + table)\n" +
-//				"                val.innerHTML = table\n" +
-//				"                table=''\n" +
-//				"            }else if(string.startsWith(\"Server URL\")){\n" +
-//				"                table += '<table>'\n" +
-//				"                table += '<tr><td><code>'+string+'</code></td><td>'+string+'</td></tr></table>'\n" +
-//				"                console.log(\"Server URL table \\n\" + table)\n" +
-//				"                val.innerHTML = table\n" +
-//				"                table=''\n" +
-//				"            }else if(string.startsWith(\"Preferred Locale\")){\n" +
-//				"                table += '<table>'\n" +
-//				"                table += '<tr><td><code>'+string+'</code></td><td>'+string+'</td></tr></table>'\n" +
-//				"                console.log(\"Preferred Locale table \\n\" + table)\n" +
-//				"                val.innerHTML = table\n" +
-//				"                table=''\n" +
-//				"            }else if(string.startsWith(\"HostName\")){\n" +
-//				"                table += '<table>'\n" +
-//				"                table += '<tr><td><code>'+string+'</code></td><td>'+string+'</td></tr></table>'\n" +
-//				"                console.log(\"Hostname table \\n\" + table)\n" +
-//				"                val.innerHTML = table\n" +
-//				"                table = ''\n" +
-//				"            }\n" +
-//				"\n" +
-//				"\n" +
-//				"            //Create h3 tags for headers\n" +
-//				"           if (string === \"h3NODE STATE/h3\" ||\n" +
-//				"               string === \"h3AUTHID/h3\" ||\n" +
-//				"               string === \"h3HEADERS/h3\" ||\n" +
-//				"               string === \"h3CLIENT IP/h3\" ||\n" +
-//				"               string === \"h3COOKIES/h3\" ||\n" +
-//				"               string === \"h3HOSTNAME/h3\" ||\n" +
-//				"               string === \"h3LOCALE/h3\" ||\n" +
-//				"               string === \"h3PARAMETERS/h3\" ||\n" +
-//				"               string === \"h3SERVER URL/h3\" ||\n" +
-//				"               string === \"h3SHARED\\n\" +\n" +
-//				"               \"                                                                STATE/h3\") {\n" +
-//				"                console.log(\"Changing Header for \"+string+ \" to <h3>...\")\n" +
-//				"               val.outerHTML = \"<h3 style='border-bottom: 2px solid black; padding-top: 5px'>\" + val.outerHTML.replace(\"h3\", \"\").replace(\"/h3\", \"\") + \"</h3>\"\n" +
-//				"           }\n" +
-//				"           //Create h4 tags for Key: Value pairs\n" +
-//				"           if (string === \"Key\" || string === \"Value\") {\n" +
-//				"               val.innerHTML = \"<h4>\" + val.outerHTML + \"</h4>\"\n" +
-//				"               console.log(\"Changing \"+string +\"to h4...\")\n" +
-//				"           }\n" +
-//				"\n" +
-//				"        //Create table for Header values\n" +
-//				"        for(key in headers) {\n" +
-//				"            if (string.startsWith(headers[key])) {\n" +
-//				"\n" +
-//				"                if (first_header === true) {\n" +
-//				"                    table += \"<table>\";\n" +
-//				"                    first_header = false;\n" +
-//				"                }\n" +
-//				"                else if (string.startsWith(headers[headers.length - 1])) {\n" +
-//				"                    let trimmed = '';\n" +
-//				"                    for (letter in string) {\n" +
-//				"                        if (string[letter] === \"[\") {\n" +
-//				"                            break;\n" +
-//				"                        } else {\n" +
-//				"                            trimmed += string[letter]\n" +
-//				"                        }\n" +
-//				"                    }\n" +
-//				"                    console.log(\"Inside headers with trimmed \"+ trimmed)\n" +
-//				"                    table += \"<tr><td><code>\" + trimmed + \"</code></td><td>\" + string.replace(trimmed, \"\") + \"</td></tr></table>\"\n" +
-//				"                    val.innerHTML = \"\"\n" +
-//				"                    headers_end = true;\n" +
-//				"\n" +
-//				"                } else {\n" +
-//				"                    let trimmed = '';\n" +
-//				"                    for (letter in string) {\n" +
-//				"                        if (string[letter] === \"[\") {\n" +
-//				"                            break;\n" +
-//				"                        } else {\n" +
-//				"                            trimmed += string[letter]\n" +
-//				"                        }\n" +
-//				"                    }\n" +
-//				"                    table += \"<tr><td><code>\" + trimmed + \"</code></td><td>\" + string.replace(trimmed, \"\") + \"</td></tr>\"\n" +
-//				"                    val.innerHTML = \"\"\n" +
-//				"                    break\n" +
-//				"                }\n" +
-//				"                if (headers_end) {\n" +
-//				"                    val.innerHTML = table\n" +
-//				"                    headers_end = false\n" +
-//				"                    console.log(\"table in headers_end \\n\" + table)\n" +
-//				"                }\n" +
-//				"            }\n" +
-//				"        }\n" +
-//				"       }";
 
-		String javascript = "\n" +
-				"  (async function onLoad() {\n" +
-				"    // console.log(\"hello justin\");\n" +
+
+		String javascript = "  (async function onLoad() {\n" +
 				"    //\n" +
 				"    //\n" +
-				"    // let first_header = true\n" +
-				"    // let table = ''\n" +
-				"    // let headers_end = false\n" +
-				"    // const headers = [\n" +
-				"    //   \"accept\",\n" +
-				"    //   \"accept-api-version\",\n" +
-				"    //   \"accept-encoding\",\n" +
-				"    //   \"accept-language\",\n" +
-				"    //   \"content-length\",\n" +
-				"    //   \"content-type\",\n" +
-				"    //   \"cookie\",\n" +
-				"    //   \"host\",\n" +
-				"    //   \"origin\",\n" +
-				"    //   \"referer\",\n" +
-				"    //   \"sec-ch-ua\",\n" +
-				"    //   \"sec-ch-ua-mobile\",\n" +
-				"    //   \"sec-ch-ua-platform\",\n" +
-				"    //   \"sec-fetch-dest\",\n" +
-				"    //   \"sec-fetch-mode\",\n" +
-				"    //   \"sec-fetch-site\",\n" +
-				"    //   \"user-agent\",\n" +
-				"    //   \"x-cloud-trace-context\",\n" +
-				"    //   \"x-forgerock-transactionid\",\n" +
-				"    //   \"x-forwarded-for\",\n" +
-				"    //   \"x-forwarded-proto\",\n" +
-				"    //   \"x-real-ip\",\n" +
-				"    //   \"x-requested-with\",\n" +
-				"    //   \"x-trusted-forwarded-for\"\n" +
-				"    // ]\n" +
-				"    //\n" +
-				"    // const parameters = [\n" +
-				"    //   \"authIndexType\",\n" +
-				"    //   \"authIndexValue\",\n" +
-				"    //   \"realm\"\n" +
-				"    // ]\n" +
-				"    //\n" +
-				"    // console.log(\"Right before the big for loop.  Here is div query length with new onLoad?: \" + document.getElementsByTagName(\"div\").length);\n" +
+				"    let first_header = true\n" +
+				"     let table = ''\n" +
+				"    let headers_end = false\n" +
+				"\n" +
+				"\n" +
+				"    const parameters = " + paramKeys +"\n"+
+				"\n" +
+				"\n" +
+				"    function trimmer(string){\n" +
+				"      let trimmed = ''\n" +
+				"      let letter = ''\n" +
+				"      if(string.startsWith(\"ClientIp\") || string.startsWith(\"HostName\") || string.startsWith(\"AuthID\")){\n" +
+				"        for(letter in string){\n" +
+				"          if(string[letter] === \" \"){\n" +
+				"            break\n" +
+				"          }\n" +
+				"          else{\n" +
+				"            trimmed += string[letter]\n" +
+				"          }\n" +
+				"        }\n" +
+				"       } else if(string.startsWith(\"Preferred Locale\") || string.startsWith(\"Server URL\")){\n" +
+				"        let space_counter = 0;\n" +
+				"        for(letter in string){\n" +
+				"          if(space_counter === 2){\n" +
+				"            space_counter = 0\n" +
+				"            break\n" +
+				"          }\n" +
+				"          if(string[letter] === \" \"){\n" +
+				"            trimmed += string[letter]\n" +
+				"            space_counter += 1\n" +
+				"          } else{\n" +
+				"            trimmed += string[letter]\n" +
+				"          }\n" +
+				"        }\n" +
+				"      }\n" +
+				"      return trimmed;\n" +
+				"    }\n" +
+				"\n" +
+				"\n" +
+				"\n" +
+				"    let headers_table = '';\n" +
+				"    let first_headers = true;\n" +
+				"    let very_end_headers = false;\n" +
+				"    let trimmed_headers;\n" +
+				"\n" +
+				"    let params_table = '';\n" +
+				"    let first_param = true;\n" +
+				"    let very_end_params = false;\n" +
+				"    let trimmed_params;\n" +
+				"    let key = '';\n" +
+				"    //For single value tables\n" +
 				"     for (const val of document.querySelectorAll('div')) {\n" +
+				"\n" +
+				"       if(val.className === \"card border-xs-0 border-sm d-flex fr-stretch-card\"){\n" +
+				"         val.style = \"width: fit-content\"\n" +
+				"       }\n" +
+				"\n" +
+				"\n" +
 				"       let string = val.textContent.trimStart(\" \").trimEnd(\" \")\n" +
-				"    //   val.textContent = \"AuthID\"\n" +
-				"    //\n" +
-				"    //\n" +
-				"    //   //Create tables for values that will not change\n" +
-				"    //   if(string.startsWith(\"AuthID\")){\n" +
-				"    //     table += '<table>'\n" +
-				"    //     table += '<tr><td><code>'+string+'</code></td><td>'+string+'</td></tr></table>'\n" +
-				"    //     console.log(\"AuthId table \\n\" + table)\n" +
-				"    //     val.innerHTML = table\n" +
-				"    //     table = ''\n" +
-				"    //   } else if(string.startsWith(\"ClientIp\")){\n" +
-				"    //     table += '<table>'\n" +
-				"    //     table += '<tr><td><code>'+string+'</code></td><td>'+string+'</td></tr></table>'\n" +
-				"    //     console.log(\"ClientIP table \\n\" + table)\n" +
-				"    //     val.innerHTML = table\n" +
-				"    //     table=''\n" +
-				"    //   }else if(string.startsWith(\"Server URL\")){\n" +
-				"    //     table += '<table>'\n" +
-				"    //     table += '<tr><td><code>'+string+'</code></td><td>'+string+'</td></tr></table>'\n" +
-				"    //     console.log(\"Server URL table \\n\" + table)\n" +
-				"    //     val.innerHTML = table\n" +
-				"    //     table=''\n" +
-				"    //   }else if(string.startsWith(\"Preferred Locale\")){\n" +
-				"    //     table += '<table>'\n" +
-				"    //     table += '<tr><td><code>'+string+'</code></td><td>'+string+'</td></tr></table>'\n" +
-				"    //     console.log(\"Preferred Locale table \\n\" + table)\n" +
-				"    //     val.innerHTML = table\n" +
-				"    //     table=''\n" +
-				"    //   }else if(string.startsWith(\"HostName\")){\n" +
-				"    //     table += '<table>'\n" +
-				"    //     table += '<tr><td><code>'+string+'</code></td><td>'+string+'</td></tr></table>'\n" +
-				"    //     console.log(\"Hostname table \\n\" + table)\n" +
-				"    //     val.innerHTML = table\n" +
-				"    //     table = ''\n" +
-				"    //   }\n" +
-				"    //\n" +
 				"\n" +
-				"      //Create h3 tags for headers\n" +
-				"       console.log(string)\n" +
-				"      if (string === \"h3NODE STATE/h3\" ||\n" +
-				"        string === \"h3AUTHID/h3\" ||\n" +
-				"        string === \"h3HEADERS/h3\" ||\n" +
-				"        string === \"h3CLIENT IP/h3\" ||\n" +
-				"        string === \"h3COOKIES/h3\" ||\n" +
-				"        string === \"h3HOSTNAME/h3\" ||\n" +
-				"        string === \"h3LOCALE/h3\" ||\n" +
-				"        string === \"h3PARAMETERS/h3\" ||\n" +
-				"        string === \"h3SERVER URL/h3\" ||\n" +
-				"        string === \"h3SHARED STATE/h3\") {\n" +
-				"        console.log(\"Changing Header for \"+string+ \" to <h3>...\")\n" +
-				"        val.outerHTML = \"<h3 style='border-bottom: 2px solid black; padding-top: 5px'>\" + val.outerHTML.replace(\"h3\", \"\").replace(\"/h3\", \"\") + \"</h3>\"\n" +
-				"      }\n" +
-				"      //Create h4 tags for Key: Value pairs\n" +
-				"      if (string === \"Key\" || string === \"Value\") {\n" +
-				"        val.outerHTML = \"<h4>\" + val.outerHTML + \"</h4>\"\n" +
-				"        console.log(\"Changing \"+string +\"to h4...\")\n" +
-				"      }\n" +
+				"       let trimmer_val;\n" +
+				"       //Create tables for values that will not change\n" +
+				"       if (string.startsWith(\"AuthID\")) {\n" +
+				"         console.log(val.style)\n" +
 				"\n" +
-				"    //   //Create table for Header values\n" +
-				"    //   for(key in headers) {\n" +
-				"    //     if (string.startsWith(headers[key])) {\n" +
-				"    //\n" +
-				"    //       if (first_header === true) {\n" +
-				"    //         table += \"<table>\";\n" +
-				"    //         first_header = false;\n" +
-				"    //       }\n" +
-				"    //       else if (string.startsWith(headers[headers.length - 1])) {\n" +
-				"    //         let trimmed = '';\n" +
-				"    //         for (letter in string) {\n" +
-				"    //           if (string[letter] === \"[\") {\n" +
-				"    //             break;\n" +
-				"    //           } else {\n" +
-				"    //             trimmed += string[letter]\n" +
-				"    //           }\n" +
-				"    //         }\n" +
-				"    //         console.log(\"Inside headers with trimmed \"+ trimmed)\n" +
-				"    //         table += \"<tr><td><code>\" + trimmed + \"</code></td><td>\" + string.replace(trimmed, \"\") + \"</td></tr></table>\"\n" +
-				"    //         val.innerHTML = \"\"\n" +
-				"    //         headers_end = true;\n" +
-				"    //\n" +
-				"    //       } else {\n" +
-				"    //         let trimmed = '';\n" +
-				"    //         for (letter in string) {\n" +
-				"    //           if (string[letter] === \"[\") {\n" +
-				"    //             break;\n" +
-				"    //           } else {\n" +
-				"    //             trimmed += string[letter]\n" +
-				"    //           }\n" +
-				"    //         }\n" +
-				"    //         table += \"<tr><td><code>\" + trimmed + \"</code></td><td>\" + string.replace(trimmed, \"\") + \"</td></tr>\"\n" +
-				"    //         val.innerHTML = \"\"\n" +
-				"    //         break\n" +
-				"    //       }\n" +
-				"    //       if (headers_end) {\n" +
-				"    //         val.innerHTML = table\n" +
-				"    //         headers_end = false\n" +
-				"    //         console.log(\"table in headers_end \\n\" + table)\n" +
-				"    //       }\n" +
-				"    //     }\n" +
-				"    //   }\n" +
+				"         trimmer_val = trimmer(string);\n" +
+				"         table += '<table>'\n" +
+				"         table += '<tr><td  style=\"overflow-wrap: anywhere; border: 1px solid black;\"><code>' + trimmer_val + '</code></td><td style=\" padding: 20px; border: 1px solid black; overflow-wrap: anywhere\">' + val.textContent.replace(\"AuthID\", \"\") + '</td></tr></table>'\n" +
+				"         // style=\"border: 1px solid black; text-align: center\" style=\"overflow-wrap: anywhere\"\n" +
+				"         trimmer_val = ''\n" +
+				"         val.innerHTML = table\n" +
+				"         table = ''\n" +
+				"       } else if (string.startsWith(\"ClientIp\")) {\n" +
+				"         val.style = \"display: flex; justify-content: left\"\n" +
+				"         trimmer_val = trimmer(string);\n" +
+				"         val.className = \"display: block; margin-left: auto; margin-right: auto; width: 40%\"\n" +
+				"         table += '<table>'\n" +
+				"         table += '<tr style=\\\"border: 1px solid black;\\n text-align: center; padding: 20px;\\\"><td style=\\\"border: 1px solid black; padding: 20px;\\n text-align: center\\\" style=\"overflow-wrap: anywhere\"><code>' + trimmer_val + '</code></td><td style=\\\"border: 1px solid black;\\n text-align: center\\\" style=\"overflow-wrap: anywhere\">' + val.textContent.replace(\"ClientIp\", \"\") + '</td></tr></table>'\n" +
+				"         val.innerHTML = table\n" +
+				"         table = ''\n" +
+				"       } else if (string.startsWith(\"Server URL\")) {\n" +
+				"         val.style = \"display: flex; justify-content: left\"\n" +
+				"         trimmer_val = trimmer(string)\n" +
+				"         table += '<table>'\n" +
+				"         table += '<tr style=\\\"border: 1px solid black;\\n text-align: center; padding: 20px;\\\"><td style=\\\"border: 1px solid black;\\n text-align: center; padding: 20px;\\\" style=\"overflow-wrap: anywhere\"><code>' + trimmer_val + '</code></td><td style=\\\"border: 1px solid black;\\n text-align: center\\\" style=\"overflow-wrap: anywhere\">' + string.replace(\"Server URL\", \"\") + '</td></tr></table>'\n" +
+				"         val.innerHTML = table\n" +
+				"         table = ''\n" +
+				"       } else if (string.startsWith(\"Preferred Locale\")) {\n" +
+				"         val.style = \"display: flex; justify-content: left\"\n" +
+				"         trimmer_val = trimmer(string)\n" +
+				"         table += '<table>'\n" +
+				"         table += '<tr style=\\\"border: 1px solid black;\\n text-align: center; padding: 20px;\\\"><td style=\\\"border: 1px solid black;\\n text-align: center; padding: 20px;\\\" style=\"overflow-wrap: anywhere\"><code>' + trimmer_val + '</code></td><td style=\\\"border: 1px solid black;\\n text-align: center\\\" style=\"overflow-wrap: anywhere\">' + string.replace(\"Preferred Locale\", \"\") + '</td></tr></table>'\n" +
+				"         val.innerHTML = table\n" +
+				"         table = ''\n" +
+				"       } else if (string.startsWith(\"HostName\")) {\n" +
+				"         val.style = \"display: flex; justify-content: left\"\n" +
+				"         trimmer_val = trimmer(string)\n" +
+				"         table += '<table>'\n" +
+				"         table += '<tr style=\\\"border: 1px solid black;\\n text-align: center; padding: 20px;\\\"><td style=\\\"border: 1px solid black;\\n text-align: center; padding: 20px;\\\" style=\"overflow-wrap: anywhere\"><code>' + trimmer_val + '</code></td><td style=\\\"border: 1px solid black;\\n text-align: center\\\" style=\"overflow-wrap: anywhere\">' + string.replace(\"HostName\", \"\") + '</td></tr></table>'\n" +
+				"         val.innerHTML = table\n" +
+				"         table = ''\n" +
+				"       }\n" +
+				"\n" +
+				"\n" +
+				"       //Create h3 tags for headers\n" +
+				"       if (string === \"h3NODE STATE/h3\" ||\n" +
+				"               string === \"h3AUTHID/h3\" ||\n" +
+				"               string === \"h3HEADERS/h3\" ||\n" +
+				"               string === \"h3CLIENT IP/h3\" ||\n" +
+				"               string === \"h3COOKIES/h3\" ||\n" +
+				"               string === \"h3HOSTNAME/h3\" ||\n" +
+				"               string === \"h3LOCALE/h3\" ||\n" +
+				"               string === \"h3PARAMETERS/h3\" ||\n" +
+				"               string === \"h3SERVER URL/h3\" ||\n" +
+				"               string === \"h3SHARED STATE/h3\") {\n" +
+				"         val.outerHTML = \"<h3 style='padding-top: 5px'>\" + val.outerHTML.replace(\"h3\", \"\").replace(\"/h3\", \"\") + \"</h3>\"\n" +
+				"       }\n" +
+				"       //Create h4 tags for Key: Value pairs\n" +
+				"       if (string === \"Key\" || string === \"Value\") {\n" +
+				"         val.outerHTML = \"<h4>\" + val.outerHTML + \"</h4>\"\n" +
+				"       }\n" +
+				"\n" +
+				"\n" +
+				"\n" +
+				"\n" +
 				"     }\n" +
 				"\n" +
+				"  let inner = 0;\n" +
+				"  let letter = ''\n" +
+				"    //For Parameters\n" +
+				"    for (const val of document.querySelectorAll('div')) {\n" +
+				"      inner = inner + 1\n" +
+				"      if (inner === 2) {\n" +
+				"        let string = val.textContent.trimStart(\" \").trimEnd(\" \")\n" +
+				"\n" +
+				"      let trimmed = ''\n" +
+				"        for (key in parameters) {\n" +
+				"          if (string.startsWith(parameters[key])) {\n" +
 				"\n" +
 				"\n" +
-				"  })();\n" +
+				"            if(string.startsWith(\"realm:\")){\n" +
+				"              continue\n" +
+				"            }\n" +
+				"\n" +
+				"            for(letter in string){\n" +
+				"              if(string[letter] === \" \"){\n" +
+				"                break\n" +
+				"              }\n" +
+				"              else{\n" +
+				"                trimmed += string[letter]\n" +
+				"              }\n" +
+				"            }\n" +
+				"\n" +
+				"            if(first_param){\n" +
+				"\n" +
+				"              params_table += \"<table><tr style=\\\"border: 1px solid black;\\n text-align: center; padding: 20px;\\\"><td style=\\\"border: 1px solid black;\\n text-align: center; padding: 20px;\\\" style=\\\"overflow-wrap: anywhere\\\"><code>\"+ trimmed+\"</code></td><td style=\\\"border: 1px solid black;\\n text-align: center\\\">\"+string.replace(trimmed, \"\")+\"</td></tr>\"\n" +
+				"              first_param = false\n" +
+				"              val.innerHTML = \"\"\n" +
+				"            }\n" +
+				"            else if(string.startsWith(parameters[parameters.length-1])){\n" +
+				"              params_table +=\" <tr style=\\\"border: 1px solid black;\\n text-align: center; padding: 20px;\\\"><td style=\\\"border: 1px solid black;\\n text-align: center; padding: 20px;\\\" style=\\\"overflow-wrap: anywhere\\\"><code>\"+trimmed+\"</code></td><td style=\\\"border: 1px solid black;\\n text-align: center\\\" style=\\\"overflow-wrap: anywhere\\\">\"+string.replace(trimmed, \"\")+\"</td></tr>\"+\"</table>\"\n" +
+				"              very_end_params = true\n" +
+				"              val.innerHTML = \"\"\n" +
+				"            }\n" +
+				"            else{\n" +
+				"              params_table += \"<tr style=\\\"border: 1px solid black;\\n text-align: center; padding: 20px; \\\"><td style=\\\"border: 1px solid black;\\n text-align: center; padding: 20px;\\\" style=\\\"overflow-wrap: anywhere\\\"><code>\"+trimmed+\"</code></td><td style=\\\"border: 1px solid black;\\n text-align: center\\\" style=\\\"overflow-wrap: anywhere\\\">\"+string.replace(trimmed, \"\")+\"</td></tr>\"\n" +
+				"              val.innerHTML = \"\"\n" +
+				"            }\n" +
+				"\n" +
+				"\n" +
+				"\n" +
+				"          }\n" +
+				"        }\n" +
+				"\n" +
+				"\n" +
+				"\n" +
+				"\n" +
+				"    }else{\n" +
+				"      continue;\n" +
+				"      }\n" +
+				"      inner = 0\n" +
+				"\n" +
+				"\n" +
+				"\n" +
+				"    if(very_end_params){\n" +
+				"      val.innerHTML = params_table\n" +
+				"      very_end_params = false\n" +
+				"    }\n" +
 				"\n" +
 				"\n" +
 				"\n" +
 				"\n" +
 				"\n" +
-				"\n";
+				"    }\n" +
+				"\n" +
+				"    //For Cookies\n" +
+				"    let cookies_table = '';\n" +
+				"    let first_cookie = true;\n" +
+				"    let very_end_cookie = false;\n" +
+				"    let trimmed_cookie;\n" +
+				"    const cookies = "+cookies+"\n" +
+				"    for (const val of document.querySelectorAll('div')) {\n" +
+				"      let string = val.textContent.trimStart(\" \").trimEnd(\" \")\n" +
+				"      if (very_end_cookie) {\n" +
+				"        break;\n" +
+				"      }\n" +
+				"\n" +
+				"//iterates through keys in list to find place I want to make table\n" +
+				"      //console.log(string)\n" +
+				"      for (key in cookies) {\n" +
+				"\n" +
+				"        if(string.startsWith(cookies[key])) {\n" +
+				"\n" +
+				"//First time coming into loop so this is the beginning\n" +
+				"            trimmed_cookie = '';\n" +
+				"            for (letter in string) {\n" +
+				"              if (string[letter] === \" \") {\n" +
+				"                break;\n" +
+				"              } else {\n" +
+				"                trimmed_cookie += string[letter]\n" +
+				"              }\n" +
+				"\n" +
+				"            }\n" +
+				"          if (first_cookie) {\n" +
+				"            cookies_table += '<table><tr style=\"border: 1px solid black;\\n text-align: center; overflow-wrap: anywhere; padding: 20px;\"\"><td style=\"border: 1px solid black;\\n text-align: center; padding: 20px;\"  style=\"overflow-wrap: anywhere\"><code>'+trimmed_cookie+'</code></td><td style=\"border: 1px solid black;\\n text-align: center\" style=\"overflow-wrap: anywhere\">'+string.replace(trimmed_cookie, \"\")+'</td></tr>';\n" +
+				"\n" +
+				"            first_cookie = false;\n" +
+				"\n" +
+				"            //This is the last key\n" +
+				"\n" +
+				"            //Creates final row and closes table tag\n" +
+				"            val.innerHTML = \"\"\n" +
+				"\n" +
+				"            if (cookies.length === 1) {\n" +
+				"              cookies_table += \"</table>\"\n" +
+				"              very_end_cookie = true\n" +
+				"              break\n" +
+				"            }\n" +
+				"          }\n" +
+				"        } else if (string.startsWith(cookies[key])) {\n" +
+				"          //If not first or last it creates the table row and removes that div\n" +
+				"          //If I don't remove the div it still has the original value with the old styling\n" +
+				"          trimmed_cookie = '';\n" +
+				"          for (letter in string) {\n" +
+				"            if (string[letter] === \" \") {\n" +
+				"              break;\n" +
+				"            } else {\n" +
+				"              trimmed_cookie += string[letter]\n" +
+				"            }\n" +
+				"          }\n" +
+				"\n" +
+				"          cookies_table += '<tr style=\"border: 1px solid black;\\n text-align: center; padding: 20px;\"><td style=\"border: 1px solid black;\\n text-align: center; padding: 20px;\" style=\"overflow-wrap: anywhere\"><code>' + trimmed_cookie + '</code></td><td style=\"border: 1px solid black;\\n text-align: center\" style=\"overflow-wrap: anywhere\">' + string.replace(trimmed_cookie, \"\") + '</td></tr>'\n" +
+				"\n" +
+				"          val.innerHTML = \"\"\n" +
+				"\n" +
+				"        }\n" +
+				"\n" +
+				"        else if (string.startsWith(cookies[cookies.length - 1])) {\n" +
+				"\n" +
+				"          trimmed_cookie = '';\n" +
+				"          for (letter in string) {\n" +
+				"            if (string[letter] === \" \") {\n" +
+				"              break;\n" +
+				"            } else {\n" +
+				"              trimmed_cookie += string[letter]\n" +
+				"            }\n" +
+				"\n" +
+				"          }\n" +
+				"          //Creates final row and closes table tag\n" +
+				"          cookies_table +='<tr style=\"border: 1px solid black;\\n text-align: center; padding: 20px;\"><td style=\"overflow-wrap: anywhere; padding: 20px;\" style=\"border: 1px solid black;\\n text-align: center\"><code>' + trimmed_cookie + '</code></td><td style=\"border: 1px solid black;\\n text-align: center; padding: 20px;\" style=\"overflow-wrap: anywhere\">' + string.replace(trimmed_cookie, \"\") + '</td></tr></table>'\n" +
+				"          very_end_cookie = true;\n" +
+				"          val.innerHTML = \"\"\n" +
+				"          break\n" +
+				"\n" +
+				"        }\n" +
+				"      }\n" +
+				"      if (very_end_cookie) {\n" +
+				"        val.innerHTML = cookies_table;\n" +
+				"\n" +
+				"        break\n" +
+				"      }\n" +
+				"    }\n" +
+				"\n" +
+				"\n" +
+				"    const headers = "+headerKeys+"\n"+
+				"    let here = true\n" +
+				"  //For Headers Table\n" +
+				"    for (const val of document.querySelectorAll('div')) {\n" +
+				"      inner = inner + 1\n" +
+				"      if (inner === 2) {\n" +
+				"        let trimmed = ''\n" +
+				"        let string = val.textContent.trimStart(\" \").trimEnd(\" \")\n" +
+				"        for(letter in string){\n" +
+				"          if(string[letter] === \" \" || string[letter] === \"[\"){\n" +
+				"            break\n" +
+				"          }else{\n" +
+				"            trimmed += string[letter]\n" +
+				"          }\n" +
+				"        }\n" +
+				"        let value = trimmed.trim()\n" +
+				"\n" +
+				"\n" +
+				"          for (key in headers) {\n" +
+				"\n" +
+				"            if (value === headers[key]) {\n" +
+				"              if (first_header) {\n" +
+				"                headers_table += '<table style = \"border: 1px solid black; padding-top: 0px; \">'\n" +
+				"                headers_table += '<tr style=\"border: 1px solid black;\\n text-align: center; padding: 20px;\"><td style=\"border: 1px solid black; padding: 20px;\\n\"><code>' + value + '</code></td><td style=\"border: 1px solid black;\\n text-align: center\">' + string.replace(value, \"\") + '</td></tr>'\n" +
+				"                first_header = false\n" +
+				"                val.innerHTML = \"\"\n" +
+				"              } else if (value === headers[headers.length - 1]) {\n" +
+				"                headers_table += '<tr style=\"border: 1px solid black;\\n text-align: center; padding: 20px;\"><td style=\"border: 1px solid black;\\n text-align: center; padding: 20px;\"><code>' + value + '</code></td><td style=\"border: 1px solid black;\\n text-align: center\">' + string.replace(value, \"\") + '</td></tr></table>'\n" +
+				"                val.innerHTML = \"\"\n" +
+				"                very_end_headers = true\n" +
+				"              } else {\n" +
+				"                headers_table += '<tr style=\"border: 1px solid black;\\n text-align: center; padding: 20px;\"><td style=\"border: 1px solid black;\\n text-align: center; padding: 20px;\"><code>' + value + '</code></td><td style=\"border: 1px solid black;\\n text-align: center\">' + string.replace(value, \"\") + '</td></tr>'\n" +
+				"                val.remove()\n" +
+				"              }\n" +
+				"            }\n" +
+				"\n" +
+				"          }\n" +
+				"\n" +
+				"\n" +
+				"\n" +
+				"\n" +
+				"        if(very_end_headers){\n" +
+				"          if(here){\n" +
+				"            val.innerHTML = headers_table\n" +
+				"            headers_end = false\n" +
+				"            here = false\n" +
+				"          }\n" +
+				"        }\n" +
+				"      }else{\n" +
+				"        continue;\n" +
+				"      }\n" +
+				"\n" +
+				"\n" +
+				"      inner = 0\n" +
+				"    }\n" +
+				"\n" +
+				"\n" +
+				"  })();";
 		ScriptTextOutputCallback script = new ScriptTextOutputCallback(javascript);
 		callbacks.add(script);
 	}
