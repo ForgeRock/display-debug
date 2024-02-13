@@ -9,22 +9,23 @@ package com.marketplace.helper;
 
 import static com.marketplace.helper.DisplayDebug.DisplayDebugOutcome.NEXT_OUTCOME;
 
+import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
-import java.util.Set;
+import java.net.URL;
+import java.util.*;
 
 import javax.inject.Inject;
 import javax.security.auth.callback.Callback;
+import javax.security.auth.callback.ConfirmationCallback;
 import javax.security.auth.callback.TextOutputCallback;
 import javax.swing.text.Document;
 import javax.swing.text.EditorKit;
 import javax.swing.text.html.HTMLEditorKit;
 
+import com.google.common.base.Charsets;
+import com.google.common.io.Resources;
+import org.apache.commons.lang.text.StrSubstitutor;
 import org.forgerock.guava.common.collect.ListMultimap;
 import org.forgerock.json.JsonValue;
 import org.forgerock.openam.annotations.sm.Attribute;
@@ -53,6 +54,10 @@ public class DisplayDebug extends AbstractDecisionNode {
 	private final Config config;
 	private static final String BUNDLE = DisplayDebug.class.getName();
 	private String loggerPrefix = "[DisplayDebug Node][Marketplace] ";
+
+	private static final String onPrem_sdkJsPathTemplate = "com/marketplace/helper/on-prem.js";
+	private final String clientScript;
+
 	@Node.Metadata(outcomeProvider = DisplayDebug.OutcomeProvider.class,
 			configClass 		= DisplayDebug.Config.class,
 			tags 				= {"marketplace", "trustnetwork"}
@@ -146,6 +151,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 	@Inject
 	public DisplayDebug(@Assisted Config config, @Assisted Realm realm) throws NodeProcessException {
 		this.config = config;
+		this.clientScript = readJS();
 	}
 
 	@Override
@@ -164,6 +170,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 		if(config.display()) {
 				try {
 					callbacks = new ArrayList<Callback>();
+
 					List<StringAttributeInputCallback> stringCallbacks = context.getCallbacks(StringAttributeInputCallback.class);
 					if (context.hasCallbacks()) {
 						logger.debug(loggerPrefix + "Done.");
@@ -239,8 +246,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 						 h3 = "h3";
 						 h3_close="/h3";
 					}
-
-
+					
 
 					if (config.sharedState()) {
 
@@ -303,11 +309,9 @@ public class DisplayDebug extends AbstractDecisionNode {
 						callbacks.add(new TextOutputCallback(TextOutputCallback.INFORMATION, h3 + "HEADERS" + h3_close));
 						ListMultimap<String, String> headers = context.request.headers;
 						if(headers.containsValue("XMLHttpRequest")){
-							System.out.println("In on-prem...");
 							on_prem_flag = true;
 						}
 						else if(headers.containsValue("forgerock-sdk")){
-							System.out.println("In cloud for some reason...");
 							cloud_flag = true;
 						}
 
@@ -383,8 +387,9 @@ public class DisplayDebug extends AbstractDecisionNode {
 
 					if(config.pretty() && on_prem_flag){
 
-						displayhtml_OnPrem(callbacks, paramKeys, headerKeys, cookies, counter);
-
+						//displayhtml_OnPrem(callbacks, paramKeys, headerKeys, cookies, counter);
+						ScriptTextOutputCallback scb = getScriptedCallback(headerKeys, paramKeys, cookies);
+						callbacks.add(scb);
 					}
 					else if(config.pretty() && cloud_flag){
 						displayhtml_Cloud(callbacks, paramKeys, headerKeys, cookies);
@@ -407,393 +412,429 @@ public class DisplayDebug extends AbstractDecisionNode {
 
 
 
-
-			return Action.goTo(NEXT_OUTCOME.name()).build();
+		String[] callbackoptions = {"Next","Cancel"};
+		ConfirmationCallback cc = new ConfirmationCallback(ConfirmationCallback.INFORMATION,callbackoptions, 0);
+		callbacks.add(cc);
+		return Action.goTo(NEXT_OUTCOME.name()).build();
 	}
 
-	public void displayhtml_OnPrem(ArrayList<Callback> callbacks, List<String> paramKeys, List<String> headerKeys,List<String> cookies, Integer counter){
+	private ScriptTextOutputCallback getScriptedCallback(List<String> headers, List<String> parameters, List<String> cookies) {
+		String parameters_string = parameters.toString();
+		parameters_string = parameters_string.replace("\"","\\\"");
 
-		String javascript = "\n" +
-				"\n" +
-				"    for (const val"+counter+" of document.querySelectorAll('div')) {\n" +
-				"        if (val"+counter+".textContent === \"h3NODE STATE/h3\" ||\n" +
-				"            val"+counter+".textContent === \"h3AUTHID/h3\" ||\n" +
-				"            val"+counter+".textContent === \"h3HEADERS/h3\" ||\n" +
-				"            val"+counter+".textContent === \"h3CLIENT IP/h3\" ||\n" +
-				"            val"+counter+".textContent === \"h3COOKIES/h3\" ||\n" +
-				"            val"+counter+".textContent === \"h3HOSTNAME/h3\" ||\n" +
-				"            val"+counter+".textContent === \"h3LOCALE/h3\" ||\n" +
-				"            val"+counter+".textContent === \"h3PARAMETERS/h3\" ||\n" +
-				"            val"+counter+".textContent === \"h3SERVER URL/h3\" ||\n" +
-				"            val"+counter+".textContent === \"h3SHARED STATE/h3\") {\n" +
-				"\n" +
-				"            val"+counter+".outerHTML = \"<h3 style='border-bottom: 2px solid black; padding-top: 5px'>\" + val"+counter+".outerHTML.replace(\"h3\", \"\").replace(\"/h3\", \"\") + \"</h3>\"\n" +
-				"        }\n" +
-				"        if (val"+counter+".textContent === \"Key\" || val"+counter+".textContent === \"Value\") {\n" +
-				"            val"+counter+".innerHTML = \"<h4>\" + val"+counter+".outerHTML + \"</h4>\"\n" +
-				"        }\n" +
-				"    }\n" +
-				"\n" +
-				"    // For Parameters\n" +
-				"    const keys"+counter+"= " + paramKeys + "\n" +
+		String headers_string = headers.toString();
+		headers_string = headers_string.replace("\"","\\\"");
 
-				"    let table"+counter+" = '';\n" +
-				"    let first"+counter+" = true;\n" +
-				"    let very_end"+counter+" = false;\n" +
-				"    let trimmed"+counter+";\n" +
-				"    //Loops through divs\n" +
-				"    for (const val"+counter+" of document.querySelectorAll('div')) {\n" +
-				"        //iterates through keys in list to find place I want to make table\n" +
-				"        for (key"+counter+" in keys"+counter+") {\n" +
-				"\n" +
-				"            if (val"+counter+".textContent.startsWith(keys"+counter+"[key"+counter+"])) {\n" +
-				"                //First time coming into loop so this is the beginning\n" +
-				"                if (first"+counter+" === true) {\n" +
-				"                    table"+counter+" += \"<div class ='react-bootstrap-table'><table class='table table-bordered table-striped table-detail'>\";\n" +
-				"                    first"+counter+" = false;\n" +
-				"                }\n" +
-				"                //This is the last key\n" +
-				"                else if (val"+counter+".textContent.startsWith(keys"+counter+"[keys"+counter+".length - 1])) {\n" +
-				"                    const string"+counter+" = val"+counter+".textContent;\n" +
-				"                    trimmed"+counter+" = '';\n" +
-				"                    for (letter"+counter+" in string"+counter+") {\n" +
-				"                        if (string"+counter+"[letter"+counter+"] === \"[\") {\n" +
-				"                            break;\n" +
-				"                        } else {\n" +
-				"                            trimmed"+counter+" += string"+counter+"[letter"+counter+"]\n" +
-				"                        }\n" +
-				"\n" +
-				"                    }\n" +
-				"                    //Creates final row and closes table tag\n" +
-				"                    table"+counter+" += \"<tr><td><code>\" + trimmed"+counter+" + \"</code></td><td>\" + val"+counter+".textContent.replace(keys"+counter+"[key"+counter+"], \"\") + \"</td></tr></table></div>\"\n" +
-				"                    very_end"+counter+" = true;\n" +
-				"                } else {\n" +
-				"                    //If not first or last it creates the table row and removes that div\n" +
-				"                    //If I don't remove the div it still has the original value with the old styling\n" +
-				"                    const string"+counter+" = val"+counter+".textContent;\n" +
-				"                    trimmed"+counter+" = '';\n" +
-				"                    for (letter"+counter+" in string"+counter+") {\n" +
-				"                        if (string"+counter+"[letter"+counter+"] === \"[\") {\n" +
-				"                            break;\n" +
-				"                        } else {\n" +
-				"                            trimmed"+counter+" += string"+counter+"[letter"+counter+"]\n" +
-				"                        }\n" +
-				"                    }\n" +
-				"                    table"+counter+" += \"<tr><td><code>\" + trimmed"+counter+" + \"</code></td><td>\" + val"+counter+".textContent.replace(keys"+counter+"[key"+counter+"], \"\") + \"</td></tr>\"\n" +
-				"                    //<table class=\"table table-hover\"><thead><tr><th class=\"selection-cell-header\" data-row-selection=\"true\"><div class=\"checkbox\"><input class=\"react-bs-select-all\" id=\"checkboxHeader\" name=\"checkboxHeader\" type=\"checkbox\"><label for=\"checkboxHeader\"></label></div></th><th tabindex=\"0\" aria-label=\"Username sortable\" class=\"sortable\">Username<span class=\"order\"><span class=\"dropdown\"><span class=\"caret\"></span></span><span class=\"dropup\"><span class=\"caret\"></span></span></span></th><th tabindex=\"0\">Full name</th><th tabindex=\"0\">Email address</th><th tabindex=\"0\">Status</th></tr></thead><tbody><tr><td class=\"selection-cell\"><div class=\"checkbox\"><input id=\"checkbox0\" name=\"checkbox0\" type=\"checkbox\"><label for=\"checkbox0\"></label></div></td><td title=\"demo\"><span class=\"am-table-icon-cell\"><span class=\"fa-stack fa-lg am-table-icon-cell-stack\"><i class=\"fa fa-circle fa-stack-2x text-primary\"></i><i class=\"fa fa-address-card fa-stack-1x fa-inverse\"></i></span> <span><span>demo</span></span></span></td><td title=\"demo\"><span>demo</span></td><td><span>demo@example.com</span></td><td><span class=\"text-success\"><i class=\"fa fa-check-circle\"></i> Active</span></td></tr><tr><td class=\"selection-cell\"><div class=\"checkbox\"><input id=\"checkbox1\" name=\"checkbox1\" type=\"checkbox\"><label for=\"checkbox1\"></label></div></td><td title=\"test_iproov\"><span class=\"am-table-icon-cell\"><span class=\"fa-stack fa-lg am-table-icon-cell-stack\"><i class=\"fa fa-circle fa-stack-2x text-primary\"></i><i class=\"fa fa-address-card fa-stack-1x fa-inverse\"></i></span> <span><span>test_iproov</span></span></span></td><td title=\"test_iproov\"><span>test_iproov</span></td><td><span>testiproov@mailinator.com</span></td><td><span class=\"text-success\"><i class=\"fa fa-check-circle\"></i> Active</span></td></tr></tbody></table></div>\n" +
-				"                    document.getElementById(val"+counter+".id).remove()\n" +
-				"                }\n" +
-				"                if (very_end"+counter+") {\n" +
-				"                    val"+counter+".innerHTML = table"+counter+";\n" +
-				"                }\n" +
-				"            }\n" +
-				"        }\n" +
-				"    }\n" +
-				"\n" +
-				"    function singleItemTable(string) {\n" +
-				"        const keys = [\n" +
-				"            \"Server URL\",\n" +
-				"            \"HostName\",\n" +
-				"            \"Preferred Locale\",\n" +
-				"            \"ClientIp\",\n" +
-				"            \"AuthID\"\n" +
-				"        ];\n" +
-				"        let table = '';\n" +
-				"        let first = true;\n" +
-				"        let very_end = false;\n" +
-				"        let key = 0;\n" +
-				"        for (const val of document.querySelectorAll('div')) {\n" +
-				"            if (val.textContent.startsWith(string)) {\n" +
-				"                table += \"<div class ='react-bootstrap-table'><table class='table table-bordered table-striped table-detail'>\";\n" +
-				"                if (string === \"HostName\") {\n" +
-				"                    table += \"<tr><td><code>\" + \"HostName\" + \"</code></td><td>\" + val.textContent.replace(\"HostName\", \"\") + \"</td></tr></table></div>\"\n" +
-				"                    very_end = true;\n" +
-				"                    if (very_end) {\n" +
-				"                        val.innerHTML = table;\n" +
-				"                        break;\n" +
-				"                    }\n" +
-				"                } else if (string === \"Server URL\") {\n" +
-				"                    table += \"<tr><td><code>\" + \"Server URL\" + \"</code></td><td>\" + val.textContent.replace(\"Server URL\", \"\") + \"</td></tr></table></div>\"\n" +
-				"                    very_end = true;\n" +
-				"                    if (very_end) {\n" +
-				"                        val.innerHTML = table;\n" +
-				"                        break;\n" +
-				"                    }\n" +
-				"                } else if (string === \"Preferred Locale\") {\n" +
-				"                    table += \"<tr><td><code>\" + \"Preferred Locale\" + \"</code></td><td>\" + val.textContent.replace(\"Preferred Locale\", \"\") + \"</td></tr></table></div>\"\n" +
-				"                    very_end = true;\n" +
-				"                    if (very_end) {\n" +
-				"                        val.innerHTML = table;\n" +
-				"                        break;\n" +
-				"                    }\n" +
-				"                } else if (string === \"ClientIp\") {\n" +
-				"                    table += \"<tr><td><code>\" + \"ClientIp\" + \"</code></td><td>\" + val.textContent.replace(\"ClientIp\", \"\") + \"</td></tr></table></div>\"\n" +
-				"                    very_end = true;\n" +
-				"                    if (very_end) {\n" +
-				"                        val.innerHTML = table;\n" +
-				"                        break;\n" +
-				"                    }\n" +
-				"                } else if (string === \"AuthID\") {\n" +
-				"                    table += \"<tr><td><code>\" + \"AuthID\" + \"</code></td><td>\" + val.textContent.replace(\"AuthID\", \"\") + \"</td></tr></table></div>\"\n" +
-				"                    very_end = true;\n" +
-				"                    if (very_end) {\n" +
-				"                        val.innerHTML = table;\n" +
-				"                        break;\n" +
-				"                    }\n" +
-				"                }\n" +
-				"            }\n" +
-				"\n" +
-				"        }\n" +
-				"    }\n" +
-				"\n" +
-				"    singleItemTable(\"HostName\")\n" +
-				"    singleItemTable(\"Server URL\")\n" +
-				"    singleItemTable(\"ClientIp\")\n" +
-				"    singleItemTable(\"Preferred Locale\")\n" +
-				"    singleItemTable(\"AuthID\")\n" +
-				"    singleItemTable(\"amlbcookie\")\n" ;
-
-		System.out.println(javascript);
-
-		ScriptTextOutputCallback script = new ScriptTextOutputCallback(javascript);
-		callbacks.add(script);
-
-		String headers_table = "\n" +
-				"    const headers"+counter+"= " + headerKeys +";\n"+
-				"\n" +
-				"    let headers_table"+counter+" = '';\n" +
-				"    let first_headers"+counter+" = true;\n" +
-				"    let very_end_headers"+counter+" = false;\n" +
-				"    let trimmed_headers"+counter+";\n" +
-				"    for (const val"+counter+" of document.querySelectorAll('div')) {\n" +
-				"        if (very_end_headers"+counter+") {\n" +
-				"            break;\n" +
-				"        }\n" +
-				"\n" +
-				"        for (key in headers"+counter+") {\n" +
-				"            if (val"+counter+".textContent.startsWith(headers"+counter+"[key]) && first_headers"+counter+" === true) {\n" +
-				"\n" +
-				"                if (first_headers"+counter+" === true) {\n" +
-				"                    headers_table"+counter+" += \"<div class ='react-bootstrap-table'><table class='table table-bordered table-striped table-detail'>\";\n" +
-				"                    first_headers"+counter+" = false;\n" +
-				"                }\n" +
-				"                //This is the last key\n" +
-				"                const string"+counter+" = val"+counter+".textContent;\n" +
-				"                trimmed_headers"+counter+" = '';\n" +
-				"                for (letter in string"+counter+") {\n" +
-				"                    if (string"+counter+"[letter] === \"[\") {\n" +
-				"                        break;\n" +
-				"                    } else {\n" +
-				"                        trimmed_headers"+counter+" += string"+counter+"[letter]\n" +
-				"                    }\n" +
-				"\n" +
-				"                }\n" +
-				"                //Creates final row and closes table tag\n" +
-				"\n" +
-				"                headers_table"+counter+" += \"<tr><td><code>\" + trimmed_headers"+counter+" + \"</code></td><td>\" + val"+counter+".textContent.replace(headers"+counter+"[key], \"\") + \"</td></tr>\"\n" +
-				"                val"+counter+".innerHTML = \"\"\n" +
-				"            } else if (val"+counter+".textContent.startsWith(headers"+counter+"[key])) {\n" +
-				"\n" +
-				"                //If not first or last it creates the table row and removes that div\n" +
-				"                //If I don't remove the div it still has the original value with the old styling\n" +
-				"                const string"+counter+" = val"+counter+".textContent;\n" +
-				"                trimmed_headers"+counter+" = '';\n" +
-				"                for (letter in string"+counter+") {\n" +
-				"                    if (string"+counter+"[letter] === \"[\") {\n" +
-				"                        break;\n" +
-				"                    } else {\n" +
-				"                        trimmed_headers"+counter+" += string"+counter+"[letter]\n" +
-				"                    }\n" +
-				"                }\n" +
-				"\n" +
-				"                headers_table"+counter+" += \"<tr><td><code>\" + trimmed_headers"+counter+" + \"</code></td><td>\" + val"+counter+".textContent.replace(headers"+counter+"[key], \"\") + \"</td></tr>\"\n" +
-				"                val"+counter+".innerHTML = \"\"\n" +
-				"\n" +
-				"            } else if (val"+counter+".textContent.startsWith(headers"+counter+"[headers"+counter+".length - 1])) {\n" +
-				"                const string"+counter+" = val"+counter+".textContent;\n" +
-				"                trimmed_headers"+counter+" = '';\n" +
-				"                for (letter in string"+counter+") {\n" +
-				"                    if (string"+counter+"[letter] === \"[\") {\n" +
-				"                        break;\n" +
-				"                    } else {\n" +
-				"                        trimmed_headers"+counter+" += string"+counter+"[letter]\n" +
-				"                    }\n" +
-				"\n" +
-				"                }\n" +
-				"                //Creates final row and closes table tag\n" +
-				"                headers_table"+counter+" += \"<tr><td><code>\" + trimmed_headers"+counter+" + \"</code></td><td>\" + val"+counter+".textContent.replace(headers"+counter+"[key], \"\") + \"</td></tr></table></div>\"\n" +
-				"                very_end_headers"+counter+" = true;\n" +
-				"                break\n" +
-				"\n" +
-				"            }\n" +
-				"        }\n" +
-				"        if (very_end_headers"+counter+") {\n" +
-				"            val"+counter+".innerHTML = headers_table"+counter+";\n" +
-				"            break\n" +
-				"        }\n" +
-				"    }\n";
-
-		ScriptTextOutputCallback newer = new ScriptTextOutputCallback(headers_table);
-		callbacks.add(newer);
-
-		String single = "   function singleItemTable(string) {\n" +
-				"\n" +
-				"       let table = '';\n" +
-				"\n" +
-				"       let very_end = false;\n" +
-				"\n" +
-				"       for (const val of document.querySelectorAll('div')) {\n" +
-				"           if (val.textContent.startsWith(string)) {\n" +
-				"               table += \"<div class ='react-bootstrap-table'><table class='table table-bordered table-striped table-detail'>\";\n" +
-				"               if (string === \"HostName\") {\n" +
-				"                   table += \"<tr><td><code>\" + \"HostName\" + \"</code></td><td>\" + val.textContent.replace(\"HostName\", \"\") + \"</td></tr></table></div>\"\n" +
-				"                   very_end = true;\n" +
-				"                   if (very_end) {\n" +
-				"                       val.innerHTML = table;\n" +
-				"                       break;\n" +
-				"                   }\n" +
-				"               } else if (string === \"Server URL\") {\n" +
-				"                   table += \"<tr><td><code>\" + \"Server URL\" + \"</code></td><td>\" + val.textContent.replace(\"Server URL\", \"\") + \"</td></tr></table></div>\"\n" +
-				"                   very_end = true;\n" +
-				"                   if (very_end) {\n" +
-				"                       val.innerHTML = table;\n" +
-				"                       break;\n" +
-				"                   }\n" +
-				"               } else if (string === \"Preferred Locale\") {\n" +
-				"                   table += \"<tr><td><code>\" + \"Preferred Locale\" + \"</code></td><td>\" + val.textContent.replace(\"Preferred Locale\", \"\") + \"</td></tr></table></div>\"\n" +
-				"                   very_end = true;\n" +
-				"                   if (very_end) {\n" +
-				"                       val.innerHTML = table;\n" +
-				"                       break;\n" +
-				"                   }\n" +
-				"               } else if (string === \"ClientIP\") {\n" +
-				"                   table += \"<tr><td><code>\" + \"ClientIP\" + \"</code></td><td>\" + val.textContent.replace(\"ClientIP\", \"\") + \"</td></tr></table></div>\"\n" +
-				"                   very_end = true;\n" +
-				"                   if (very_end) {\n" +
-				"                       val.innerHTML = table;\n" +
-				"                       break;\n" +
-				"                   }\n" +
-				"               } else if (string === \"AuthID\") {\n" +
-				"                   table += \"<tr><td><code>\" + \"AuthID\" + \"</code></td><td>\" + val.textContent.replace(\"AuthID\", \"\") + \"</td></tr></table></div>\"\n" +
-				"                   very_end = true;\n" +
-				"                   if (very_end) {\n" +
-				"                       val.innerHTML = table;\n" +
-				"                       break;\n" +
-				"                   }\n" +
-				"               }else if (string === \"amlbcookie\") {\n" +
-				"                   table += \"<tr><td><code>\" + \"amlbcookie\" + \"</code></td><td>\" + val.textContent.replace(\"amlbcookie\", \"\") + \"</td></tr></table></div>\"\n" +
-				"                   very_end = true;\n" +
-				"                   if (very_end) {\n" +
-				"                       val.innerHTML = table;\n" +
-				"                       break;\n" +
-				"                   }\n" +
-				"               }\n" +
-				"           }\n" +
-				"\n" +
-				"       }\n" +
-				"   }\n" +
-				"\n" +
-				"   singleItemTable(\"HostName\")\n" +
-				"   singleItemTable(\"Server URL\")\n" +
-				"   singleItemTable(\"ClientIP\")\n" +
-				"   singleItemTable(\"Preferred Locale\")\n" +
-				"   singleItemTable(\"AuthID\")\n" +
-				"   singleItemTable(\"amlbcookie\")\n"+
-				"   singleItemTable(\"service\")\n";
-	ScriptTextOutputCallback single_tables = new ScriptTextOutputCallback(single);
-		callbacks.add(single_tables);
+		String cookies_string = cookies.toString();
+		cookies_string = cookies_string.replace("\"","\\\"");
 
 
-	String cookies_table = "  const cookies"+counter+" = " + cookies + "\n" +
-			"\n" +
-			"   let cookies_table"+counter+" = '';\n" +
-			"   let first_cookie"+counter+" = true;\n" +
-			"   let very_end_cookie"+counter+" = false;\n" +
-			"   let trimmed_cookie"+counter+";\n" +
-			"   //Loops through divs\n" +
-			"   for (const val"+counter+" of document.querySelectorAll('div')) {\n" +
-			"       if (very_end_cookie"+counter+") {\n" +
-			"           break;\n" +
-			"       }\n" +
-			"\n" +
-			"//iterates through keys in list to find place I want to make table\n" +
-			"       for (key in cookies"+counter+") {\n" +
-			"           if (val"+counter+".textContent.startsWith(cookies"+counter+"[key]) && first_cookie"+counter+" === true) {\n" +
-			"\n" +
+		System.out.println("Separator\n\n\n\n\n\n\n\n\n\n");
+		Map<String, String> sdkConfigMap = new HashMap<>();
+		sdkConfigMap.put("parameters", parameters_string); // Put the parameters list value where "parameters" are in the js file
+		sdkConfigMap.put("cookies", cookies_string); // Put the cookies list value where "cookies" are in the js file
+		sdkConfigMap.put("headers", headers_string);// Put the headers list value where "headers" are in the js file
 
-			"               if (first_cookie"+counter+" === true) {\n" +
-			"                   cookies_table"+counter+" += \"<div class ='react-bootstrap-table'><table class='table table-bordered table-striped table-detail'>\";\n" +
-			"                   first_cookie"+counter+" = false;\n" +
-			"               }\n" +
-			"               //This is the last key\n" +
-			"               const string"+counter+" = val"+counter+".textContent;\n" +
-			"               trimmed_cookie"+counter+" = '';\n" +
-			"               for (letter in string"+counter+") {\n" +
-			"                   if (string"+counter+"[letter] === \"[\") {\n" +
-			"                       break;\n" +
-			"                   } else {\n" +
-			"                       trimmed_cookie"+counter+" += string"+counter+"[letter]\n" +
-			"                   }\n" +
-			"\n" +
-			"               }\n" +
-			"               //Creates final row and closes table tag\n" +
-			"\n" +
-			"               cookies_table"+counter+" += \"<tr><td><code>\" + trimmed_cookie"+counter+" + \"</code></td><td>\" + val"+counter+".textContent.replace(cookies"+counter+"[key], \"\") + \"</td></tr>\"\n" +
-			"               val"+counter+".innerHTML = \"\"\n" +
-			"\n" +
-			"               if(cookies"+counter+".length === 1) {\n" +
-			"                   cookies_table"+counter+" += \"</table></div>\"\n" +
-			"                   very_end_cookie"+counter+" = true\n" +
-			"                   break\n" +
-			"               }\n" +
-			"           } else if (val"+counter+".textContent.startsWith(cookies"+counter+"[key])) {\n" +
-			"\n" +
-			"               //If not first or last it creates the table row and removes that div\n" +
-			"               //If I don't remove the div it still has the original value with the old styling\n" +
-			"               const string"+counter+" = val"+counter+".textContent;\n" +
-			"               trimmed_cookie"+counter+" = '';\n" +
-			"               for (letter in string"+counter+") {\n" +
-			"                   if (string"+counter+"[letter] === \"[\") {\n" +
-			"                       break;\n" +
-			"                   } else {\n" +
-			"                       trimmed_cookie"+counter+" += string"+counter+"[letter]\n" +
-			"                   }\n" +
-			"               }\n" +
-			"\n" +
-			"               cookies_table"+counter+" += \"<tr><td><code>\" + trimmed_cookie"+counter+" + \"</code></td><td>\" + val"+counter+".textContent.replace(cookies"+counter+"[key], \"\") + \"</td></tr>\"\n" +
-			"               val"+counter+".innerHTML = \"\"\n" +
-			"            console.log(cookies"+counter+"[key])\n" +
-			"           }\n" +
-			"\n" +
-			"           else if (val"+counter+".textContent.startsWith(cookies"+counter+"[cookies"+counter+".length - 1])) {\n" +
-			"               const string"+counter+" = val"+counter+".textContent;\n" +
-			"               trimmed_cookie"+counter+" = '';\n" +
-			"               for (letter in string"+counter+") {\n" +
-			"                   if (string"+counter+"[letter] === \"[\") {\n" +
-			"                       break;\n" +
-			"                   } else {\n" +
-			"                       trimmed_cookie"+counter+" += string"+counter+"[letter]\n" +
-			"                   }\n" +
-			"\n" +
-			"               }\n" +
-			"               //Creates final row and closes table tag\n" +
-			"               cookies_table"+counter+" += \"<tr><td><code>\" + trimmed_cookie"+counter+" + \"</code></td><td>\" + val"+counter+".textContent.replace(cookies"+counter+"[key], \"\") + \"</td></tr></table></div>\"\n" +
-			"               very_end_cookie"+counter+" = true;\n" +
-			"               val"+counter+".innerHTML = \"\"\n" +
-			"               break\n" +
-			"\n" +
-			"           }\n" +
-			"       }\n" +
-			"       if (very_end_cookie"+counter+") {\n" +
-			"           val"+counter+".innerHTML = cookies_table"+counter+";\n" +
-			"           break\n" +
-			"       }\n" +
-			"   }\n" +
-			"\n";
+		String sdkJs = new StrSubstitutor(sdkConfigMap).replace(this.clientScript); // This replaces the values in the this.clientScript (The js file) with the java values
+		System.out.println(sdkJs);
 
-		ScriptTextOutputCallback script_cookies = new ScriptTextOutputCallback(cookies_table);
-		callbacks.add(script_cookies);
+		ScriptTextOutputCallback callback = new ScriptTextOutputCallback(sdkJs);
+		return callback;
 	}
+
+	private String readJS() throws NodeProcessException {
+		URL resource = Resources.getResource(onPrem_sdkJsPathTemplate);
+		try {
+			return Resources.toString(resource, Charsets.UTF_8);
+		} catch (IOException ex) {
+			logger.error(String.format("%s %s: %s", loggerPrefix, ex.getClass().getCanonicalName(),
+					Arrays.toString(ex.getStackTrace())));
+			throw new NodeProcessException(ex);
+		}
+	}
+//On-prem js
+//	public void displayhtml_OnPrem(ArrayList<Callback> callbacks, List<String> paramKeys, List<String> headerKeys,List<String> cookies, Integer counter){
+//
+//		String javascript = "\n" +
+//				"\n" +
+//				"    for (const val of document.querySelectorAll('div')) {\n" +
+//				"        if (val.textContent === \"h3NODE STATE/h3\" ||\n" +
+//				"            val.textContent === \"h3AUTHID/h3\" ||\n" +
+//				"            val.textContent === \"h3HEADERS/h3\" ||\n" +
+//				"            val.textContent === \"h3CLIENT IP/h3\" ||\n" +
+//				"            val.textContent === \"h3COOKIES/h3\" ||\n" +
+//				"            val.textContent === \"h3HOSTNAME/h3\" ||\n" +
+//				"            val.textContent === \"h3LOCALE/h3\" ||\n" +
+//				"            val.textContent === \"h3PARAMETERS/h3\" ||\n" +
+//				"            val.textContent === \"h3SERVER URL/h3\" ||\n" +
+//				"            val.textContent === \"h3SHARED STATE/h3\") {\n" +
+//				"\n" +
+//				"            val.outerHTML = \"<h3 style='border-bottom: 2px solid black; padding-top: 5px'>\" + val.outerHTML.replace(\"h3\", \"\").replace(\"/h3\", \"\") + \"</h3>\"\n" +
+//				"        }\n" +
+//				"        if (val.textContent === \"Key\" || val.textContent === \"Value\") {\n" +
+//				"            val.innerHTML = \"<h4>\" + val.outerHTML + \"</h4>\"\n" +
+//				"        }\n" +
+//				"    }\n" +
+//				"\n" +
+//				"    // For Parameters\n" +
+//				"    var keys= " + paramKeys + "\n" +
+//
+//				"    var table = '';\n" +
+//				"    var first = true;\n" +
+//				"    var very_end = false;\n" +
+//				"    var trimmed;\n" +
+//				"    //Loops through divs\n" +
+//				"    for (const val of document.querySelectorAll('div')) {\n" +
+//				"        //iterates through keys in list to find place I want to make table\n" +
+//				"        for (key in keys) {\n" +
+//				"\n" +
+//				"            if (val.textContent.startsWith(keys[key])) {\n" +
+//				"                //First time coming into loop so this is the beginning\n" +
+//				"                if (first === true) {\n" +
+//				"                    table += \"<div class ='react-bootstrap-table'><table class='table table-bordered table-striped table-detail'>\";\n" +
+//				"                    first = false;\n" +
+//				"                }\n" +
+//				"                //This is the last key\n" +
+//				"                else if (val.textContent.startsWith(keys[keys.length - 1])) {\n" +
+//				"                    const string = val.textContent;\n" +
+//				"                    trimmed = '';\n" +
+//				"                    for (letter in string) {\n" +
+//				"                        if (string[letter] === \"[\") {\n" +
+//				"                            break;\n" +
+//				"                        } else {\n" +
+//				"                            trimmed += string[letter]\n" +
+//				"                        }\n" +
+//				"\n" +
+//				"                    }\n" +
+//				"                    //Creates final row and closes table tag\n" +
+//				"                    table += \"<tr><td><code>\" + trimmed + \"</code></td><td>\" + val.textContent.replace(keys[key], \"\") + \"</td></tr></table></div>\"\n" +
+//				"                    very_end = true;\n" +
+//				"                } else {\n" +
+//				"                    //If not first or last it creates the table row and removes that div\n" +
+//				"                    //If I don't remove the div it still has the original value with the old styling\n" +
+//				"                    const string = val.textContent;\n" +
+//				"                    trimmed = '';\n" +
+//				"                    for (letter in string) {\n" +
+//				"                        if (string[letter] === \"[\") {\n" +
+//				"                            break;\n" +
+//				"                        } else {\n" +
+//				"                            trimmed += string[letter]\n" +
+//				"                        }\n" +
+//				"                    }\n" +
+//				"                    table += \"<tr><td><code>\" + trimmed + \"</code></td><td>\" + val.textContent.replace(keys[key], \"\") + \"</td></tr>\"\n" +
+//				"                    document.getElementById(val.id).remove()\n" +
+//				"                }\n" +
+//				"                if (very_end) {\n" +
+//				"                    val.innerHTML = table;\n" +
+//				"                }\n" +
+//				"            }\n" +
+//				"        }\n" +
+//				"    }\n" +
+//				"\n" +
+//				"    function singleItemTable(string) {\n" +
+//				"        const keys = [\n" +
+//				"            \"Server URL\",\n" +
+//				"            \"HostName\",\n" +
+//				"            \"Preferred Locale\",\n" +
+//				"            \"ClientIp\",\n" +
+//				"            \"AuthID\"\n" +
+//				"        ];\n" +
+//				"        let table = '';\n" +
+//				"        let first = true;\n" +
+//				"        let very_end = false;\n" +
+//				"        let key = 0;\n" +
+//				"        for (const val of document.querySelectorAll('div')) {\n" +
+//				"            if (val.textContent.startsWith(string)) {\n" +
+//				"                table += \"<div class ='react-bootstrap-table'><table class='table table-bordered table-striped table-detail'>\";\n" +
+//				"                if (string === \"HostName\") {\n" +
+//				"                    table += \"<tr><td><code>\" + \"HostName\" + \"</code></td><td>\" + val.textContent.replace(\"HostName\", \"\") + \"</td></tr></table></div>\"\n" +
+//				"                    very_end = true;\n" +
+//				"                    if (very_end) {\n" +
+//				"                        val.innerHTML = table;\n" +
+//				"                        break;\n" +
+//				"                    }\n" +
+//				"                } else if (string === \"Server URL\") {\n" +
+//				"                    table += \"<tr><td><code>\" + \"Server URL\" + \"</code></td><td>\" + val.textContent.replace(\"Server URL\", \"\") + \"</td></tr></table></div>\"\n" +
+//				"                    very_end = true;\n" +
+//				"                    if (very_end) {\n" +
+//				"                        val.innerHTML = table;\n" +
+//				"                        break;\n" +
+//				"                    }\n" +
+//				"                } else if (string === \"Preferred Locale\") {\n" +
+//				"                    table += \"<tr><td><code>\" + \"Preferred Locale\" + \"</code></td><td>\" + val.textContent.replace(\"Preferred Locale\", \"\") + \"</td></tr></table></div>\"\n" +
+//				"                    very_end = true;\n" +
+//				"                    if (very_end) {\n" +
+//				"                        val.innerHTML = table;\n" +
+//				"                        break;\n" +
+//				"                    }\n" +
+//				"                } else if (string === \"ClientIp\") {\n" +
+//				"                    table += \"<tr><td><code>\" + \"ClientIp\" + \"</code></td><td>\" + val.textContent.replace(\"ClientIp\", \"\") + \"</td></tr></table></div>\"\n" +
+//				"                    very_end = true;\n" +
+//				"                    if (very_end) {\n" +
+//				"                        val.innerHTML = table;\n" +
+//				"                        break;\n" +
+//				"                    }\n" +
+//				"                } else if (string === \"AuthID\") {\n" +
+//				"                    table += \"<tr><td><code>\" + \"AuthID\" + \"</code></td><td>\" + val.textContent.replace(\"AuthID\", \"\") + \"</td></tr></table></div>\"\n" +
+//				"                    very_end = true;\n" +
+//				"                    if (very_end) {\n" +
+//				"                        val.innerHTML = table;\n" +
+//				"                        break;\n" +
+//				"                    }\n" +
+//				"                }\n" +
+//				"            }\n" +
+//				"\n" +
+//				"        }\n" +
+//				"    }\n" +
+//				"\n" +
+//				"    singleItemTable(\"HostName\")\n" +
+//				"    singleItemTable(\"Server URL\")\n" +
+//				"    singleItemTable(\"ClientIp\")\n" +
+//				"    singleItemTable(\"Preferred Locale\")\n" +
+//				"    singleItemTable(\"AuthID\")\n" +
+//				"    singleItemTable(\"amlbcookie\")\n" ;
+//
+//		System.out.println(javascript);
+//
+//		ScriptTextOutputCallback script = new ScriptTextOutputCallback(javascript);
+//		callbacks.add(script);
+//
+//		String headers_table = "\n" +
+//				"    var headers= " + headerKeys +";\n"+
+//				"\n" +
+//				"    var headers_table = '';\n" +
+//				"    let first_headers = true;\n" +
+//				"    let very_end_headers = false;\n" +
+//				"    let trimmed_headers;\n" +
+//				"    for (const val of document.querySelectorAll('div')) {\n" +
+//				"        if (very_end_headers) {\n" +
+//				"            break;\n" +
+//				"        }\n" +
+//				"\n" +
+//				"        for (key in headers) {\n" +
+//				"            if (val.textContent.startsWith(headers[key]) && first_headers === true) {\n" +
+//				"\n" +
+//				"                if (first_headers === true) {\n" +
+//				"                    headers_table += \"<div class ='react-bootstrap-table'><table class='table table-bordered table-striped table-detail'>\";\n" +
+//				"                    first_headers = false;\n" +
+//				"                }\n" +
+//				"                //This is the last key\n" +
+//				"                const string = val.textContent;\n" +
+//				"                trimmed_headers = '';\n" +
+//				"                for (letter in string) {\n" +
+//				"                    if (string[letter] === \"[\") {\n" +
+//				"                        break;\n" +
+//				"                    } else {\n" +
+//				"                        trimmed_headers += string[letter]\n" +
+//				"                    }\n" +
+//				"\n" +
+//				"                }\n" +
+//				"                //Creates final row and closes table tag\n" +
+//				"\n" +
+//				"                headers_table += \"<tr><td><code>\" + trimmed_headers + \"</code></td><td>\" + val.textContent.replace(headers[key], \"\") + \"</td></tr>\"\n" +
+//				"                val.innerHTML = \"\"\n" +
+//				"            } else if (val.textContent.startsWith(headers[key])) {\n" +
+//				"\n" +
+//				"                //If not first or last it creates the table row and removes that div\n" +
+//				"                //If I don't remove the div it still has the original value with the old styling\n" +
+//				"                const string = val.textContent;\n" +
+//				"                trimmed_headers = '';\n" +
+//				"                for (letter in string) {\n" +
+//				"                    if (string[letter] === \"[\") {\n" +
+//				"                        break;\n" +
+//				"                    } else {\n" +
+//				"                        trimmed_headers += string[letter]\n" +
+//				"                    }\n" +
+//				"                }\n" +
+//				"\n" +
+//				"                headers_table += \"<tr><td><code>\" + trimmed_headers + \"</code></td><td>\" + val.textContent.replace(headers[key], \"\") + \"</td></tr>\"\n" +
+//				"                val.innerHTML = \"\"\n" +
+//				"\n" +
+//				"            } else if (val.textContent.startsWith(headers[headers.length - 1])) {\n" +
+//				"                const string = val.textContent;\n" +
+//				"                trimmed_headers = '';\n" +
+//				"                for (letter in string) {\n" +
+//				"                    if (string[letter] === \"[\") {\n" +
+//				"                        break;\n" +
+//				"                    } else {\n" +
+//				"                        trimmed_headers += string[letter]\n" +
+//				"                    }\n" +
+//				"\n" +
+//				"                }\n" +
+//				"                //Creates final row and closes table tag\n" +
+//				"                headers_table += \"<tr><td><code>\" + trimmed_headers + \"</code></td><td>\" + val.textContent.replace(headers[key], \"\") + \"</td></tr></table></div>\"\n" +
+//				"                very_end_headers = true;\n" +
+//				"                break\n" +
+//				"\n" +
+//				"            }\n" +
+//				"        }\n" +
+//				"        if (very_end_headers) {\n" +
+//				"            val.innerHTML = headers_table;\n" +
+//				"            break\n" +
+//				"        }\n" +
+//				"    }\n";
+//
+//		ScriptTextOutputCallback newer = new ScriptTextOutputCallback(headers_table);
+//		callbacks.add(newer);
+//
+//		String single = "   function singleItemTable(string) {\n" +
+//				"\n" +
+//				"       let table = '';\n" +
+//				"\n" +
+//				"       let very_end = false;\n" +
+//				"\n" +
+//				"       for (const val of document.querySelectorAll('div')) {\n" +
+//				"           if (val.textContent.startsWith(string)) {\n" +
+//				"               table += \"<div class ='react-bootstrap-table'><table class='table table-bordered table-striped table-detail'>\";\n" +
+//				"               if (string === \"HostName\") {\n" +
+//				"                   table += \"<tr><td><code>\" + \"HostName\" + \"</code></td><td>\" + val.textContent.replace(\"HostName\", \"\") + \"</td></tr></table></div>\"\n" +
+//				"                   very_end = true;\n" +
+//				"                   if (very_end) {\n" +
+//				"                       val.innerHTML = table;\n" +
+//				"                       break;\n" +
+//				"                   }\n" +
+//				"               } else if (string === \"Server URL\") {\n" +
+//				"                   table += \"<tr><td><code>\" + \"Server URL\" + \"</code></td><td>\" + val.textContent.replace(\"Server URL\", \"\") + \"</td></tr></table></div>\"\n" +
+//				"                   very_end = true;\n" +
+//				"                   if (very_end) {\n" +
+//				"                       val.innerHTML = table;\n" +
+//				"                       break;\n" +
+//				"                   }\n" +
+//				"               } else if (string === \"Preferred Locale\") {\n" +
+//				"                   table += \"<tr><td><code>\" + \"Preferred Locale\" + \"</code></td><td>\" + val.textContent.replace(\"Preferred Locale\", \"\") + \"</td></tr></table></div>\"\n" +
+//				"                   very_end = true;\n" +
+//				"                   if (very_end) {\n" +
+//				"                       val.innerHTML = table;\n" +
+//				"                       break;\n" +
+//				"                   }\n" +
+//				"               } else if (string === \"ClientIP\") {\n" +
+//				"                   table += \"<tr><td><code>\" + \"ClientIP\" + \"</code></td><td>\" + val.textContent.replace(\"ClientIP\", \"\") + \"</td></tr></table></div>\"\n" +
+//				"                   very_end = true;\n" +
+//				"                   if (very_end) {\n" +
+//				"                       val.innerHTML = table;\n" +
+//				"                       break;\n" +
+//				"                   }\n" +
+//				"               } else if (string === \"AuthID\") {\n" +
+//				"                   table += \"<tr><td><code>\" + \"AuthID\" + \"</code></td><td>\" + val.textContent.replace(\"AuthID\", \"\") + \"</td></tr></table></div>\"\n" +
+//				"                   very_end = true;\n" +
+//				"                   if (very_end) {\n" +
+//				"                       val.innerHTML = table;\n" +
+//				"                       break;\n" +
+//				"                   }\n" +
+//				"               }else if (string === \"amlbcookie\") {\n" +
+//				"                   table += \"<tr><td><code>\" + \"amlbcookie\" + \"</code></td><td>\" + val.textContent.replace(\"amlbcookie\", \"\") + \"</td></tr></table></div>\"\n" +
+//				"                   very_end = true;\n" +
+//				"                   if (very_end) {\n" +
+//				"                       val.innerHTML = table;\n" +
+//				"                       break;\n" +
+//				"                   }\n" +
+//				"               }\n" +
+//				"           }\n" +
+//				"\n" +
+//				"       }\n" +
+//				"   }\n" +
+//				"\n" +
+//				"   singleItemTable(\"HostName\")\n" +
+//				"   singleItemTable(\"Server URL\")\n" +
+//				"   singleItemTable(\"ClientIP\")\n" +
+//				"   singleItemTable(\"Preferred Locale\")\n" +
+//				"   singleItemTable(\"AuthID\")\n" +
+//				"   singleItemTable(\"amlbcookie\")\n"+
+//				"   singleItemTable(\"service\")\n";
+//	ScriptTextOutputCallback single_tables = new ScriptTextOutputCallback(single);
+//		callbacks.add(single_tables);
+//
+//
+//	String cookies_table = "  var cookies = " + cookies + "\n" +
+//			"\n" +
+//			"   let cookies_table = '';\n" +
+//			"   let first_cookie = true;\n" +
+//			"   let very_end_cookie = false;\n" +
+//			"   let trimmed_cookie;\n" +
+//			"   //Loops through divs\n" +
+//			"   for (const val of document.querySelectorAll('div')) {\n" +
+//			"       if (very_end_cookie) {\n" +
+//			"           break;\n" +
+//			"       }\n" +
+//			"\n" +
+//			"//iterates through keys in list to find place I want to make table\n" +
+//			"       for (key in cookies) {\n" +
+//			"           if (val.textContent.startsWith(cookies[key]) && first_cookie === true) {\n" +
+//			"\n" +
+//
+//			"               if (first_cookie === true) {\n" +
+//			"                   cookies_table += \"<div class ='react-bootstrap-table'><table class='table table-bordered table-striped table-detail'>\";\n" +
+//			"                   first_cookie = false;\n" +
+//			"               }\n" +
+//			"               //This is the last key\n" +
+//			"               const string = val.textContent;\n" +
+//			"               trimmed_cookie = '';\n" +
+//			"               for (letter in string) {\n" +
+//			"                   if (string[letter] === \"[\") {\n" +
+//			"                       break;\n" +
+//			"                   } else {\n" +
+//			"                       trimmed_cookie += string[letter]\n" +
+//			"                   }\n" +
+//			"\n" +
+//			"               }\n" +
+//			"               //Creates final row and closes table tag\n" +
+//			"\n" +
+//			"               cookies_table += \"<tr><td><code>\" + trimmed_cookie + \"</code></td><td>\" + val.textContent.replace(cookies[key], \"\") + \"</td></tr>\"\n" +
+//			"               val.innerHTML = \"\"\n" +
+//			"\n" +
+//			"               if(cookies.length === 1) {\n" +
+//			"                   cookies_table += \"</table></div>\"\n" +
+//			"                   very_end_cookie = true\n" +
+//			"                   break\n" +
+//			"               }\n" +
+//			"           } else if (val.textContent.startsWith(cookies[key])) {\n" +
+//			"\n" +
+//			"               //If not first or last it creates the table row and removes that div\n" +
+//			"               //If I don't remove the div it still has the original value with the old styling\n" +
+//			"               const string = val.textContent;\n" +
+//			"               trimmed_cookie = '';\n" +
+//			"               for (letter in string) {\n" +
+//			"                   if (string[letter] === \"[\") {\n" +
+//			"                       break;\n" +
+//			"                   } else {\n" +
+//			"                       trimmed_cookie += string[letter]\n" +
+//			"                   }\n" +
+//			"               }\n" +
+//			"\n" +
+//			"               cookies_table += \"<tr><td><code>\" + trimmed_cookie + \"</code></td><td>\" + val.textContent.replace(cookies[key], \"\") + \"</td></tr>\"\n" +
+//			"               val.innerHTML = \"\"\n" +
+//			"            console.log(cookies[key])\n" +
+//			"           }\n" +
+//			"\n" +
+//			"           else if (val.textContent.startsWith(cookies[cookies.length - 1])) {\n" +
+//			"               const string = val.textContent;\n" +
+//			"               trimmed_cookie = '';\n" +
+//			"               for (letter in string) {\n" +
+//			"                   if (string[letter] === \"[\") {\n" +
+//			"                       break;\n" +
+//			"                   } else {\n" +
+//			"                       trimmed_cookie += string[letter]\n" +
+//			"                   }\n" +
+//			"\n" +
+//			"               }\n" +
+//			"               //Creates final row and closes table tag\n" +
+//			"               cookies_table += \"<tr><td><code>\" + trimmed_cookie + \"</code></td><td>\" + val.textContent.replace(cookies[key], \"\") + \"</td></tr></table></div>\"\n" +
+//			"               very_end_cookie = true;\n" +
+//			"               val.innerHTML = \"\"\n" +
+//			"               break\n" +
+//			"\n" +
+//			"           }\n" +
+//			"       }\n" +
+//			"       if (very_end_cookie) {\n" +
+//			"           val.innerHTML = cookies_table;\n" +
+//			"           break\n" +
+//			"       }\n" +
+//			"   }\n" +
+//			"\n";
+//
+//		ScriptTextOutputCallback script_cookies = new ScriptTextOutputCallback(cookies_table);
+//		callbacks.add(script_cookies);
+//	}
 
 	public void displayhtml_Cloud(ArrayList<Callback> callbacks, List<String> paramKeys, List<String> headerKeys, List<String> cookies){
 
@@ -842,7 +883,7 @@ public class DisplayDebug extends AbstractDecisionNode {
 				"\n" +
 				"\n" +
 				"\n" +
-				"    let headers_table = '';\n" +
+				"    var headers_table = '';\n" +
 				"    let first_headers = true;\n" +
 				"    let very_end_headers = false;\n" +
 				"    let trimmed_headers;\n" +

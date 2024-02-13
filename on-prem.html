@@ -796,81 +796,81 @@ to such license between the licensee and ForgeRock AS.
 
 
 
-    //    for (const val of document.querySelectorAll('div')) {
-//        if (val.textContent === "h3NODE STATE/h3" ||
-//            val.textContent === "h3AUTHID/h3" ||
-//            val.textContent === "h3HEADERS" ||
-//            val.textContent === "h3CLIENT IP/h3" ||
-//            val.textContent === "h3COOKIES/h3" ||
-//            val.textContent === "h3HOSTNAME/h3" ||
-//            val.textContent === "h3LOCALE/h3" ||
-//            val.textContent === "h3PARAMETERS/h3" ||
-//            val.textContent === "h3SERVER URL/h3" ||
-//            val.textContent === "h3SHARED STATE/h3") {
-//
-//            val.outerHTML = "<h3 style='border-bottom: 2px solid black; padding-top: 5px'>" + val.outerHTML.replace("h3", "").replace("/h3", "") + "</h3>"
-//        }
-//        if (val.textContent === "Key" || val.textContent === "Value") {
-//            val.innerHTML = "<h4>" + val.outerHTML + "</h4>"
-//        }
-//    }
-//
-//    // For Parameters
-//    const keys = paramKeys
-//
-//    let table = '';
-//    let first = true;
-//    let very_end = false;
-//    let trimmed;
-//    //Loops through divs
-//    for (const val of document.querySelectorAll('div')) {
-//        //iterates through keys in list to find place I want to make table
-//        for (key in keys) {
-//
-//            if (val.textContent.startsWith(keys[key])) {
-//                //First time coming into loop so this is the beginning
-//                if (first === true) {
-//                    table += "<div class ='react-bootstrap-table'><table class='table table-bordered table-striped table-detail'>";
-//                    first = false;
-//                }
-//                //This is the last key
-//                else if (val.textContent.startsWith(keys[keys.length - 1])) {
-//                    const string = val.textContent;
-//                    trimmed = '';
-//                    for (letter in string) {
-//                        if (string[letter] === "[") {
-//                            break;
-//                        } else {
-//                            trimmed += string[letter]
-//                        }
-//
-//                    }
-//                    //Creates final row and closes table tag
-//                    table += "<tr><td><code>" + trimmed + "</code></td><td>" + val.textContent.replace(keys[key], "") + "</td></tr></table></div>"
-//                    very_end = true;
-//                } else {
-//                    //If not first or last it creates the table row and removes that div
-//                    //If I don't remove the div it still has the original value with the old styling
-//                    const string = val.textContent;
-//                    trimmed = '';
-//                    for (letter in string) {
-//                        if (string[letter] === "[") {
-//                            break;
-//                        } else {
-//                            trimmed += string[letter]
-//                        }
-//                    }
-//                    table += "<tr><td><code>" + trimmed + "</code></td><td>" + val.textContent.replace(keys[key], "") + "</td></tr>"
-//                    //<table class="table table-hover"><thead><tr><th class="selection-cell-header" data-row-selection="true"><div class="checkbox"><input class="react-bs-select-all" id="checkboxHeader" name="checkboxHeader" type="checkbox"><label for="checkboxHeader"></label></div></th><th tabindex="0" aria-label="Username sortable" class="sortable">Username<span class="order"><span class="dropdown"><span class="caret"></span></span><span class="dropup"><span class="caret"></span></span></span></th><th tabindex="0">Full name</th><th tabindex="0">Email address</th><th tabindex="0">Status</th></tr></thead><tbody><tr><td class="selection-cell"><div class="checkbox"><input id="checkbox0" name="checkbox0" type="checkbox"><label for="checkbox0"></label></div></td><td title="demo"><span class="am-table-icon-cell"><span class="fa-stack fa-lg am-table-icon-cell-stack"><i class="fa fa-circle fa-stack-2x text-primary"></i><i class="fa fa-address-card fa-stack-1x fa-inverse"></i></span> <span><span>demo</span></span></span></td><td title="demo"><span>demo</span></td><td><span>demo@example.com</span></td><td><span class="text-success"><i class="fa fa-check-circle"></i> Active</span></td></tr><tr><td class="selection-cell"><div class="checkbox"><input id="checkbox1" name="checkbox1" type="checkbox"><label for="checkbox1"></label></div></td><td title="test_iproov"><span class="am-table-icon-cell"><span class="fa-stack fa-lg am-table-icon-cell-stack"><i class="fa fa-circle fa-stack-2x text-primary"></i><i class="fa fa-address-card fa-stack-1x fa-inverse"></i></span> <span><span>test_iproov</span></span></span></td><td title="test_iproov"><span>test_iproov</span></td><td><span>testiproov@mailinator.com</span></td><td><span class="text-success"><i class="fa fa-check-circle"></i> Active</span></td></tr></tbody></table></div>
-//                    document.getElementById(val.id).remove()
-//                }
-//                if (very_end) {
-//                    val.innerHTML = table;
-//                }
-//            }
-//        }
-//    }
-//
+        for (const val of document.querySelectorAll('div')) {
+       if (val.textContent === "h3NODE STATE/h3" ||
+           val.textContent === "h3AUTHID/h3" ||
+           val.textContent === "h3HEADERS" ||
+           val.textContent === "h3CLIENT IP/h3" ||
+           val.textContent === "h3COOKIES/h3" ||
+           val.textContent === "h3HOSTNAME/h3" ||
+           val.textContent === "h3LOCALE/h3" ||
+           val.textContent === "h3PARAMETERS/h3" ||
+           val.textContent === "h3SERVER URL/h3" ||
+           val.textContent === "h3SHARED STATE/h3") {
+
+           val.outerHTML = "<h3 style='border-bottom: 2px solid black; padding-top: 5px'>" + val.outerHTML.replace("h3", "").replace("/h3", "") + "</h3>"
+       }
+       if (val.textContent === "Key" || val.textContent === "Value") {
+           val.innerHTML = "<h4>" + val.outerHTML + "</h4>"
+       }
+   }
+
+   // For Parameters
+   const keys = paramKeys
+
+   let table = '';
+   let first = true;
+   let very_end = false;
+   let trimmed;
+   //Loops through divs
+   for (const val of document.querySelectorAll('div')) {
+       //iterates through keys in list to find place I want to make table
+       for (key in keys) {
+
+           if (val.textContent.startsWith(keys[key])) {
+               //First time coming into loop so this is the beginning
+               if (first === true) {
+                   table += "<div class ='react-bootstrap-table'><table class='table table-bordered table-striped table-detail'>";
+                   first = false;
+               }
+               //This is the last key
+               else if (val.textContent.startsWith(keys[keys.length - 1])) {
+                   const string = val.textContent;
+                   trimmed = '';
+                   for (letter in string) {
+                       if (string[letter] === "[") {
+                           break;
+                       } else {
+                           trimmed += string[letter]
+                       }
+
+                   }
+                   //Creates final row and closes table tag
+                   table += "<tr><td><code>" + trimmed + "</code></td><td>" + val.textContent.replace(keys[key], "") + "</td></tr></table></div>"
+                   very_end = true;
+               } else {
+                   //If not first or last it creates the table row and removes that div
+                   //If I don't remove the div it still has the original value with the old styling
+                   const string = val.textContent;
+                   trimmed = '';
+                   for (letter in string) {
+                       if (string[letter] === "[") {
+                           break;
+                       } else {
+                           trimmed += string[letter]
+                       }
+                   }
+                   table += "<tr><td><code>" + trimmed + "</code></td><td>" + val.textContent.replace(keys[key], "") + "</td></tr>"
+                   //<table class="table table-hover"><thead><tr><th class="selection-cell-header" data-row-selection="true"><div class="checkbox"><input class="react-bs-select-all" id="checkboxHeader" name="checkboxHeader" type="checkbox"><label for="checkboxHeader"></label></div></th><th tabindex="0" aria-label="Username sortable" class="sortable">Username<span class="order"><span class="dropdown"><span class="caret"></span></span><span class="dropup"><span class="caret"></span></span></span></th><th tabindex="0">Full name</th><th tabindex="0">Email address</th><th tabindex="0">Status</th></tr></thead><tbody><tr><td class="selection-cell"><div class="checkbox"><input id="checkbox0" name="checkbox0" type="checkbox"><label for="checkbox0"></label></div></td><td title="demo"><span class="am-table-icon-cell"><span class="fa-stack fa-lg am-table-icon-cell-stack"><i class="fa fa-circle fa-stack-2x text-primary"></i><i class="fa fa-address-card fa-stack-1x fa-inverse"></i></span> <span><span>demo</span></span></span></td><td title="demo"><span>demo</span></td><td><span>demo@example.com</span></td><td><span class="text-success"><i class="fa fa-check-circle"></i> Active</span></td></tr><tr><td class="selection-cell"><div class="checkbox"><input id="checkbox1" name="checkbox1" type="checkbox"><label for="checkbox1"></label></div></td><td title="test_iproov"><span class="am-table-icon-cell"><span class="fa-stack fa-lg am-table-icon-cell-stack"><i class="fa fa-circle fa-stack-2x text-primary"></i><i class="fa fa-address-card fa-stack-1x fa-inverse"></i></span> <span><span>test_iproov</span></span></span></td><td title="test_iproov"><span>test_iproov</span></td><td><span>testiproov@mailinator.com</span></td><td><span class="text-success"><i class="fa fa-check-circle"></i> Active</span></td></tr></tbody></table></div>
+                   document.getElementById(val.id).remove()
+               }
+               if (very_end) {
+                   val.innerHTML = table;
+               }
+           }
+       }
+   }
+
    function singleItemTable(string) {
 
        let table = '';
@@ -910,13 +910,6 @@ to such license between the licensee and ForgeRock AS.
                    }
                } else if (string === "AuthID") {
                    table += "<tr><td><code>" + "AuthID" + "</code></td><td>" + val.textContent.replace("AuthID", "") + "</td></tr></table></div>"
-                   very_end = true;
-                   if (very_end) {
-                       val.innerHTML = table;
-                       break;
-                   }
-               }else if (string === "amlbcookie") {
-                   table += "<tr><td><code>" + "amlbcookie" + "</code></td><td>" + val.textContent.replace("amlbcookie", "") + "</td></tr></table></div>"
                    very_end = true;
                    if (very_end) {
                        val.innerHTML = table;
@@ -1013,7 +1006,10 @@ to such license between the licensee and ForgeRock AS.
    }
 
 
-   const cookies = cookies
+   const cookies = [
+
+       "IPlanetDirectory"
+   ]
 
    let cookies_table = '';
    let first_cookie = true;
