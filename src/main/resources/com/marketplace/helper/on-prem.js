@@ -143,7 +143,7 @@ function singleItemTable(string) {
                     break;
                 }
             } else if (string === "AuthID") {
-                table += "<tr><td><code>" + "AuthID" + "</code></td><td>" + val.textContent.replace("AuthID", "") + "</td></tr></table></div>"
+                table += "<tr style=\"overflow-wrap: anywhere\"><td><code>" + "AuthID" + "</code></td><td style=\"overflow-wrap: anywhere\">" + val.textContent.replace("AuthID", "") + "</td></tr></table></div>"
                 very_end = true;
                 if (very_end) {
                     val.innerHTML = table;
@@ -206,11 +206,8 @@ for (const val of document.querySelectorAll('div')) {
     for (key in headers) {
         if (value === headers[key] && first_headers === true) {
             if(array.includes(value)){
-                console.log(value+" already in list breaking")
                 break
             }else{
-                console.log("Adding " + value + " to list")
-                console.log("Current list: " + array)
                 array.push(value)
             }
 //First time coming into loop so this is the beginning
@@ -222,7 +219,7 @@ for (const val of document.querySelectorAll('div')) {
             string = value;
             trimmed_headers = '';
             for (letter in string) {
-                if (string[letter] === "[") {
+                if (string[letter] === "[" || string[letter] === " ") {
                     break;
                 } else {
                     trimmed_headers += string[letter]
@@ -231,15 +228,13 @@ for (const val of document.querySelectorAll('div')) {
             }
             //Creates final row and closes table tag
 
-            headers_table += "<tr><td><code>" + trimmed_headers + "</code></td><td>" + val.textContent.replace(headers[key], "") + "</td></tr>"
+            headers_table += "<tr style=\"overflow-wrap: anywhere\"><td style=\"overflow-wrap: anywhere\"><code>" + trimmed_headers + "</code></td><td style=\"overflow-wrap: anywhere\">" + val.textContent.replace(headers[key], "") + "</td></tr>"
             val.innerHTML = ""
         } else if (value === headers[key]) {
             if(array.includes(value)){
-                console.log(value+" already in list breaking")
                 break
             }else{
-                console.log("Adding " + value + " to list")
-                console.log("Current list: " + array)
+
                 array.push(value)
             }
             //If not first or last it creates the table row and removes that div
@@ -253,17 +248,14 @@ for (const val of document.querySelectorAll('div')) {
                     trimmed_headers += string[letter]
                 }
             }
-            headers_table += "<tr><td><code>" + trimmed_headers + "</code></td><td>" + val.textContent.replace(headers[key], "") + "</td></tr>"
+            headers_table += "<tr style=\"overflow-wrap: anywhere\"><td style=\"overflow-wrap: anywhere\"><code>" + trimmed_headers + "</code></td><td style=\"overflow-wrap: anywhere\">" + val.textContent.replace(headers[key], "") + "</td></tr>"
 
             val.innerHTML = ""
 
         } else if (value === headers[headers.length - 1]) {
             if(array.includes(value)){
-                console.log(value+" already in list breaking")
                 break
             }else{
-                console.log("Adding " + value + " to list")
-                console.log("Current list: " + array)
                 array.push(value)
             }
             string = value;
@@ -278,7 +270,7 @@ for (const val of document.querySelectorAll('div')) {
             }
             //Creates final row and closes table tag
             //console.log("trimmed: "+ val.textContent.replace(headers[key], ""))
-            headers_table += "<tr><td><code>" + trimmed_headers + "</code></td><td>" + val.textContent.replace(trimmed_headers, "") + "</td></tr></table>"
+            headers_table += "<tr style=\"overflow-wrap: anywhere\"><td style=\"overflow-wrap: anywhere\"><code>" + trimmed_headers + "</code></td><td style=\"overflow-wrap: anywhere\">" + val.textContent.replace(trimmed_headers, "") + "</td></tr></table>"
             very_end_headers = true;
             val.innerHTML = ""
             break
@@ -337,7 +329,7 @@ for (const val of document.querySelectorAll('div')) {
             trimmed_cookie = '';
 
             for (letter in string) {
-                if (string[letter] === "[") {
+                if (string[letter] === "[" || string[letter] === " ") {
                     break;
                 } else {
                     trimmed_cookie += string[letter]
@@ -345,7 +337,7 @@ for (const val of document.querySelectorAll('div')) {
 
             }
 
-            cookies_table += "<tr><td><code>" + trimmed_cookie + "</code></td><td>" + val.textContent.replace(cookies[key], "") + "</td></tr>"
+            cookies_table += "<tr style=\"overflow-wrap: anywhere\"><td style=\"overflow-wrap: anywhere\"><code>" + trimmed_cookie + "</code></td><td style=\"overflow-wrap: anywhere\">" + val.textContent.replace(cookies[key], "") + "</td></tr>"
             val.innerHTML = ""
 
             if(cookies.length === 1) {
@@ -354,13 +346,12 @@ for (const val of document.querySelectorAll('div')) {
                 break
             }
         } else if (val.textContent.startsWith(cookies[key])) {
-            console.log("Matched cookies value and val")
             //If not first or last it creates the table row and removes that div
             //If I don't remove the div it still has the original value with the old styling
             string = val.textContent;
             trimmed_cookie = '';
             for (letter in string) {
-                if (string[letter] === "[") {
+                if (string[letter] === "[" || string[letter] === " ") {
                     break;
                 } else {
                     trimmed_cookie += string[letter]
@@ -376,7 +367,7 @@ for (const val of document.querySelectorAll('div')) {
              string = val.textContent;
             trimmed_cookie = '';
             for (letter in string) {
-                if (string[letter] === "[") {
+                if (string[letter] === "[" || string[letter] === " ") {
                     break;
                 } else {
                     trimmed_cookie += string[letter]
@@ -384,7 +375,7 @@ for (const val of document.querySelectorAll('div')) {
 
             }
             //Creates final row and closes table tag
-            cookies_table += "<tr><td><code>" + trimmed_cookie + "</code></td><td>" + val.textContent.replace(cookies[key], "") + "</td></tr></table></div>"
+            cookies_table += "<tr style=\"overflow-wrap: anywhere\"><td style=\"overflow-wrap: anywhere\"><code>" + trimmed_cookie + "</code></td><td style=\"overflow-wrap: anywhere\">" + val.textContent.replace(trimmed_cookie, "") + "</td></tr></table></div>"
             very_end_cookie = true;
             val.innerHTML = ""
             break
