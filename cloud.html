@@ -769,8 +769,6 @@
        let trimmer_val;
        //Create tables for values that will not change
        if (string.startsWith("AuthID")) {
-         console.log(val.style)
-
          trimmer_val = trimmer(string);
          table += '<table style="width: 100%">'
          table += '<tr><td  style="overflow-wrap: anywhere; border: 1px solid black;"><code>' + trimmer_val + '</code></td><td style=" padding: 20px; border: 1px solid black; overflow-wrap: anywhere">' + val.textContent.replace("AuthID", "") + '</td></tr></table>'
