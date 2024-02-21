@@ -29,7 +29,6 @@ Copy the .jar file from the ../target directory into the ../web-container/webapp
 `None`
 ## Configurations
 
-## Outputs
 <table>
 <thead>
 <th>Property</th>
