@@ -763,6 +763,10 @@
          val.style = "width: fit-content"
        }
 
+       if(val.className === "min-vh-100 d-flex flex-column fr-fullscreen-mobile"){
+         val.style = "margin: 0px"
+       }
+
 
        let string = val.textContent.trimStart(" ").trimEnd(" ")
 
@@ -955,7 +959,7 @@
             }
           }
 
-          cookies_table += '<tr style="border: 1px solid black;\n text-align: left; padding: 20px;"><td style="border: 1px solid black;\n text-align: left; padding: 20px;" style="overflow-wrap: anywhere"><code>' + trimmed_cookie + '</code></td><td style="border: 1px solid black;\n text-align: left" style="overflow-wrap: anywhere">' + string.replace(trimmed_cookie, "") + '</td></tr>'
+          cookies_table += '<tr style="border: 1px solid black; text-align: left; padding: 20px;"><td style="border: 1px solid black;\n text-align: left; padding: 20px;" style="overflow-wrap: anywhere"><code>' + trimmed_cookie + '</code></td><td style="border: 1px solid black;\n text-align: left" style="overflow-wrap: anywhere">' + string.replace(trimmed_cookie, "") + '</td></tr>'
 
           val.innerHTML = ""
 
@@ -973,7 +977,7 @@
 
           }
           //Creates final row and closes table tag
-          cookies_table +='<tr style="border: 1px solid black;\n text-align: left; padding: 20px;"><td style="overflow-wrap: anywhere; padding: 20px;" style="border: 1px solid black; text-align: left"><code>' + trimmed_cookie + '</code></td><td style="border: 1px solid black;\n text-align: left; padding: 20px;" style="overflow-wrap: anywhere">' + string.replace(trimmed_cookie, "") + '</td></tr></table>'
+          cookies_table +='<tr style="border: 1px solid black; text-align: left; padding: 20px;"><td style="overflow-wrap: anywhere; padding: 20px;" style="border: 1px solid black; text-align: left"><code>' + trimmed_cookie + '</code></td><td style="border: 1px solid black;\n text-align: left; padding: 20px;" style="overflow-wrap: anywhere">' + string.replace(trimmed_cookie, "") + '</td></tr></table>'
           very_end_cookie = true;
           val.innerHTML = ""
           break

@@ -16,20 +16,15 @@
 # Enhanced Debug Node
 
 A simple authentication node for ForgeRock's [Identity Platform][forgerock_platform] 7.2.0 and above. This node is used 
-for debugging a user journey. In the admin configuration, the admin can choose whether to display 
-the node or not, is able to insert Key: Value pairs into Shared State / edit items in the Shared State while 
-seeing what values are for AuthID, HTTP Request Headers, ClientIP, Cookies, Hostname, Locales, Parameters,
-and the Server URL. 
+for debugging a user journey. The admin configures the node to output what the admin wants to see or insert values into Shared State  
 
-
-Copy the .jar file from the ../target directory into the ../web-container/webapps/openam/WEB-INF/lib directory where AM is deployed.  Restart the web container to pick up the new node.  The node will then appear in the authentication trees components palette.
 
 ## Inputs
 
 `None`
 ## Configurations
 
-## Outputs
+
 <table>
 <thead>
 <th>Property</th>
@@ -38,10 +33,6 @@ Copy the .jar file from the ../target directory into the ../web-container/webapp
 <tr>
     <td>Enable</td>
     <td>Choose whether to display node or not</td>
-</tr>
-<tr>
-    <td>2 or more Debug nodes in journey and using ForgeRock UI?</td>
-    <td>If there is one instance of this node in the journey, leave as False. If there are more than one change True</td>
 </tr>
 <tr>
     <td>Insert into shared state</td>
@@ -98,7 +89,7 @@ An error occurred causing the node to fail. Check the logs to see more details o
 
 ## Outputs
 
-Key : Value pair in Shared State depending on if user inserts into Shared State or not
+Key : Value pair in Shared State depending on if Admin configures node to insert into Shared State and values are inserted into text-boxes in the journey
 ## Examples
 
 ![ScreenShot](./example.png)
